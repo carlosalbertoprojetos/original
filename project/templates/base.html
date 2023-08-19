@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Favicon -->
+        <link rel="shortcut icon" href="{% static 'img/logo.ico' %}" type="image/x-icon">
+
+        <!-- Bootstrap -->
+        <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+
+        <!-- FontAwsome -->
+        <script src="{% static 'js/fontawesomeKit.js' %}"></script>
+        <link rel="stylesheet" href="{% static 'css/googleFonts.css' %}">
+
+        <!-- JS -->
+        <link rel="stylesheet" href="{% static 'css/datatables.min.css' %}">
+        <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+        <script src="{% static 'js/datatables.min.js' %}"></script>
+        <script src="{% static 'js/jqueryDataTable.js' %}"></script>
+
+        <!-- select2 -->
+        <!-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" /> -->
+        <link rel="stylesheet" href="{% static 'css/select2.min.css' %}">
+
+        <!-- DatePicker -->
+        <link rel="stylesheet" href="{% static 'css/datapicker.min.css' %}">
+        <script src="{% static 'js/datepicker.min.js' %}"></script>
+
+        <!-- DataTable -->
+        <link rel="stylesheet" href="{% static 'css/datatables.min.css' %}">
+
+        <!-- CSS -->
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+        {% block css %}
+        {% endblock %}
+
+        <title> {% block title %} Original Bebedouros {% endblock title%} </title>
+    </head>
+
+    <body class="bg-light">
+
+        {% block base %}
+        {% endblock %}
+
+        {% block script %}
+        {% endblock %}
+
+    </body>
+
+</html>

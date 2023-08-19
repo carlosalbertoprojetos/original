@@ -1,0 +1,43 @@
+{% extends 'index.html' %}
+
+{% load static %}
+
+<title> {% block title %} Detalhes do Cliente {% endblock title%} </title>
+
+
+{% block index %}
+
+<div class="container invoice bg-white rounded-3">
+    <div class="row d-flex justify-content-between">
+        <div class="col-12 col-md-8 mb-3">
+            <a class="logo d-flex text-decoration-none" href="#">
+                <img src="{% static 'img/logo.png' %}" width="30" height="30">
+                <h6 class="m-0 ps-2 fs-5 text-dark text-uppercase">Original</h6>
+            </a>
+        </div>
+    </div>
+
+    <hr class="my-0">
+
+    <div class="row d-flex justify-content-between py-4">
+        <div class="col-12 col-md-6 py-2">
+            <p class="fw-bold mb-3">Dados do Cliente</p>
+            <p class="">{{ object.nome }}</p>
+            <p class="">{{ object.nome_fantasia }}</p>
+            <p class="">{{ object.tel_principal }} / {{ object.tel_contato }}</p>
+            <p class="">{{ object.email }}</p>
+            <p class="">{{ object.cpf }}</p>
+            <p class="">{{ object.cnpj }}</p>
+            <p class="">{{ object.insc_estadual }}</p>
+            <p class="">{{ object.logradouro }}, {{objectnumero}}, {{objectcomplemento}}, {{object.bairro}}</p>
+            <p class="">{{ object.cep }}</p>
+            <p class="">{{ object.estado }}</p>
+            <p class="">{{ object.cidade }}</p>
+            <p class="">{{ object.status_cliente }}</p>
+        </div>
+    </div>
+
+
+</div>
+
+{% endblock %}

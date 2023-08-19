@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Home{% endblock %}
+
+{% block base %}
+
+<body class="container-fluidtext-center"
+    style="background-image: url('../project/static/img/fundo.jpg'); background-repeat: no-repeat; background-size: cover; height: 90vh; ">
+    <main>
+        <div class="row py-lg-5">
+            <div class="col-lg-6 col-md-8 mx-auto">
+                <div class="container sombra" id="formLogin">
+                    <h1 class="font-center text-light font-italic font-weight-bold">Bem Vindo!</h1>
+                    <button><a type="button" class="text-light" href="/login/">Acessar</a></button>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+
+{% endblock %}

@@ -1,0 +1,648 @@
+{% extends 'index.html' %}
+
+{% load static %}
+{% load widget_tweaks %}
+
+<title> {% block title %} Venda {% endblock title%} </title>
+
+{% block index %}
+
+<head>
+    <link rel="stylesheet" href="{% static 'css/select2.min.css' %}">
+</head>
+<div class="container">
+    <!-- {% if msgerro %}
+    <div id="div_mensagem" class="alert alert-danger" role="alert">
+        <label id="mensagem">Voce não pode colocar o preco abaixo do preco minimo.</label>
+    </div>
+    {% endif %} -->
+
+    <div id="div_mensagem" class="hidden" role="alert">
+        <label id="mensagem"></label>
+    </div>
+    <form method="post" enctype="multipart/form-data" id="form">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <div class="card">
+            <div class="card-header">
+                <label class="fs-5 fw-bold">{{ texto }} Pedido de Venda {{ id }}</label>
+            </div>
+            <div class="card-body label pt-0">
+                <div class="row mb-2">
+                    <div class="col-12 col-lg-4">
+                        <label for="id_cliente" class="">Cliente</label>
+                        {{ form.cliente }}
+                    </div>
+                    <div class="col-12 col-lg-2">
+                        <label for="id_vendedor" class="">Vendedor</label>
+                        <p class="form-control form-control-sm m-0">{{ request.user }}</p>
+                    </div>
+                    <div class="col-6 col-lg-2 p-0">
+                        <label for="id_data_pedido" class="">Pedido</label>
+                        {{ form.data_pedido }}
+                    </div>
+                    <div class="col-6 col-lg-2">
+                        <label for="id_data_entrega" class="">Data de Produção</label>
+                        {{ form.data_entrega }}
+                    </div>
+                    <div class="col-7 col-lg-4">
+                        <label for="id_transportadora" class="">Transportadora</label>
+                        {{ form.transportadora }}
+                    </div>
+                    <div class="col-5 col-lg-3">
+                        <label for="id_status_venda" class="">Status</label>
+                        {{ form.status_venda }}
+                    </div>
+                    <div class="col-12 col-lg-12">
+                        <label for="id_detalhes" class="">Detalhes</label>
+                        {{ form.detalhes }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if produto %}
+        {{ produto.management_form }}
+        {{ produto.non_form_errors }}
+        <div class="card my-2">
+            <div class="card-header"><label class="fs-5 fw-bold">Produtos</label></div>
+            <div class="card-body label py-0" id="produto-form-list">
+                {% for prod in produto %}
+                <div class="row produto-form">
+                    {{ prod.id }}
+                    <div class="col-12 col-lg-4 px-1">
+                        {{ prod.produto.label_tag }}
+                        {{ prod.produto.errors }}
+                        {% render_field prod.produto onChange='filtroPreco()' %}
+                    </div>
+                    <div class="col-4 col-lg-1 px-1">
+                        {{ prod.voltagem.label_tag }}
+                        {{ prod.voltagem.errors }}
+                        {{ prod.voltagem }}
+                    </div>
+                    <div class="col-4 col-lg-1 px-1">
+                        {{ prod.torneira.label_tag }}
+                        {{ prod.torneira.errors }}
+                        {{ prod.torneira }}
+                    </div>
+                    <div class="col-4 col-lg-1 px-1">
+                        {{ prod.adesivado.label_tag }}
+                        {{ prod.adesivado.errors }}
+                        {{ prod.adesivado }}
+                    </div>
+                    <div class="col-3 col-lg-1 px-1">
+                        {{ prod.quantidade.label_tag }}
+                        {{ prod.quantidade.errors }}
+                        {{ prod.quantidade }}
+                    </div>
+                    <div class="col-3 col-lg-2 px-1">
+                        {{ prod.preco.label_tag }}
+                        {{ prod.preco.errors }}
+                        {{ prod.preco }}
+                    </div>
+                    <div class="col-6 col-lg-2 px-1">
+                        {{ prod.subtotal.label_tag }}
+                        {{ prod.subtotal.errors }}
+                        {{ prod.subtotal }}
+                    </div>
+                    {% if codigo %}
+                    <div class="col-6 col-lg-1 d-flex flex-column align-items-top me-5 p-0 pt-1 pe-3">
+                        <label class="mb-2 ps-3" for="">Apagar </label>
+                        {{ prod.DELETE}}
+                    </div>
+                    {% endif %}
+                    <hr class="d-block d-lg-none mt-2 mb-0">
+                </div>
+                {% endfor %}
+            </div>
+            <div id='empty-produto' class="hidden">
+                {{ produto.empty_form.id }}
+                <div class="col-12 col-lg-4 px-1">
+                    {{ produto.empty_form.produto.label_tag }}
+                    {{ produto.empty_form.produto.errors }}
+                    {{ produto.empty_form.produto }}
+                </div>
+                <div class="col-4 col-lg-1 px-1">
+                    {{ produto.empty_form.voltagem.label_tag }}
+                    {{ produto.empty_form.voltagem.errors }}
+                    {{ produto.empty_form.voltagem }}
+                </div>
+                <div class="col-4 col-lg-1 px-1">
+                    {{ produto.empty_form.torneira.label_tag }}
+                    {{ produto.empty_form.torneira.errors }}
+                    {{ produto.empty_form.torneira }}
+                </div>
+                <div class="col-4 col-lg-1 px-1">
+                    {{ produto.empty_form.adesivado.label_tag }}
+                    {{ produto.empty_form.adesivado.errors }}
+                    {{ produto.empty_form.adesivado }}
+                </div>
+                <div class="col-3 col-lg-1 px-1">
+                    {{ produto.empty_form.quantidade.label_tag }}
+                    {{ produto.empty_form.quantidade.errors }}
+                    {{ produto.empty_form.quantidade }}
+                </div>
+                <div class="col-3 col-lg-2 px-1">
+                    {{ produto.empty_form.preco.label_tag }}
+                    {{ produto.empty_form.preco.errors }}
+                    {{ produto.empty_form.preco }}
+                </div>
+                <div class="col-6 col-lg-2 px-1">
+                    {{ produto.empty_form.subtotal.label_tag }}
+                    {{ produto.empty_form.subtotal.errors }}
+                    {{ produto.empty_form.subtotal }}
+                </div>
+                {% if codigo %}
+                <div class="col-6 col-lg-1 d-flex flex-column align-items-top me-5 p-0 pt-1 pe-3">
+                    <label class="mb-2 ps-3" for="">Apagar </label>
+                    {{ produto.empty_form.DELETE}}
+                </div>
+                {% endif %}
+                <hr class="d-block d-lg-none mt-2 mb-0">
+            </div>
+            <div class="btnMaster p-0 ps-2"><button id="add-produto" class="btnMaster btn btn-sm"
+                    type="button">Adicionar
+                    novo produto</button><i class="fa fa-plus-square" aria-hidden="true"></i>
+            </div>
+            <div class="card-header border-0">
+                <div class="row justify-content-end px-3 me-lg-5 pe-lg-5 label">
+                    <div class="col-4 col-lg-2 p-0 p-lg-2">
+                        <label for="id_valor_venda" class="">Valor da Venda</label>
+                        {{ form.valor_venda }}
+                    </div>
+                    <div class="col-4 col-lg-2 p-0 p-lg-2">
+                        <label for="id_porcentagem_desconto" class="">Desconto</label>
+                        {{ form.porcentagem_desconto }}
+                    </div>
+                    <div class="col-4 col-lg-2 px-1 p-lg-2">
+                        <label for="id_valor_frete" class="">Valor do Frete</label>
+                        {{ form.valor_frete }}
+                    </div>
+                    <div class="col-6 col-lg-2 pe-0 p-lg-2">
+                        <label for="id_subtotal" class="">Total</label>
+                        {{ form.subtotal }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        <div class="card my-2">
+            <div class="card-header"><label class="fs-5 fw-bold">Parcelas</label></div>
+            <div class="row label justify-content-evenly justify-content-lg-start px-3">
+                <div class="col-12 col-lg-2 pe-lg-0">
+                    <label for="id_condicaopgto" class="">Condição</label>
+                    {% render_field form.condicaopgto onChange='condicao()' %}
+                </div>
+                <div class="col-4 col-lg-1 pe-lg-0">
+                    <label for="id_parcelas" class="text-center">Parcelas</label>
+                    {{ form.parcelas }}
+                </div>
+                <div class="col-6 col-lg-2 pe-lg-0">
+                    <label for="id_parcelas" class="">Forma Pagamento</label>
+                    {{ form.formapgto }}
+                </div>
+                <div class="col-4 col-lg-2 pt-lg-0">
+                    <label for="id_dias_prim_par" class="">Dias primeira</label>
+                    {{ form.dias_prim_par }}
+                </div>
+                <div class="col-6 col-lg-2 p-lg-0">
+                    <label for="id_dias_outras_par" class="">Dias demais parcelas</label>
+                    {{ form.dias_outras_par }}
+                </div>
+            </div>
+            <hr class="mt-2 mb-0">
+            {% if parcela %}
+            {{ parcela.management_form }}
+            {{ parcela.non_form_errors }}
+            <div class="card-body label pt-0" id="parcela-form-list">
+                {% for parc in parcela %}
+                <div class="row parcela-form">
+                    {{ parc.id }}
+                    {{ parc.receita }}
+                    {{ parc.datadocumento }}
+                    <div class="col-6 col-lg-3">
+                        {{ parc.parcela.label_tag }}
+                        {{ parc.parcela.errors }}
+                        {{ parc.parcela }}
+                    </div>
+                    <div class="col-6 col-lg-2">
+                        {{ parc.valor.label_tag }}
+                        {{ parc.valor.errors }}
+                        {{ parc.valor }}
+                    </div>
+                    <div class="col-6 col-lg-2">
+                        {{ parc.datavencimento.label_tag }}
+                        {{ parc.datavencimento.errors }}
+                        {{ parc.datavencimento }}
+                    </div>
+                    <div class="col-6 col-lg-3">
+                        {{ parc.formapgto.label_tag }}
+                        {{ parc.formapgto.errors }}
+                        {{ parc.formapgto }}
+                    </div>
+                    {% if codigo %}
+                    {% if request.user.is_superuser %}
+                    <div class="col-6 col-lg-2">
+                        {{ parc.datapagamento.label_tag }}
+                        {{ parc.datapagamento.errors }}
+                        {{ parc.datapagamento }}
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        {{ parc.detalhes.label_tag }}
+                        {{ parc.detalhes.errors }}
+                        {{ parc.detalhes }}
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        {{ parc.imagem.label_tag }}
+                        {{ parc.imagem.errors }}
+                        {{ parc.imagem }}
+                    </div>
+                    {% endif%}
+                    {% else %}
+                    <div class="col-12 col-lg-3">
+                        {{ parc.detalhes.label_tag }}
+                        {{ parc.detalhes.errors }}
+                        {{ parc.detalhes }}
+                    </div>
+                    {% endif%}
+                </div>
+                <hr class="mt-2 mb-0">
+                {% endfor %}
+            </div>
+            <div id='empty-parcela' class="hidden">
+                {{ parcela.empty_form.id }}
+                {{ parcela.empty_form.receita }}
+                {{ parcela.empty_form.datadocumento }}
+                <div class="col-6 col-lg-2">
+                    {{ parcela.empty_form.parcela.label_tag }}
+                    {{ parcela.empty_form.parcela.errors }}
+                    {{ parcela.empty_form.parcela }}
+                </div>
+                <div class="col-6 col-lg-2">
+                    {{ parcela.empty_form.valor.label_tag }}
+                    {{ parcela.empty_form.valor.errors }}
+                    {{ parcela.empty_form.valor }}
+                </div>
+                <div class="col-6 col-lg-2">
+                    {{ parcela.empty_form.datavencimento.label_tag }}
+                    {{ parcela.empty_form.datavencimento.errors }}
+                    {{ parcela.empty_form.datavencimento }}
+                </div>
+                <div class="col-6 col-lg-2">
+                    {{ parcela.empty_form.formapgto.label_tag }}
+                    {{ parcela.empty_form.formapgto.errors }}
+                    {{ parcela.empty_form.formapgto }}
+                </div>
+                {% if codigo %}
+                {% if request.user.is_superuser %}
+                <div class="col-6 col-lg-2">
+                    {{ parcela.empty_form.datapagamento.label_tag }}
+                    {{ parcela.empty_form.datapagamento.errors }}
+                    {{ parcela.empty_form.datapagamento }}
+                </div>
+                <div class="col-12 col-lg-2">
+                    {{ parcela.empty_form.detalhes.label_tag }}
+                    {{ parcela.empty_form.detalhes.errors }}
+                    {{ parcela.empty_form.detalhes }}
+                </div>
+                <div class="col-12 col-lg-2">
+                    {{ parcela.empty_form.imagem.label_tag }}
+                    {{ parcela.empty_form.imagem.errors }}
+                    {{ parcela.empty_form.imagem }}
+                </div>
+                {% endif %}
+                {% else %}
+                <div class="col-12 col-lg-3">
+                    {{ parcela.empty_form.detalhes.label_tag }}
+                    {{ parcela.empty_form.detalhes.errors }}
+                    {{ parcela.empty_form.detalhes }}
+                </div>
+                {% endif%}
+                <hr class="d-block d-lg-none mt-2 mb-0">
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="d-flex float-end m-3 mb-5">
+            <div class="col-3 d-flex gap-2 align-middle">
+                <a role="button" class="btn btn-secondary btn-sm" href="{% url 'venda:vendaList' %}">Cancelar</a>
+                <div class="form-group form-button">
+                    <input type="submit" class="btn btn-primary btn-sm" value="Salvar" id="id_salvar" />
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script type="text/javascript" language="javascript">
+
+    // mensagens
+    function aviso(texto) {
+        var divmensagem = document.getElementById('div_mensagem');
+        divmensagem.setAttribute('class', 'alert alert-warning');
+        mensagem.innerHTML = texto;
+        $(window).scrollTop(0);
+    }
+
+    // calcula quantidade, vezes o preco e retorna em subtotal
+    var venda = document.getElementById("id_valor_venda");
+    var tvenda = document.getElementById("id_subtotal");
+    var valordesconto = document.getElementById("id_percentual");
+    var preco_base = 0
+
+    function change() {
+        var ids = $('#id_vendaproduto_set-TOTAL_FORMS').val();
+        let sum = 0;
+
+        for (let i = 0; i < ids; i++) {
+            var produto = $(`#id_vendaproduto_set-${i}-produto`).val();
+            var quant = $(`#id_vendaproduto_set-${i}-quantidade`).val();
+            var preco = $(`#id_vendaproduto_set-${i}-preco`).val();
+            var subt = document.getElementById(`id_vendaproduto_set-${i}-subtotal`);
+
+            if (quant >= 0 && preco >= 0) {
+                calc = Number(quant) * Number(preco);
+                subt.value = calc.toFixed(2);
+            }
+            sum += Number(quant) * Number(preco);
+        }
+
+        var desc = $('#id_porcentagem_desconto').val();
+        venda.setAttribute('value', sum.toFixed(2));
+        var vlrfrete = $('#id_valor_frete').val();
+        vfrete = Number(vlrfrete)
+        let calctotal = 0
+
+        calcvenda = venda.value;
+        if (desc > 0) {
+            calcvenda = (venda.value * (100 - desc)) / 100;
+            calctotal = calcvenda + vfrete
+        } else {
+            calctotal = sum + vfrete
+        }
+        tvenda.setAttribute('value', calctotal.toFixed(2));
+
+        // atualiza as parcelas caso produtos sejam alterados (valores)
+        var parc = $("#id_parcelas").val();
+        if (parc)
+            valorParcelas()
+    }
+
+    // limita a quantidade de fabricação de produtos em 10 por dia
+    function agendaProd() {
+
+        var divmensagem = document.getElementById('div_mensagem');
+        divmensagem.setAttribute('class', 'hidden');
+
+        var select = $("#id_data_entrega :selected").text();
+        vlratual = select.slice(12, -1);
+        var numagen = parseInt(vlratual)
+
+        var ids = $('#id_vendaproduto_set-TOTAL_FORMS').val();
+        numprod = 0
+        for (let i = 0; i < ids; i++) {
+            var quant = $(`#id_vendaproduto_set-${i}-quantidade`).val();
+            numprod += Number(quant)
+        }
+
+        if (numagen == 10 || numprod > 10 || (numagen + numprod) > 10) {
+            aviso(
+                texto = 'O limite de 10 produtos agendados para este dia já foram cadastrados!'
+            )
+        }
+        change()
+    }
+
+    // select2 inicial produto
+    window.onload = function () {
+        document.getElementById(`id_vendaproduto_set-0-produto`).click()
+    }
+
+    // select2 produto
+    function reply_click(clicked_id) {
+        $(`#${clicked_id}`).select2()
+        var select = $("#id_data_entrega :selected").text();
+        vlratual = select.slice(12, -1);
+        var prodagendada = parseInt(vlratual)
+        if (prodagendada == 10) {
+            aviso('Atenção!\n O limite de 10 produtos agendados para este dia já foram cadastrados!');
+        }
+    }
+
+    // select2 cliente
+    $(document).ready(function () {
+        $('#id_cliente').select2()
+    });
+
+    // relaciona o preco do produto conforme o select do produto
+    function filtroPreco(change_id) {
+        var a = change_id
+        var id_formset = a[20]
+        var id_produto = $(`#${change_id}`).val();
+        var preco = document.querySelector(`#id_vendaproduto_set-${id_formset}-preco`);
+        let url = "{% url 'venda:produtoPrecoAjax' %}";
+
+        $.ajax({
+            type: 'GET',
+            url: url,
+            data: {
+                id_produto: id_produto,
+            },
+            success: function (response) {
+                preco_tab = preco_base = response['data']
+                preco.setAttribute('value', preco_tab);
+                preco.setAttribute('min', preco_tab);
+                change()
+            }
+        })
+    }
+
+    // -------------------------PRODUTO--------------------------------
+    const addProdutoBtn = document.getElementById('add-produto');
+    const totalProdutosForms = document.getElementById('id_vendaproduto_set-TOTAL_FORMS');
+
+    addProdutoBtn.addEventListener('click', add_new_produto_form);
+    function add_new_produto_form(event) {
+        if (event) {
+            event.preventDefault();
+        }
+        const currentProdutoForms = document.getElementsByClassName("produto-form");
+        const currentProdutoFormCount = currentProdutoForms.length;
+        const formProdutoCopyTarget = document.getElementById("produto-form-list");
+        const copyProdutoEmptyFormEl = document.getElementById('empty-produto').cloneNode(true);
+        copyProdutoEmptyFormEl.setAttribute('class', 'row produto-form pt-1');
+        // copyProdutoEmptyFormEl.setAttribute('required', 'required');
+        copyProdutoEmptyFormEl.setAttribute('id', `vendaproduto_set-${currentProdutoFormCount}`);
+        const regexProduto = new RegExp('__prefix__', 'g');
+        copyProdutoEmptyFormEl.innerHTML = copyProdutoEmptyFormEl.innerHTML.replace(regexProduto, currentProdutoFormCount);
+        totalProdutosForms.setAttribute('value', currentProdutoFormCount + 1);
+        formProdutoCopyTarget.append(copyProdutoEmptyFormEl);
+        document.getElementById(`id_vendaproduto_set-${currentProdutoFormCount}-produto`).click();
+    }
+
+    // -------------------------PARCELA--------------------------------
+    function addDays(date, days) {
+        date.setDate(date.getDate() + days);
+        return date;
+    }
+
+    // retorna os dados das parcelas conforme o select da condição
+    function condicao() {
+        let data = $("#id_data_entrega").val();
+        let total = $("#id_subtotal").val();
+        var id_condicao = document.getElementById('id_condicaopgto');
+        var tot = document.getElementById('id_contareceber_set-TOTAL_FORMS');
+        let url = "{% url 'venda:condicaoAjax' %}";
+
+        if (total <= 0) {
+            aviso(texto = 'Selecione ao menos um produto')
+            id_condicao.value = ''
+            parcelas = ''
+        } else {
+            var primeira = document.getElementById("id_dias_prim_par");
+            var demais = document.getElementById("id_dias_outras_par");
+            var parcelas = document.getElementById("id_parcelas");
+
+            $.ajax({
+                type: 'GET',
+                url: url,
+                data: {
+                    id_condicao: id_condicao.value,
+                },
+                success: function (response) {
+                    primeira.setAttribute('value', [response['info'][0].primeira]);
+                    demais.setAttribute('value', [response['info'][0].demais]);
+                    parcelas.setAttribute('value', [response['info'][0].parcelas]);
+                    prim = ([response['info'][0].primeira]);
+                    dema = ([response['info'][0].demais]);
+                    parc = ([response['info'][0].parcelas]);
+                    document.getElementById('id_formapgto').value = ([response['info'][0].pgid]);
+                    parcelasChange()
+                },
+            })
+        }
+    }
+
+    function parcelasChange() {
+        data = $("#id_data_entrega").val();
+        total = $("#id_subtotal").val();
+        prim = $("#id_dias_prim_par").val();
+        dema = $("#id_dias_outras_par").val();
+        par = $("#id_parcelas").val();
+
+        totalNewForms = document.getElementById('id_contareceber_set-TOTAL_FORMS');
+        var formCopyTarget = document.getElementById('parcela-form-list');
+        while (formCopyTarget.firstChild) {
+            formCopyTarget.removeChild(formCopyTarget.firstChild)
+        };
+
+        for (let i = 0; i < parc; i++) {
+            const currentParcelas = document.getElementsByClassName('parcela-form');
+            const currentFormCount = currentParcelas.length
+            const formCopyTarget = document.getElementById('parcela-form-list');
+            const copyEmptyFormEl = document.getElementById('empty-parcela').cloneNode(true);
+            copyEmptyFormEl.setAttribute('class', 'row parcela-form pt-1');
+            copyEmptyFormEl.setAttribute('id', `id_contareceber_set-${currentFormCount}-datadocumento`);
+            const regex = new RegExp('__prefix__', 'g');
+            copyEmptyFormEl.innerHTML = copyEmptyFormEl.innerHTML.replace(regex, currentFormCount);
+            totalNewForms.setAttribute('value', currentFormCount + 1);
+            formCopyTarget.append(copyEmptyFormEl);
+
+            // número das parcelas
+            const parcela = document.getElementById(`id_contareceber_set-${i}-parcela`);
+            parcela.setAttribute('value', `${i + 1}ª parcela`);
+
+            // data das parcelas
+            const dataPar = document.getElementById(`id_contareceber_set-${i}-datavencimento`);
+            let numpar = $(`#id_contareceber_set-${i}-parcela`).val();
+            if (numpar == '1ª parcela') {
+                const da = new Date(data);
+                const novaData = addDays(da, parseInt(prim));
+                dataPar.setAttribute('value', novaData.toISOString().slice(0, 10));
+            } else {
+                let dat = $(`#id_contareceber_set-${i - 1}-datavencimento`).val();
+                const da = new Date(dat);
+                const novaData = addDays(da, parseInt(dema));
+                dataPar.setAttribute('value', novaData.toISOString().slice(0, 10));
+            }
+        }
+        valorParcelas()
+    }
+
+    function valorParcelas() {
+        let total = $("#id_subtotal").val();
+        var parc = $("#id_parcelas").val();
+
+        // forma de pagamento
+        var fpg = $("#id_formapgto").val();
+
+        // divide o total, subtraído o desconto, pela quantidade parcelas
+        var div = total / parc
+
+        // calculo para não arredondar divisão do total pelo número de prestações
+        var v1 = Math.floor(div * 100) / 100;
+
+        // diferença entre o total e sua divisão pela quantidade de prestações
+        v2 = total - (v1 * parc)
+        var outvar = v2.toFixed(2)
+
+        var ultima = total - (v1 * (parc - 1))
+        v3 = ultima.toFixed(2)
+
+        // calcular última parcela
+        var quantultpar = (parc - 1)
+        var v4 = (quantultpar * v1)
+        var ultimaparc = v4 + (total - (v1 * (parc - 1)))
+        var ids = $('#id_contareceber_set-TOTAL_FORMS').val();
+        var id = ids - 1
+        var qua = 0
+        if (parc > 0) {
+            qua = parc - 1
+        }
+
+        for (let i = 0; i < id; i++) {
+            let parcs = document.getElementById(`id_contareceber_set-${i}-valor`);
+            parcs.setAttribute('value', v1.toFixed(2))
+            document.getElementById(`id_contareceber_set-${i}-formapgto`).value = fpg;
+        }
+        let upar = document.getElementById(`id_contareceber_set-${qua}-valor`);
+        upar.setAttribute('value', v3);
+        document.getElementById(`id_contareceber_set-${qua}-formapgto`).value = fpg;
+    }
+
+    function preco_min(data) {
+        id_formset = data.id
+        value = data.value
+        if (Number(value) < Number(preco_base)) {
+            let preco = document.getElementById(`${id_formset}`);
+            preco.value = preco_base;
+            aviso('O valor mínimo para este produto é de R$ ' + preco_base)
+        } else {
+            change();
+        }
+    }
+
+    function dataPagamento(id) {
+        var a = id
+        var id_formset = a[20]
+        var data = document.getElementById(`id_contareceber_set-${id_formset}-datapagamento`);
+        var required = document.getElementById(`id_contareceber_set-${id_formset}-imagem`);
+        var checkbox = document.querySelector(`#contareceber_set-${id_formset}-imagem-clear_id`);
+        // verifica se o campo 'Data do Pagamento' está preenchido, caso esteja, obriga a inserir arquivo de imagem
+        if (data.value) {
+            required.setAttribute('required', 'required');
+            if (typeof checkbox === "undefined") {
+                checkbox.checked = true;
+            }
+        }
+    }
+
+</script>
+</body>
+{% endblock %}
+
+
+{% block script %}
+<script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+<script src="{% static 'js/select2.min.js' %}"></script>
+{% endblock %}

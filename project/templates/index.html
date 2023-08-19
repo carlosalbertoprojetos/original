@@ -1,0 +1,309 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Index{% endblock %}
+
+{% block base %}
+<header class="bg-white">
+    <div class="container">
+        <nav class="d-flex align-items-center justify-content-between p-2">
+            <div class="d-none d-md-block ms-2">
+                <a class="logo d-flex gap-2 text-decoration-none" href="/">
+                    <img src="{% static 'img/logo.png' %}">
+                    <h6 class="m-auto ps-1 fs-5 text-dark text-uppercase">Original</h6>
+                </a>
+            </div>
+            <button class="d-block d-lg-none navbar-toggler collapsed border-0 " type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false">
+                <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" font-size="1.5rem" class=""
+                    width="1em" height="1em" viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"></path>
+                </svg>
+            </button>
+            <div class="d-flex">
+                <a class="nav-link active m-auto" aria-current="page" href="#"><svg xmlns="http://www.w3.org/2000/svg"
+                        aria-hidden="true" role="img" font-size="1.5rem" class="iconify iconify--mdi me-2" width="1em"
+                        height="1em" viewBox="0 0 24 24">
+                        <path fill="currentColor"
+                            d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5l-1.5 1.5l-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16A6.5 6.5 0 0 1 3 9.5A6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14S14 12 14 9.5S12 5 9.5 5Z">
+                        </path>
+                    </svg>
+                </a>
+                <a class="avatar position-relative" id="idimage" role="button" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    <img src="{% static 'img/JohnDoe.png' %}" class="text-center text-light rounded-circle" width="40"
+                        height="40"><span class="position-absolute"></span>
+                </a>
+                {% if user.is_authenticated %}
+                <ul class="dropdown-menu" aria-labelledby="idimage">
+                    <li><a class="dropdown-item" href="{% url 'account_logout' %}">Sair</a></li>
+                </ul>
+                {% endif %}
+            </div>
+        </nav>
+        <div class="navbar-collapse collapse justify-content-end" id="navbarCollapse">
+            <div class="subBar bg-white align-items-start">
+                <div class="card p-3 w-100 h-100">
+                    {% if 'compra' in perms %}
+                    <li class="nav-item dropdown">
+                        <a class="dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                            Compra</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'compra:compraList' %}">Pedido</a>
+                            </li>
+                            <li><a class="dropdown-item" href="{% url 'fornecedor:fornecedorList' %}"
+                                    target="_blank">Fornecedor</a>
+                            </li>
+                        </ul>
+                    </li>
+                    {%endif%}
+                    {%if 'venda' in perms%}
+                    <li class="nav-item dropdown">
+                        <a class="dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                            Venda</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'cliente:clienteList' %}">Clientes</a>
+                            </li>
+                            <li><a class="dropdown-item" href="{% url 'venda:vendaList' %}">Pedidos</a></li>
+                            <li><a class="dropdown-item"
+                                    href="{% url  'transportadora:transporteList' %}">Transportadoras</a>
+                            </li>
+                            <li><a class="dropdown-item" href="{% url 'venda:relatorios' %}">Relatórios</a>
+                            </li>
+                            <li><a class="dropdown-item"
+                                    href="{% url 'financeiro:comissaoVendedorList' %}">Comissões</a>
+                            </li>
+                        </ul>
+                    </li>
+                    {% endif %}
+                    {% if 'compra' in perms or 'producao' in perms %}
+                    <li class="nav-item dropdown">
+                        <a class="dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                            Estoque</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'estoque:estoqueList' %}">Entrada de
+                                    Estoque</a>
+                            </li>
+                            <li><a class="dropdown-item" href="{% url  'produto:produtoList' %}">Produtos</a>
+                            </li>
+                            <li><a class="dropdown-item" href="{% url 'producao:estoqueReal' %}">Vendas Real</a>
+                            </li>
+                            <li><a class="dropdown-item" href="{% url 'producao:previsaoEstoque' %}">Previsão</a>
+                            </li>
+                        </ul>
+                    </li>
+                    {% endif %}
+                    {% if 'financeiro' in perms %}
+                    <li class="nav-item dropdown">
+                        <a class="dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                            Financeiro</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'despesa:fluxodecaixa' %}">Fluxo de
+                                    Caixa</a></li>
+                            <li><a class="dropdown-item" href="{% url 'despesa:despesaList' %}">Despesa</a>
+                            </li>
+                            <li><a class="dropdown-item" href="{% url 'receita:receitaList' %}">Receita</a>
+                            </li>
+                            <li><a class="dropdown-item" href="{% url 'financeiro:contasapagar' %}">Contas a Pagar</a>
+                            </li>
+                            <li><a class="dropdown-item" href="{% url 'financeiro:contasareceber' %}">Contas a
+                                    Receber</a>
+                            </li>
+                            <li><a class="dropdown-item" href="{% url 'notafiscal:nfcompraList' %}">Notas Fiscais</a>
+                            </li>
+                            <li><a class="dropdown-item" href="{% url 'notafiscal:notafiscalList' %}">Baixar Notas
+                                    Fiscais</a>
+                            </li>
+                        </ul>
+                    </li>
+                    {%endif%}
+                    {%if 'producao' in perms%}
+                    <li class="nav-item dropdown">
+                        <a class="dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                            Produção</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url  'producao:iniciarProducao' %}">Iniciar
+                                    Produção</a>
+                            </li>
+                            <li><a class="dropdown-item" href="{% url  'producao:chaodeFabrica' %}">Chão de
+                                    Fabrica</a>
+                            </li>
+                            <li><a class="dropdown-item" href="{% url  'producao:enviarExpedicao' %}">Enviar
+                                    Expedição</a>
+                            </li>
+                        </ul>
+                    </li>
+                    {%endif%}
+                    {%if 'expedicao' in perms%}
+                    <li class="nav-item dropdown">
+                        <a class="dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                            Expedição</a>
+                        <ul class="dropdown-menu">
+                        </ul>
+                    </li>
+                    {%endif%}
+                    {%if 'garantia' in perms%}
+                    <li class="nav-item dropdown">
+                        <a class="dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                            Garantia</a>
+                        <ul class="dropdown-menu">
+                        </ul>
+                    </li>
+                    {%endif%}
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+<hr class="m-0 d-none d-md-block">
+<div class="subBar d-none d-md-block bg-white">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 d-flex gap-5 align-items-center">
+                {%if 'compra' in perms%}
+                <li class="nav-item dropdown">
+                    <a class="dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="{% static 'img/icons/compra.png' %}" alt="" height="25" width="25">
+                        <!-- <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+                            <path fill="currentColor"
+                                d="M4 7a1 1 0 0 0 0 2h2.22l2.624 10.5c.223.89 1.02 1.5 1.937 1.5h12.47c.903 0 1.67-.6 1.907-1.47L27.75 10h-2.094l-2.406 9H10.78L8.157 8.5A1.984 1.984 0 0 0 6.22 7H4zm18 14c-1.645 0-3 1.355-3 3s1.355 3 3 3s3-1.355 3-3s-1.355-3-3-3zm-9 0c-1.645 0-3 1.355-3 3s1.355 3 3 3s3-1.355 3-3s-1.355-3-3-3zm3-14v5h-3l4 4l4-4h-3V7h-2zm-3 16c.564 0 1 .436 1 1c0 .564-.436 1-1 1c-.564 0-1-.436-1-1c0-.564.436-1 1-1zm9 0c.564 0 1 .436 1 1c0 .564-.436 1-1 1c-.564 0-1-.436-1-1c0-.564.436-1 1-1z" />
+                        </svg> -->
+                        Compra </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{% url 'compra:compraList' %}">Pedido</a></li>
+                        <li><a class="dropdown-item" href="{% url 'fornecedor:fornecedorList' %}"
+                                target="_blank">Fornecedor</a>
+                        </li>
+                    </ul>
+                </li>
+                {%endif%}
+                {%if 'venda' in perms%}
+                <li class="nav-item dropdown">
+                    <a class="dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="{% static 'img/icons/venda.png' %}" alt="" height="25" width="25">
+                        <!-- <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                            <path fill="currentColor"
+                                d="M12.825 22.825L2 12V2h10l10.8 10.85l-9.975 9.975Zm0-2.825l7.15-7.15L11.15 4H4v7.15L12.825 20ZM6.5 8q.625 0 1.063-.438T8 6.5q0-.625-.438-1.063T6.5 5q-.625 0-1.063.438T5 6.5q0 .625.438 1.063T6.5 8ZM4 4Z" />
+                        </svg> -->
+                        Venda</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{% url 'cliente:clienteList' %}">Clientes</a></li>
+                        <li><a class="dropdown-item" href="{% url 'venda:vendaList' %}">Pedidos</a></li>
+                        <li><a class="dropdown-item"
+                                href="{% url  'transportadora:transporteList' %}">Transportadoras</a></li>
+                        <li><a class="dropdown-item" href="{% url 'venda:relatorios' %}">Relatórios</a></li>
+                        <li><a class="dropdown-item" href="{% url 'financeiro:comissaoVendedorList' %}">Comissões</a>
+                        </li>
+                    </ul>
+                </li>
+                {%endif%}
+                {%if 'compra' in perms or 'producao' in perms%}
+                <li class="nav-item dropdown">
+                    <a class="dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="{% static 'img/icons/estoque.png' %}" alt="" height="25" width="25">
+                        <!-- <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                            <path fill="currentColor"
+                                d="M12 6V0H4v6H0v7h16V6h-4zm-5 6H1V7h2v1h2V7h2v5zM5 6V1h2v1h2V1h2v5H5zm10 6H9V7h2v1h2V7h2v5zM0 16h3v-1h10v1h3v-2H0v2z" />
+                        </svg> -->
+                        Estoque</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{% url 'estoque:estoqueList' %}">Entrada de Estoque</a>
+                        </li>
+                        <li><a class="dropdown-item" href="{% url  'produto:produtoList' %}">Produtos</a>
+                        </li>
+                        <li><a class="dropdown-item" href="{% url 'producao:estoqueReal' %}">Vendas Real</a>
+                        </li>
+                        <li><a class="dropdown-item" href="{% url 'producao:previsaoEstoque' %}">Previsão</a>
+                        </li>
+                    </ul>
+                </li>
+                {%endif%}
+                {%if 'financeiro' in perms%}
+                <li class="nav-item dropdown">
+                    <a class="dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="{% static 'img/icons/financeiro.png' %}" alt="" height="25" width="25">
+                        <!-- <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+                            <path fill="currentColor"
+                                d="M22 3v4c-1.848 0-3.613.332-5.266.91l-.527-1.148l.902-.403l-.812-1.828l-3.652 1.625l.812 1.828l.922-.41l.512 1.106a16.126 16.126 0 0 0-3.043 1.988l-.786-.836l.727-.668l-1.351-1.476l-2.946 2.707l1.352 1.476l.742-.684l.805.848a15.929 15.929 0 0 0-2.446 3.395l-1.082-.535l.45-.883l-1.782-.907l-1.812 3.567l1.781.906l.457-.902l1.145.57A15.912 15.912 0 0 0 6.05 22H4v6h24V3zm2 2h2v17H8.05C8.563 14.727 14.595 9 22 9h2zm-6 6.953a2.001 2.001 0 0 0-1 3.735V20h5v-2h-3v-2.316a1.998 1.998 0 0 0-1-3.73zM6 24h20v2H6z" />
+                        </svg> -->
+                        Financeiro</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{% url 'despesa:fluxodecaixa' %}">Fluxo de Caixa</a></li>
+                        {%if 'financeiro.view_contapagar' in perms %}<li><a class="dropdown-item"
+                                href="{% url 'despesa:despesaList' %}">Despesa</a></li>{%endif%}
+                        {%if 'financeiro.view_contareceber' in perms %}<li><a class="dropdown-item"
+                                href="{% url 'receita:receitaList' %}">Receita</a></li>{%endif%}
+                        {%if 'financeiro.view_contapagar' in perms %}<li><a class="dropdown-item"
+                                href="{% url 'financeiro:contasapagar' %}">Contas a Pagar</a></li>{%endif%}
+                        {%if 'financeiro.view_contareceber' in perms %}<li><a class="dropdown-item"
+                                href="{% url 'financeiro:contasareceber' %}">Contas a Receber</a></li>{%endif%}
+                        {%if 'financeiro.view_contapagar' in perms %}<li><a class="dropdown-item"
+                                href="{% url 'notafiscal:nfcompraList' %}">Notas Fiscais</a></li>{%endif%}
+                        {%if 'financeiro.view_contapagar' in perms %}<li><a class="dropdown-item"
+                                href="{% url 'notafiscal:notafiscalList' %}">Baixar Notas Fiscais</a></li>{%endif%}
+
+
+                    </ul>
+                </li>
+                {%endif%}
+                {%if 'producao' in perms%}
+                <li class="nav-item dropdown">
+                    <a class="dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="{% static 'img/icons/producao.png' %}" alt="" height="25" width="25">
+                        <!-- <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                            <g fill="none" fill-rule="evenodd">
+                                <path
+                                    d="M24 0v24H0V0h24ZM12.594 23.258l-.012.002l-.071.035l-.02.004l-.014-.004l-.071-.036c-.01-.003-.019 0-.024.006l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427c-.002-.01-.009-.017-.016-.018Zm.264-.113l-.014.002l-.184.093l-.01.01l-.003.011l.018.43l.005.012l.008.008l.201.092c.012.004.023 0 .029-.008l.004-.014l-.034-.614c-.003-.012-.01-.02-.02-.022Zm-.715.002a.023.023 0 0 0-.027.006l-.006.014l-.034.614c0 .012.007.02.017.024l.015-.002l.201-.093l.01-.008l.003-.011l.018-.43l-.003-.012l-.01-.01l-.184-.092Z" />
+                                <path fill="currentColor"
+                                    d="M12.5 3c.82 0 1.49.654 1.506 1.476l.024.836l.027.675l.057 1.08l.039.611l.022.322h2.259c.906 0 1.555.773 1.53 1.595l-.005.45l.005.28l.01.315l.02.351l.027.386l.039.42l.05.456l.064.488l.079.523l.045.273l.103.572l.121.604c.175.827.402 1.74.696 2.735l.233.76c.082.26.169.523.26.792H21a1 1 0 1 1 0 2H3a1 1 0 1 1 0-2h1.257c.685-2.358 1.113-4.697 1.377-6.801l.097-.829l.081-.8l.035-.389l.06-.752l.046-.717l.035-.677l.025-.635l.016-.59l.01-.542v-.86L6.027 4.7a31.204 31.204 0 0 0-.004-.139A1.512 1.512 0 0 1 7.533 3H12.5Zm-.482 2H8.034l.006.542l-.001.668l-.008.541l-.015.59l-.023.634l-.033.676l-.02.354l-.05.734l-.064.77l-.037.396l-.084.816a48.038 48.038 0 0 1-1.241 6.8L6.335 19h7.4l-.191-.876l-.09-.436l-.17-.866l-.155-.857l-.142-.846l-.13-.832l-.118-.816l-.107-.797l-.095-.778l-.125-1.122l-.072-.716l-.062-.687l-.101-1.28l-.073-1.14l-.04-.75l-.04-1.03L12.019 5Zm3.941 5h-1.615l.053.528l.121 1.097c.265 2.249.665 4.8 1.269 7.375h1.817c-.272-.844-.5-1.64-.691-2.388l-.18-.73l-.155-.697l-.134-.663l-.114-.629a30.348 30.348 0 0 1-.05-.3l-.087-.577a23.09 23.09 0 0 1-.07-.54l-.056-.506l-.042-.468l-.03-.432l-.02-.394l-.015-.521V10Z" />
+                            </g>
+                        </svg> -->
+                        Produção</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{% url  'producao:iniciarProducao' %}">Iniciar Produção</a>
+                        </li>
+                        <li><a class="dropdown-item" href="{% url  'producao:chaodeFabrica' %}">Chão de Fabrica</a></li>
+                        <li><a class="dropdown-item" href="{% url  'producao:enviarExpedicao' %}">Enviar Expedição</a>
+                        </li>
+                    </ul>
+                </li>
+                {%endif%}
+                {%if 'expedicao' in perms%}
+                <li class="nav-item dropdown">
+                    <a class="dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="{% static 'img/icons/expedicao.png' %}" alt="" height="40" width="30">
+                        <!-- <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                            <path fill="currentColor"
+                                d="M18 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5s.67 1.5 1.5 1.5m1.5-9H17V12h4.46L19.5 9.5M6 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5s.67 1.5 1.5 1.5M20 8l3 4v5h-2c0 1.66-1.34 3-3 3s-3-1.34-3-3H9c0 1.66-1.34 3-3 3s-3-1.34-3-3H1V6c0-1.11.89-2 2-2h14v4h3M3 6v9h.76c.55-.61 1.35-1 2.24-1c.89 0 1.69.39 2.24 1H15V6H3Z" />
+                        </svg> -->
+                        Expedição</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{% url 'expedicao:listaExpedicao' %}">Listar Expedição</a>
+                        </li>
+                    </ul>
+                </li>
+                {%endif%}
+                {%if 'garantia' in perms%}
+                <li class="nav-item dropdown">
+                    <a class="dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="{% static 'img/icons/garantia.png' %}" alt="" height="25" width="25">
+                        <!-- <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+                            <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="2" d="m16 3l14 26H2Zm0 8v8m0 4v2" />
+                        </svg> -->
+                        Garantia</a>
+                    <ul class="dropdown-menu">
+                    </ul>
+                </li>
+                {%endif%}
+            </div>
+        </div>
+    </div>
+</div>
+
+<main class="mb-5 pt-3 pb-5">
+    {% block index %}
+    {% endblock %}
+</main>
+{% endblock %}

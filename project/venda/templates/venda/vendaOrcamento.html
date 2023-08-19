@@ -1,0 +1,138 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+
+    <head>
+
+        <title>Orçamento</title>
+
+        <style>
+            .row {
+                --bs-gutter-x: 1.5rem;
+                --bs-gutter-y: 0;
+                display: flex;
+                flex-wrap: wrap;
+            }
+
+            .col-6 {
+                flex: 0 0 auto;
+                width: 50%
+            }
+        </style>
+
+    </head>
+
+    <body>
+        <div>
+            <div>
+                <div>
+                    <div>
+
+                        <img src="http://www.intip.com.br/logogrande.png" width="100" height="100">
+                    </div>
+                    <div align="center">
+                        <div><b>Representações Hs</b></div>
+                        <div>Orçamento Nº {{pk}}</div>
+                    </div>
+                </div>
+                <hr>
+                <div><b>CNPJ: </b>27.980.581/0001-21</div>
+                <hr>
+                <div>
+                    <div>
+                        <div>
+                            {% for c in venda %}
+                            <div class="row">
+                                <div class="col-6"><b>Cliente:</b> {{ c.cliente.nome }}</div>
+                                <div class="col-6"><b>Nome Fantasia:</b> {{ c.cliente.nome_fantasia }}</div>
+                            </div>
+                            <div>
+                                <div><b>CNPJ:</b> {{ c.cliente.cnpj }}</div>
+                                <div><b>Inscrição Estadual:</b> {{ c.cliente.insc_estadual }}</div>
+                            </div>
+                            <div><b>Endereço: </b>{{ c.cliente.logradouro }}, {{ c.cliente.numero }}, {{
+                                c.cliente.complemento }}</div>
+                            <div>
+                                <div><b>Bairro:</b> {{ c.cliente.bairro }}</div>
+                                <div><b>CEP:</b> {{ c.cliente.cep }}</div>
+                            </div>
+                            <div>
+                                <div><b>Cidade:</b> {{ c.cliente.cidade }}</div>
+                                <div><b>Estado:</b> {{ c.cliente.estado }}</div>
+                            </div>
+                            <div>
+                                <div><b>Telefone:</b> {{ c.cliente.tel_principal|default:"" }}</div>
+                                <div><b>E-mail:</b> {{ c.cliente.email }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th align="left">Produto</th>
+                                <th align="center">Quantidade</th>
+                                <th align="right">Preço(R$)</th>
+                                <th align="right">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for prod in produtos %}
+                            <tr>
+                                <td>{{ prod.produto }}</td>
+                                <td align="center">{{ prod.quantidade }}</td>
+                                <td align="right">R$ {{ prod.preco }}</td>
+                                <td align="right">R$ {{ prod.subtotal }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <hr>
+                <div>
+                    <div align="right">
+                        <b>TOTAL: </b>
+                        R$ {{ c.subtotal }}
+                    </div>
+                </div>
+                <hr>
+                <div><b>Detalhes da Venda:</b> {{ c.detalhes|default:"" }}</div>
+                <div>
+                    <div><b>Condição de Pagamento:</b> {{ c.condicaopgto }}</div>
+                    <div><b>Data de Emissão:</b> {{ c.data_pedido }}</div>
+                </div>
+                <hr>
+                <div>
+                    <div>
+                        <div class="row">
+                            <div class="col-6"><b>Transportadora:</b> {{ c.transportadora }}</div>
+                            <div class="col-6"><b>Nome Fantasia:</b> {{ c.transportadora.nome_fantasia }}</div>
+                        </div>
+                        <div>
+                            <div><b>CNPJ:</b> {{ c.transportadora.cnpj }}</div>
+                            <div><b>Inscrição Estadual:</b> {{ c.transportadora.insc_estadual }}</div>
+                        </div>
+                        <div><b>Endereço: </b>{{ c.transportadora.logradouro }}, {{ c.transportadora.numero }}, {{
+                            c.transportadora.complemento }}</div>
+                        <div>
+                            <div><b>Bairro:</b> {{ c.transportadora.bairro }}</div>
+                            <div><b>CEP:</b> {{ c.transportadora.cep }}</div>
+                        </div>
+                        <div>
+                            <div><b>Cidade:</b> {{ c.transportadora.cidade }}</div>
+                            <div><b>Estado:</b> {{ c.transportadora.estado }}</div>
+                        </div>
+                        <div>
+                            <div><b>Telefone:</b> {{ c.transportadora.tel_principal|default:"" }}</div>
+                            <div><b>E-mail:</b> {{ c.transportadora.email }}</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+    </body>
+
+</html>

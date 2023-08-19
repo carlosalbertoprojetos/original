@@ -1,0 +1,105 @@
+{% extends 'index.html' %}
+
+{% load static crispy_forms_tags %}
+
+<title> {% block title %} Fornecedor {% endblock title%} </title>
+
+{% block index %}
+
+<div class="container">
+    <form method="post" action="" class="">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <div class="card">
+            <div class="card-header">
+                <label class="fs-5 fw-bold">
+                    {% if id %}
+                    Alterar
+                    {% else %}
+                    Novo
+                    {% endif %}
+                    Cadastro de Fornecedor
+                </label>
+            </div>
+            <div class="card-body label">
+                <div class="row mb-2">
+                    <div class="col-12 col-md-4">
+                        <label for="id_nome" class="">Nome</label>
+                        {{ form.nome }}
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <label for="id_nome_fantasia" class="">Nome Fantasia</label>
+                        {{ form.nome_fantasia }}
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <label for="id_email" class="">Email</label>
+                        {{ form.email }}
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <label for="id_tel_principal" class="">Telefone Principal</label>
+                        {{ form.tel_principal }}
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <label for="id_tel_contato" class="">Telefone de Contato</label>
+                        {{ form.tel_contato }}
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <label for="id_cpf" class="">CPF</label>
+                        {{ form.cpf }}
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <label for="id_cnpj" class="">CNPJ</label>
+                        {{ form.cnpj }}
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <label for="id_insc_estadual" class="">Inscrição Estadual</label>
+                        {{ form.insc_estadual }}
+                    </div>
+                    <div class="col-12 col-md-5">
+                        <label for="id_logradouro" class="">Logradouro</label>
+                        {{ form.logradouro }}
+                    </div>
+                    <div class="col-3 col-md-1">
+                        <label for="id_numero" class="">Número</label>
+                        {{ form.numero }}
+                    </div>
+                    <div class="col-3 col-md-2">
+                        <label for="id_complemento" class="">complemento</label>
+                        {{ form.complemento }}
+                    </div>
+                    <div class="col-8 col-md-4">
+                        <label for="id_bairro" class="">Bairro</label>
+                        {{ form.bairro }}
+                    </div>
+                    <div class="col-4 col-md-2">
+                        <label for="id_cep" class="">CEP</label>
+                        {{ form.cep }}
+                    </div>
+                    <div class="col-3 col-md-1">
+                        <label for="id_estado" class="">Estado</label>
+                        {{ form.estado }}
+                    </div>
+                    <div class="col-9 col-md-2">
+                        <label for="id_cidade" class="">Cidade</label>
+                        {{ form.cidade }}
+                    </div>
+                    <div class="col-6 col-md-1 mt-3">
+                        <label for="id_status_cliente" class="">Ativo</label>
+                        {{ form.status_fornecedor }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex float-end m-3">
+            <div class="col-3 d-flex gap-2 align-middle">
+                <a role="button" class="btn btn-secondary btn-sm"
+                    href="{% url 'fornecedor:fornecedorList' %}">Cancelar</a>
+                <div class="form-group form-button">
+                    <input type="submit" class="btn btn-primary btn-sm" value="Salvar" />
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

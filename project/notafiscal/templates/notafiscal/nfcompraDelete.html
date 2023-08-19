@@ -1,0 +1,27 @@
+{% extends 'index.html' %}
+
+{% load static %}
+
+<title> {% block title %} Delete Nota Fiscal {% endblock title%} </title>
+
+
+{% block index %}
+
+<div class="container">
+    <h5>Delete</h5>
+    <div class="cols-6">
+        <form action="." method="POST">
+            <div class="col-sm-6">
+                {% csrf_token %}
+                <p>Você tem certeza que deseja deletar o registro: <b>{{ object.fornecedor }}, CNPJ:
+                        {{ object.cnpj_destinatario }}, emitido em {{ object.data_emissao|date:"d/m/Y" }}</b>?</p>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary btn-sm">Confirmar</button>
+                    <a class="btn btn-secondary btn-sm" href="{% url 'notafiscal:nfcompraList' %}">Cancelar</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

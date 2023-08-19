@@ -1,0 +1,343 @@
+{% extends 'index.html' %}
+
+{% load static crispy_forms_tags %}
+
+<title> {% block title %} Compra {% endblock title%} </title>
+
+{% block index %}
+
+<head>
+    <link rel="stylesheet" href="{% static 'css/select2.min.css' %}">
+</head>
+<div class="container">
+    <form method="post">
+        {% csrf_token %}
+        {% if status == 'autorizado' %}
+        <p class="hidden">{{form}}</p>
+        <div class="card">
+            <div class="card-header">
+                <label class="fs-5 fw-bold">Editar Pedido de Compra</label>
+            </div>
+            <div class="card-body label pt-0">
+                <div class="row mb-2">
+                    {% for d in dados_compra %}
+                    <div class="col-12 col-md-4 pe-0">
+                        <label for="id_fornecedor" class="w-100">Fornecedor</label>
+                        <p class="m-0" style="font-size:12px;">{{ d.fornecedor|upper }}</p>
+                    </div>
+                    <div class="col-6 col-md-2 pe-0">
+                        <label for="id_data" class="w-100">Data</label>
+                        <p class="m-0" style="font-size:12px;">
+                            {{ d.data|date:"d/m/Y" }}
+                        </p>
+                    </div>
+                    <div class="col-6 col-md-2 pe-0">
+                        <label for="id_previsaoentrega" class="w-100">Previsão de Entrega</label>
+                        <p class="m-0" style="font-size:12px;">
+                            {{ d.previsaoentrega|date:"d/m/Y" }}
+                        </p>
+                    </div>
+                    <div class="col-6 col-md-2 text-center pe-0">
+                        <label for="id_total" class="w-100">Total</label>
+                        <p class="m-0" style="font-size:12px;">
+                            R$ {{ d.total }}
+                        </p>
+                    </div>
+                    <div class="col-6 col-md-2 pe-0">
+                        <label for="id_status_compra" class="w-100">Situação</label>
+                        {{ d.status_compra|capfirst }}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <p class="hidden">{{ produto.management_form }}{{ produto }}</p>
+        <div class="card my-2">
+            <div class="card-header"><label class="fs-5 fw-bold">Produtos</label></div>
+            <div class="card-body label pt-0" id="produto-form-list">
+                <div class="row produto-form">
+                    <div class="col-9 col-lg-4">
+                        <label for="id_produto" class="w-100">Produto</label>
+                    </div>
+                    <div class="col-3 col-lg-2">
+                        <label for="id_quantidade" class="w-100 text-center">Quantidade</label>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <label for="id_detalhes" class="w-100">Detalhes</label>
+                    </div>
+                </div>
+                {% for prod in dados_produto %}
+                <div class="row produto-form">
+                    <div class="col-9 col-lg-4">
+                        <p class="m-0" style="font-size:12px;">{{ prod.produto }}</p>
+                    </div>
+                    <div class="col-3 col-lg-2">
+                        <p class="m-0 text-center" style="font-size:12px;">{{ prod.quantidade }}</p>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <p class="m-0" style="font-size:12px;">{{ prod.detalhes }}</p>
+                    </div>
+                    <hr class="d-block d-lg-none mt-2 mb-0">
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% else %}
+
+        {{ form.non_field_errors }}
+        <div class="card">
+            <div class="card-header">
+                {% if dados_compra %}
+                <label class="fs-5 fw-bold">Editar Pedido de Compra</label>
+                {% else %}
+                <label class="fs-5 fw-bold">Novo Pedido de Compra</label>
+                {% endif %}
+            </div>
+            <div class="card-body label pt-0">
+                <div class="row mb-2">
+                    <div class="col-12 col-md-4">
+                        <label for="id_fornecedor" class="">Fornecedor</label>
+                        {{ form.fornecedor }}
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <label for="id_data" class="">Data</label>
+                        {{ form.data }}
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <label for="id_previsaoentrega" class="">Previsão de Entrega</label>
+                        {{ form.previsaoentrega }}
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <label for="id_total" class="">Total</label>
+                        {{ form.total }}
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <label for="id_status_compra" class="">Situação</label>
+                        {{ form.status_compra }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if produto %}
+        {{ produto.management_form }}
+        {{ produto.non_form_errors }}
+        <div class="card my-2">
+            <div class="card-header"><label class="fs-5 fw-bold">Produtos</label></div>
+            <div class="card-body label py-0" id="produto-form-list">
+                {% for prod in produto %}
+                <div class="row produto-form">
+                    {{ prod.id }}
+                    <div class="col-9 col-lg-4">
+                        {{ prod.produto.label_tag }}
+                        {{ prod.produto.errors }}
+                        {{ prod.produto }}
+                    </div>
+                    <div class="col-3 col-lg-1">
+                        {{ prod.quantidade.label_tag }}
+                        {{ prod.quantidade.errors }}
+                        {{ prod.quantidade }}
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        {{ prod.detalhes.label_tag }}
+                        {{ prod.detalhes.errors }}
+                        {{ prod.detalhes }}
+                    </div>
+                    <hr class="d-block d-lg-none mt-2 mb-0">
+                </div>
+                {% endfor %}
+            </div>
+            <div id='empty-produto' class="hidden">
+                {{ produto.empty_form.id }}
+                <div class="col-6 col-lg-4">
+                    {{ produto.empty_form.produto.label_tag }}
+                    {{ produto.empty_form.produto.errors }}
+                    {{ produto.empty_form.produto }}
+                </div>
+                <div class="col-6 col-lg-1">
+                    {{ produto.empty_form.quantidade.label_tag }}
+                    {{ produto.empty_form.quantidade.errors }}
+                    {{ produto.empty_form.quantidade }}
+                </div>
+                <div class="col-12 col-lg-6">
+                    {{ produto.empty_form.detalhes.label_tag }}
+                    {{ produto.empty_form.detalhes.errors }}
+                    {{ produto.empty_form.detalhes }}
+                </div>
+                <hr class="d-block d-lg-none mt-2 mb-0">
+            </div>
+            <div class="m-2 btnMaster px-2"><button id="add-produto" class="btnMaster btn btn-sm"
+                    type="button">Adicionar novo produto</button><i class="fa fa-plus-square" aria-hidden="true"></i>
+            </div>
+        </div>
+        {% endif %}
+        {% endif %}
+
+
+        {% if parcela %}
+        {{ parcela.management_form }}
+        {{ parcela.non_form_errors }}
+        <div class="card">
+            <div class="card-header"><label class="fs-5 fw-bold">Parcelas</label></div>
+            <div class="card-body label py-0" id="parcela-form-list">
+                {% for parc in parcela %}
+                <div class="row parcela-form">
+                    {{ parc.id }}
+                    {{ parc.datadocumento }}
+                    <div class="col-6 col-lg-2">
+                        {{ parc.valor.label_tag }}
+                        {{ parc.valor.errors }}
+                        {{ parc.valor }}
+                    </div>
+                    <div class="col-6 col-lg-2">
+                        {{ parc.datavencimento.label_tag }}
+                        {{ parc.datavencimento.errors }}
+                        {{ parc.datavencimento }}
+                    </div>
+                    <div class="col-6 col-lg-2">
+                        {{ parc.formapgto.label_tag }}
+                        {{ parc.formapgto.errors }}
+                        {{ parc.formapgto }}
+                    </div>
+                    {%if 'financeiro.change_contapagar' in perms %}
+                    <div class="col-6 col-lg-2">
+                        {{ parc.datapagamento.label_tag }}
+                        {{ parc.datapagamento.errors }}
+                        {{ parc.datapagamento }}
+                    </div>
+                    {%endif%}
+                    <div class="col-12 col-lg-4">
+                        {{ parc.detalhes.label_tag }}
+                        {{ parc.detalhes.errors }}
+                        {{ parc.detalhes }}
+                    </div>
+                </div>
+                <hr class="d-block d-lg-none mt-2 mb-0">
+                {% endfor %}
+            </div>
+            <div id='empty-parcela' class="hidden">
+                {{ parcela.empty_form.id }}
+                {{ parcela.empty_form.datadocumento }}
+                <div class="col-6 col-lg-2">
+                    {{ parcela.empty_form.valor.label_tag }}
+                    {{ parcela.empty_form.valor.errors }}
+                    {{ parcela.empty_form.valor }}
+                </div>
+                <div class="col-6 col-lg-2">
+                    {{ parcela.empty_form.datavencimento.label_tag }}
+                    {{ parcela.empty_form.datavencimento.errors }}
+                    {{ parcela.empty_form.datavencimento }}
+                </div>
+                <div class="col-12 col-lg-2">
+                    {{ parcela.empty_form.formapgto.label_tag }}
+                    {{ parcela.empty_form.formapgto.errors }}
+                    {{ parcela.empty_form.formapgto }}
+                </div>
+                {%if 'financeiro.change_contapagar' in perms %}
+                <div class="col-6 col-lg-2">
+                    {{ parc.datapagamento.label_tag }}
+                    {{ parc.datapagamento.errors }}
+                    {{ parc.datapagamento }}
+                </div>
+                {%endif%}
+                <div class="col-12 col-lg-6">
+                    {{ parcela.empty_form.detalhes.label_tag }}
+                    {{ parcela.empty_form.detalhes.errors }}
+                    {{ parcela.empty_form.detalhes }}
+                </div>
+                <hr class="d-block d-lg-none mt-2 mb-0">
+            </div>
+            {% if not status == 'autorizado' %}
+            <div class="m-2 btnMaster px-2"><button id="add-parcela" class="btnMaster btn btn-sm"
+                    type="button">Adicionar nova parcela</button><i class="fa fa-plus-square" aria-hidden="true"></i>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="d-flex float-end m-3 mb-5">
+            <div class="col-3 d-flex gap-2 align-middle">
+                <a role="button" class="btn btn-secondary btn-sm" href="{% url 'compra:compraList' %}">Cancelar</a>
+                <div class="form-group form-button">
+                    <input type="submit" class="btn btn-primary btn-sm" value="Salvar" />
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+<script>
+    // select2 inicial produto
+    window.onload = function () {
+        document.getElementById(`id_compramateriaprima_set-0-produto`).click()
+    }
+
+    // select2 produto
+    function reply_click(clicked_id) {
+        $(`#${clicked_id}`).select2();
+    }
+
+    // select2 fornecedor
+    $(document).ready(function () {
+        $('#id_fornecedor').select2();
+    });
+
+    // -------------------------PRODUTO--------------------------------
+    const addProdutoBtn = document.getElementById('add-produto')
+    const totalProdutosForms = document.getElementById('id_compramateriaprima_set-TOTAL_FORMS')
+
+    addProdutoBtn.addEventListener('click', add_new_produto_form)
+    function add_new_produto_form(event) {
+        if (event) {
+            event.preventDefault()
+        }
+        const currentProdutoForms = document.getElementsByClassName("produto-form")
+        const currentProdutoFormCount = currentProdutoForms.length // + 1
+
+        const formProdutoCopyTarget = document.getElementById("produto-form-list")
+        const copyProdutoEmptyFormEl = document.getElementById('empty-produto').cloneNode(true)
+        console.log(copyProdutoEmptyFormEl)
+        copyProdutoEmptyFormEl.setAttribute('class', 'row produto-form')
+        copyProdutoEmptyFormEl.setAttribute('id', `compramateriaprima_set-${currentProdutoFormCount}`)
+        const regexProduto = new RegExp('__prefix__', 'g')
+        copyProdutoEmptyFormEl.innerHTML = copyProdutoEmptyFormEl.innerHTML.replace(regexProduto, currentProdutoFormCount)
+        totalProdutosForms.setAttribute('value', currentProdutoFormCount + 1)
+
+        formProdutoCopyTarget.append(copyProdutoEmptyFormEl)
+
+        document.getElementById(`id_compramateriaprima_set-${currentProdutoFormCount}-produto`).click()
+    }
+
+
+    // -------------------------PARCELA--------------------------------
+    const addParcelaBtn = document.getElementById('add-parcela')
+    const totalPacelasrForms = document.getElementById('id_contapagar_set-TOTAL_FORMS')
+
+    addParcelaBtn.addEventListener('click', add_new_parcela_form)
+    function add_new_parcela_form(event) {
+        if (event) {
+            event.preventDefault()
+        }
+        const currentParcelaForms = document.getElementsByClassName("parcela-form")
+        const currentParcelaFormCount = currentParcelaForms.length // + 1
+
+        const formParcelaCopyTarget = document.getElementById("parcela-form-list")
+        const copyParcelaEmptyFormEl = document.getElementById('empty-parcela').cloneNode(true)
+        copyParcelaEmptyFormEl.setAttribute('class', 'row parcela-form')
+        copyParcelaEmptyFormEl.setAttribute('id', `contapagar_set-${currentParcelaFormCount}`)
+        const regexParcela = new RegExp('__prefix__', 'g')
+        copyParcelaEmptyFormEl.innerHTML = copyParcelaEmptyFormEl.innerHTML.replace(regexParcela, currentParcelaFormCount)
+        totalPacelasrForms.setAttribute('value', currentParcelaFormCount + 1)
+
+        formParcelaCopyTarget.append(copyParcelaEmptyFormEl)
+    }
+
+</script>
+{% endblock %}
+
+
+{% block script %}
+<script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+<script src="{% static 'js/select2.min.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,10 @@
+e8d42dc9527cdb5af0059c7b31ebb4a30a5619fe
+
+
+
+
+sonar-scanner.bat \
+  -D"sonar.organization=compra-intip" \
+  -D"sonar.projectKey=compra-intip_erp-intip" \
+  -D"sonar.sources=." \
+  -D"sonar.host.url=https://sonarcloud.io"

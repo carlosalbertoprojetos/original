@@ -1,0 +1,31 @@
+{% extends 'index.html' %}
+
+{% load static crispy_forms_tags %}
+
+<title> {% block title %} Matéria Prima {% endblock title%} </title>
+
+{% block index %}
+
+<div class="container">
+    <div class="card p-3">
+        <form method="POST" action="" class="">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <div class="card">
+                <div class="card-header">
+                    <label class="fs-5 fw-bold">Matéria Prima</label>
+                </div>
+                {{ form }}
+                <div class="d-flex justify-content-end mt-2">
+                    <div class="col-3 d-flex gap-2 justify-content-end">
+                        <div class="form-group form-button">
+                            <input type="submit" class="btn btn-primary btn-sm" value="Salvar" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

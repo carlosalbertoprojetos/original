@@ -1,0 +1,77 @@
+{% extends 'index.html' %}
+
+{% load static %}
+
+<title> {% block title %} Estoque {% endblock title%} </title>
+
+
+{% block index %}
+
+<div class="container">
+    <div class="filters card border-1">
+        <div class="card-header">
+            <label class="fs-5 fw-bold">Estoque</label>
+        </div>
+        <div class="p-3">
+            <table class="table table-sm" id="id_table">
+                <!-- <caption>Estoque</caption> -->
+                <thead>
+                    <tr>
+                        <th>Matéria Prima</th>
+                        <th class="text-center">Quantidade</th>
+                        <th>Endereço de estoque</th>
+                        <th class="text-center">Conferir Estoque</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for obj in object_list %}
+                    <tr>
+                        <td>{{ obj.materiaprima }}</td>
+                        <td align="center">{{ obj.qtde }}</td>
+                        <td>{{ obj.enderecoestoque }}</td>
+                        <td align="center">
+                            <a class="px-2" href="{{ obj.estoque_mp_edit }}" style="font-size: 12px">
+                                <i class="fa fa-edit"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    $(document).ready(function () {
+        $('#id_table').DataTable({
+            "language": {
+                "sProcessing": "Proccesando...",
+                "sLengthMenu": "Mostrar _MENU_ registros",
+                "sZeroRecords": "Nenhum resultado encontrado",
+                "sEmptyTable": "Nenhum dado disponivel",
+                "sInfo": "Mostrando registros de _START_ a _END_ de um total de _TOTAL_ registros",
+                "sInfoEmpty": "Mostrando registros de 0 a 0 de um total de 0 registros",
+                "sInfoFiltered": "(filtrado de um total de _MAX_ registros)",
+                "sInfoPostFix": "",
+                "sSearch": "Buscar:",
+                "sUrl": "",
+                "sInfoThousands": ",",
+                "sLoadingRecords": "Carregando...",
+                "oPaginate": {
+                    "sFirst": "Primero",
+                    "sLast": "Último",
+                    "sNext": "Seguinte",
+                    "sPrevious": "Anterior"
+                },
+                "oAria": {
+                    "sSortAscending": ": Ativar para ordenar a coluna de maneira ascendente",
+                    "sSortDescending": ": Ativar para ordenar a coluna de maneira descendente"
+                }
+            }
+        });
+    }); 
+</script>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends 'index.html' %}
+
+{% load static %}
+
+<title> {% block title %} Contas a Pagar {% endblock title%} </title>
+
+{% block index %}
+
+<!-- Modal -->
+<div class="modal fade" id="ex1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="upload_xmlLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header justify-content-end">
+              <p><a href="#" onclick='$("#ex1").modal("hide");'>fechar</a></p>
+            </div>
+            <div class="modal-body">afaeef
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="container">
+    <div class="filters card border-1 mt-2">
+        <div class="card-header">
+            <label class="fs-5 fw-bold">Vendas na Expedição</label>
+        </div>
+        <div class="p-3">
+            <table class="table table-sm" id="id_table">
+                <div class="col-12 d-flex justify-content-end">
+                </div>
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Código</th>
+                        <th>Cliente</th>
+                        <th>Data Pedido</th>
+                        <th>Data Produção</th>
+                        <th>Status</th>
+                        <th>Imprimir NF</th>
+                        <th>Emitir Boleto</th>
+                        <th>Confirmar envio</th>
+                        <th>Editar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <form method="POST" id="form" name="form" action="">
+                        {% csrf_token %}
+                    {%for venda in vendas%}
+                    <tr>
+                        <td><input type="checkbox" id="venda" name="venda" data-25l="{{venda.qtde_25l}}"  data-50l="{{venda.qtde_50l}}"  data-100l="{{venda.qtde_100l}}"  data-200l="{{venda.qtde_200l}}" value="{{venda.id}}"/></td>
+                        <td>{{venda.id}}</td>
+                        <td>{{venda.cliente}}</td>
+                        <td>{{venda.data_pedido}}</td>
+                        <td>{{venda.data_entrega}}</td>
+                        <td>{{venda.status_venda.title}}</td>
+                        <td><input type="button" name="Imprimir" onclick="javascript:$('#ex1').modal('show');"  value="Imprimir NF"></td>
+                        <td><input type="button" name="Emitir" value="Emitir Boleto"></td>
+                        <td><input type="button" name="Confirmar" value="Confirmar"></td>
+                        <td align="center pe-1">
+                            <abbr title="Editar">
+                                <a href="{{ venda.venda_gau_edit }}">
+                                    <i class=" fa fa-edit"></i>
+                                </a>
+                            </abbr>
+                        </td>
+                    </tr>
+                    {%endfor%}
+                </form>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+

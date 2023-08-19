@@ -1,0 +1,85 @@
+{% extends 'index.html' %}
+
+{% load static %}
+
+<title> {% block title %} Notas Fiscais {% endblock title%} </title>
+
+
+{% block index %}
+
+<div class="container">
+    <div class="filters card border-1">
+        <div class="card-header">
+            <label class="fs-5 fw-bold">Notas Fiscais</label>
+        </div>
+        <div class="p-3">
+            <table class="table table-sm" id="id_table">
+                <div class="col-12 d-flex justify-content-end">
+                </div>
+                <thead>
+                    <tr>
+                        <th>Chave de Acesso</th>
+                        <th>Fornecedor</th>
+                        <th>CNPJ</th>
+                        <th>Data de Emissão</th>
+                        <th>Total da Nota</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for object in object_list %}
+                    <tr>
+                        <td>{{ object.chavedeacesso|truncatechars:15 }}</td>
+                        <td>{{ object.fornecedor }}</td>
+                        <td>{{ object.cnpj_destinatario }}</td>
+                        <td>{{ object.data_emissao|date:"d/m/Y" }}</td>
+                        <td>{{ object.valor_total_da_nota }}</td>
+                        <td>
+                            <a class="" href="{{ object.nfcompra_gau_delete }}" style="padding-left: 7px">
+                                <i class="fa fa-close no"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+    $(document).ready(function () {
+        $('#id_table').DataTable({
+            "language": {
+                "sProcessing": "Proccesando...",
+                "sLengthMenu": "Mostrar _MENU_ registros",
+                "sZeroRecords": "Nenhum resultado encontrado",
+                "sEmptyTable": "Nenhum dado disponivel",
+                "sInfo": "Mostrando registros de _START_ a _END_ de um total de _TOTAL_ registros",
+                "sInfoEmpty": "Mostrando registros de 0 a 0 de um total de 0 registros",
+                "sInfoFiltered": "(filtrado de um total de _MAX_ registros)",
+                "sInfoPostFix": "",
+                "sSearch": "Buscar:",
+                "sUrl": "",
+                "sInfoThousands": ",",
+                "sLoadingRecords": "Carregando...",
+                "oPaginate": {
+                    "sFirst": "Primero",
+                    "sLast": "Último",
+                    "sNext": "Seguinte",
+                    "sPrevious": "Anterior"
+                },
+                "oAria": {
+                    "sSortAscending": ": Ativar para ordenar a coluna de maneira ascendente",
+                    "sSortDescending": ": Ativar para ordenar a coluna de maneira descendente"
+                }
+            }
+        }
+
+        );
+    }); 
+</script>
+{% endblock %}

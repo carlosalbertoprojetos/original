@@ -1,0 +1,83 @@
+<div class="card p-4 p-lg-5 mt-3">
+    <div class="row">
+        <div class="col-12 col-lg-9">
+            <br>
+            <canvas id="id_relatorioVendas" width="100" height="30"></canvas>
+            {% if mensagem %}
+            {{ mensagem }}
+            {% endif %}
+        </div>
+        <div class="col-12 col-lg-3 text-end text-lg-start pt-5">
+            <h6 class="text-muted">VENDIDOS NO MÊS</h6>
+            <h4 id="id_totalMes"></h4>
+            <h4>R$ {{ total_mes_ajax|floatformat:2 }}</h4>
+        </div>
+    </div>
+</div>
+<br>
+
+<script>
+
+    var total_mes = document.getElementById('id_totalMes')
+    const ctx = document.getElementById('id_relatorioVendas').getContext('2d');
+    const myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: data.labels,
+            datasets: [{
+                data: data.data,
+                pointRadius: 4,
+                pointBackgroundColor: "rgba(0, 128, 0)",
+                backgroundColor: "rgba(0,0,255,1.0)",
+                borderColor: "rgba(0, 128, 0)",
+                borderWidth: 1
+            }]
+        },
+        options: {
+            plugins: {
+                legend: {
+                    display: false
+                },
+            },
+            scales: {
+                x: {
+                    type: 'time',
+                    time: {
+                        unit: 'day',
+                        displayFormats: {
+                            day: 'dd'
+                        },
+                    },
+                    border: {
+                        width: 3
+                    },
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        font: {
+                            weight: 'bold'
+                        }
+                    }
+                },
+                x2: {
+                    type: 'time',
+                    time: {
+                        unit: 'day',
+                        displayFormats: {
+                            day: 'eeeee'
+                        },
+                    },
+                    border: {
+                        display: false
+                    },
+                    grid: {
+                        display: false
+                    },
+
+                },
+            }
+        }
+    })
+
+</script>

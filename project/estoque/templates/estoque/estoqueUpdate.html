@@ -1,0 +1,89 @@
+{% extends 'index.html' %}
+
+{% load static %}
+
+<title> {% block title %} Estoque {% endblock title%} </title>
+
+
+{% block index %}
+
+<div class="container">
+    <div class="card m-auto p-3">
+        <div class="card-header border rounded-2">
+            <label class="fs-5 fw-bold">Estoque Atual</label>
+        </div>
+        <div class="card mb-2 p-2">
+            <div class="row">
+                <div class="col-4 col-lg-5 pe-0">
+                    <label for="id_fornecedor" class="">Matéria Prima:</label>
+                    <h6><b>{{ form.materiaprima }}</b></h6>
+                </div>
+                <div class="col-3 col-lg-3 p-0">
+                    <label for="id_qtde" class="fs-bold">Quantidade:</label>
+                    <h6><b>{{ form.qtde }}</b></h6>
+                </div>
+                <div class="col-5 col-lg-4">
+                    <label for="id_enderecoestoque" class="">Endereço de Estoque:</label>
+                    <h6><b>{{ form.enderecoestoque }}</b></h6>
+                </div>
+            </div>
+        </div>
+        <div class="card-header border rounded-2">
+            <label class="fs-5 fw-bold">Conferência</label>
+        </div>
+        <form method="POST" class="card">
+            {% csrf_token %}
+            <div class="card-body pt-0">
+                <div class="row pb-0">
+                    <div class="col-4 col-lg-1 pe-0">
+                        <label for="id_data_entrega" class="">Data</label>
+                        {{ forms.data }}
+                    </div>
+                    <div class="col-8 col-lg-1">
+                        <label for="id_data_pedido" class="">Contagem</label>
+                        {{ forms.conferencia }}
+                    </div>
+                    <div class="col-10 col-lg-9">
+                        <label for="id_codigo" class="">Relatório</label>
+                        {{ forms.relatorio }}
+                    </div>
+                    <div class="col-1 pt-4 m-lg-auto mb-0 p-0">
+                        <button type="submit" class="btn btn-primary btn-sm">Salvar</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="filters card border-1 mt-2">
+            <div class="card-header">
+                <label class="fs-5 fw-bold">Balanço - Estoque</label>
+            </div>
+            <div class="px-lg-1">
+                <table class="table table-sm" id="id_table">
+                    <!-- <caption>Balanço Estoque</caption> -->
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Estoque</th>
+                            <th>Conferência</th>
+                            <th>Relatório</th>
+                            <th>Funcionário</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for obj in object_list %}
+                        <tr>
+                            <td>{{ obj.data|date:'d/m/Y' }}</td>
+                            <td align="center">{{ obj.qtde }}</td>
+                            <td align="center">{{ obj.conferencia }}</td>
+                            <td>{{ obj.relatorio }}</td>
+                            <td>{{ obj.usuario }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,46 @@
+<nfeProc versao="4.00" xmlns="http://www.portalfiscal.inf.br/nfe"><NFe xmlns="http://www.portalfiscal.inf.br/nfe"><infNFe Id="NFe31221227980581000121550010000003271070907051" versao="4.00"><ide><cUF>31</cUF><cNF>07090705</cNF><natOp>VENDA DE MERCADORIAS</natOp><mod>55</mod><serie>1</serie><nNF>327</nNF><dhEmi>2022-12-19T10:56:00-03:00</dhEmi><tpNF>1</tpNF><idDest>2</idDest><cMunFG>3106705</cMunFG><tpImp>1</tpImp><tpEmis>1</tpEmis><cDV>1</cDV><tpAmb>1</tpAmb><finNFe>1</finNFe><indFinal>1</indFinal><indPres>0</indPres><procEmi>3</procEmi><verProc>4.01_sebrae_b040</verProc></ide><emit><CNPJ>27980581000121</CNPJ><xNome>ORIGINAL BEBEDOUROS</xNome><enderEmit><xLgr>R.CLEMENTE NETO SILVA</xLgr><nro>376</nro><xBairro>FILADÉLFIA</xBairro><cMun>3106705</cMun><xMun>Betim</xMun><UF>MG</UF><CEP>32670042</CEP><cPais>1058</cPais><xPais>BRASIL</xPais></enderEmit><IE>0029868940028</IE><CRT>1</CRT></emit><dest><CNPJ>36433781000155</CNPJ><xNome>SAO BENTO COMERCIO DE EQUIPAMENTOS DE INFORMATICA</xNome><enderDest><xLgr>R. OLAVO BILAC</xLgr><nro>1056</nro><xBairro>IMIGRANTE</xBairro><cMun>4302105</cMun><xMun>Bento Goncalves</xMun><UF>RS</UF><CEP>95702000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais></enderDest><indIEDest>1</indIEDest><IE>0100192440</IE><email>GENTIL@SANTALUCIARA.COM.BR</email></dest><det nItem="1"><prod><cProd>01</cProd><cEAN>SEM GTIN</cEAN><xProd>RESFRIADOR 25L COL 2T 220</xProd><NCM>84198991</NCM><CFOP>6101</CFOP><uCom>UN</uCom><qCom>3.0000</qCom><vUnCom>1220.0000000000</vUnCom><vProd>3660.00</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>UN</uTrib><qTrib>3.0000</qTrib><vUnTrib>1220.0000000000</vUnTrib><indTot>1</indTot></prod><imposto><vTotTrib>164.70</vTotTrib><ICMS><ICMSSN102><orig>0</orig><CSOSN>102</CSOSN></ICMSSN102></ICMS><PIS><PISNT><CST>08</CST></PISNT></PIS><COFINS><COFINSNT><CST>08</CST></COFINSNT></COFINS></imposto></det><total><ICMSTot><vBC>0.00</vBC><vICMS>0.00</vICMS><vICMSDeson>0.00</vICMSDeson><vFCPUFDest>0.00</vFCPUFDest><vICMSUFDest>0.00</vICMSUFDest><vICMSUFRemet>0.00</vICMSUFRemet><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><vProd>3660.00</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>3660.00</vNF><vTotTrib>164.70</vTotTrib></ICMSTot></total><transp><modFrete>1</modFrete><transporta><CNPJ>06349754000138</CNPJ><xNome>NOVO VALE TRANSPORTES</xNome></transporta><vol><qVol>3</qVol><pesoL>60.000</pesoL><pesoB>60.000</pesoB></vol></transp><pag><detPag><indPag>1</indPag><tPag>03</tPag><vPag>3660.00</vPag></detPag></pag><infAdic><infCpl>REDESPACHO: TRANSPORTADORA 2001 - WARTHA, 01.784.706/0002-35. ENDEREÇO: ESTR. DO COPÃO BONITO, 420 - JARDIM MARIA DE LOURDES, GUARULHOS - SP, 02227-001. TELEFONE: (11) 2243-2001. RESPONSÁVEL PELA ENTREGA DE SP ATÉ O DESTINO.</infCpl></infAdic><infRespTec><CNPJ>43728245000142</CNPJ><xContato>suporte</xContato><email>suporteemissores@sebraesp.com.br</email><fone>08005700800</fone></infRespTec></infNFe><Signature xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315" /><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1" /><Reference URI="#NFe31221227980581000121550010000003271070907051"><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" /><Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315" /></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" /><DigestValue>h1a9QcDualOnrLUIS0PWDPugyMU=</DigestValue></Reference></SignedInfo><SignatureValue>CT4i6UmyLdRHgbCoYJrPQTBxepCvxjZxN1cg/abAs+UAnuuyziKSk6rE7NtoV55XZTdFWTR+NFYB
+m/xqbnr+8Btr4EaZBhdYQFvUjrlYFPyPcgHUszyDvSBHKayNpAfg4VgLnBJqmWrMNixJ98BXxwig
+bHfaLxngcrE5zlWjQ3ibUiXJlvXYdZjKr27ZIfM+u5ZjJfgQJyIZYFAaz3ds2YUgqnHMXRF7MlNt
+b1RHXtsu9AKuRbqNBV9pqRv38dnrky/9ekPH4rPvo0uMVkmm+KSDdky5g/dh194VQVKiD5u1c2Ul
+YxjBN4wCGxizrM4FdWa+pUogMwJm2N6GrrZbUw==</SignatureValue><KeyInfo><X509Data><X509Certificate>MIIHNjCCBR6gAwIBAgIIVkkiAiVXtvAwDQYJKoZIhvcNAQELBQAwWTELMAkGA1UEBhMCQlIxEzAR
+BgNVBAoTCklDUC1CcmFzaWwxFTATBgNVBAsTDEFDIFNPTFVUSSB2NTEeMBwGA1UEAxMVQUMgU09M
+VVRJIE11bHRpcGxhIHY1MB4XDTIyMDIyNTE3NDMwMFoXDTIzMDIyNTE3NDMwMFowgd8xCzAJBgNV
+BAYTAkJSMRMwEQYDVQQKEwpJQ1AtQnJhc2lsMQswCQYDVQQIEwJNRzEOMAwGA1UEBxMFQmV0aW0x
+HjAcBgNVBAsTFUFDIFNPTFVUSSBNdWx0aXBsYSB2NTEXMBUGA1UECxMOMzY0MzE1MTMwMDAxMDIx
+EzARBgNVBAsTClByZXNlbmNpYWwxGjAYBgNVBAsTEUNlcnRpZmljYWRvIFBKIEExMTQwMgYDVQQD
+EytFREVSIFNBVUxPIENPU1RBIDA2MDczNjY3NjEyOjI3OTgwNTgxMDAwMTIxMIIBIjANBgkqhkiG
+9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqSMWGLwFgqwXMhO2mcnY44hwWMSi2eLvHM5NdYXRqmzfraVX
+m9XozaKfVsgj9RpKdg/xIOJHvderQAMvL9SoH1OSSjJ9wJfK7j2Jdd6y+Z0ZuYmA2zRe36oC5OWd
+JW2mzv3XOOO1JyQ6t7MfgkUTzRFefISa8gGgUFi9EVa9d4aTtBdvA/RUp8g25kw+q/hknQBPORsp
+ZwYp6pwEdoWzwkjt5kVMSOM5OHWB+DrldQ/Vckr9IcKMLWFPawKeFcaNsf2eTy0qcE0ogOjAWhWd
+16Bo+1lXtAVXKh2TYqkD84tMJjKbV0LEfEkXEzjBBexELlFjFum5GZGMgO7mF3QQrwIDAQABo4IC
+eTCCAnUwCQYDVR0TBAIwADAfBgNVHSMEGDAWgBTFUu0lgAnfnILIn0fG3bRfMd25sTBUBggrBgEF
+BQcBAQRIMEYwRAYIKwYBBQUHMAKGOGh0dHA6Ly9jY2QuYWNzb2x1dGkuY29tLmJyL2xjci9hYy1z
+b2x1dGktbXVsdGlwbGEtdjUucDdiMIG0BgNVHREEgawwgamBHG9yaWdpbmFsYmViZWRvdXJvc0Bn
+bWFpbC5jb22gGwYFYEwBAwKgEhMQRURFUiBTQVVMTyBDT1NUQaAZBgVgTAEDA6AQEw4yNzk4MDU4
+MTAwMDEyMaA4BgVgTAEDBKAvEy0wOTEwMTk4NDA2MDczNjY3NjEyMDAwMDAwMDAwMDAwMDAwMDAw
+MDAwMDAwMDCgFwYFYEwBAwegDhMMMDAwMDAwMDAwMDAwMF0GA1UdIARWMFQwUgYGYEwBAgEmMEgw
+RgYIKwYBBQUHAgEWOmh0dHA6Ly9jY2QuYWNzb2x1dGkuY29tLmJyL2RvY3MvZHBjLWFjLXNvbHV0
+aS1tdWx0aXBsYS5wZGYwHQYDVR0lBBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMEMIGMBgNVHR8EgYQw
+gYEwPqA8oDqGOGh0dHA6Ly9jY2QuYWNzb2x1dGkuY29tLmJyL2xjci9hYy1zb2x1dGktbXVsdGlw
+bGEtdjUuY3JsMD+gPaA7hjlodHRwOi8vY2NkMi5hY3NvbHV0aS5jb20uYnIvbGNyL2FjLXNvbHV0
+aS1tdWx0aXBsYS12NS5jcmwwHQYDVR0OBBYEFPFnMIL0lg3AGaxasKs5wWznA6s3MA4GA1UdDwEB
+/wQEAwIF4DANBgkqhkiG9w0BAQsFAAOCAgEAYpCmHfizTPT2qdUlLKHOJSnsAkpHrZRkSC/n/mU7
+FyKVuP4RvjLsHqIGOFFGZizSkskE8Vstt9nDa0CsBAlUuY/5Cemf0uH0tUPRhBnP8sbRXvrr8hF6
++3fnPnr5LxKIA5jis8AJxCbC9uLPn5l9K7S0/Yhx4AMsMtSyh6n9/NKo106gEYhHuUmjSeYaG9MD
+HHON2D5ogt++eeAgb/BYqRZkFu+fL03mGgKbs4xTH9OIWpP0rQlMpaJRBXAuk9fs2H8uXeMB4Cm+
+l4Cs4j1vC9EB347c3WbeeQrtWbBfmHJaQHIOrLsL+a0RWzkPflJ2UuAEhSzrHQPg+0For2coH52V
+JUQJR2CtIxOmRlBXXnsFumY8r4TjV3Gu+UrzxuzRX7IfMCSLx/Moy69cWtwv/7NtDWjk/xA4Dll4
+YNZ0ioHhj+SiZQaTmIUcsaqRaYQZaj/6c2nMdxQppWinyzkZHOkfsGbOAHo4ygpD3BykfL7KoUWe
+aFO6lHhkJ+EYFaXSsJVTge8f2E8qnA60IVxX5wRs9M6xp2Ch+zPzGMZ/5tq7/SZsLuPUri2vw3yG
+r8/NipJZ1UJ+sgYR5NpiF3UnK/qyEMTaEPMqeVQK0uVxUMQGxdXeBd7kTFbj+DqR9d+aKOyUWnP8
+mMHKBeWHCr7kBby1cSOZwm8+M9GngUVl/jQ=</X509Certificate></X509Data></KeyInfo></Signature></NFe><protNFe versao="4.00"><infProt Id="ID131225114334020">
+  <tpAmb>1</tpAmb>
+  <verAplic>14.4.93-NI1</verAplic>
+  <chNFe>31221227980581000121550010000003271070907051</chNFe>
+  <dhRecbto>2022-12-19T10:56:44-03:00</dhRecbto>
+  <nProt>131225114334020</nProt>
+  <digVal>h1a9QcDualOnrLUIS0PWDPugyMU=</digVal>
+  <cStat>100</cStat>
+  <xMotivo>Autorizado o uso da NF-e</xMotivo>
+</infProt></protNFe></nfeProc>

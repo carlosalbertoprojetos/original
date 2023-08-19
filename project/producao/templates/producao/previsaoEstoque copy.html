@@ -1,0 +1,138 @@
+{% extends 'index.html' %}
+
+{% load static %}
+{% load widget_tweaks %}
+
+<title> {% block title %} Previsão de Estoque {% endblock title%} </title>
+
+{% block index %}
+<div class="container px-2">
+    <!-- <div class="d-flex gap-5 justify-content-between mb-2 px-1"> -->
+    <div class="d-flex gap-5 mb-2 px-1">
+        <h6 class="fw-bold">PREVISÃO DE ESTOQUE</h6>
+        <!-- <div class="d-flex">
+            <h6 class="text-end m-auto me-2">Quantidade por dia -></h6>
+            <input class="form-control form-control-sm justify-content-end fw-bold fs-3 text-center" type="text" id="id_quantidade" style="width: 100px;" onchange="quantidadeProduzir()">
+        </div> -->
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            Quantidade
+        </button>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Insira a Quantidade para cada Produto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <!-- <form method="POST">
+                    <div class="modal-body">
+                        {% csrf_token %}
+                        {{ formset.management_form }}
+                        {% for form in formset %}
+                        <div class="card-body pt-0">
+                            <div class="row justify-content-evenly pb-0">
+                                {{ form.produto }} - {{ form.quantidade }}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary btn-sm">Salvar</button>
+                </div>
+                </form> -->
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ formset.management_data }}
+                    {{ formset.as_p }}
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary btn-sm">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="overflow-auto card py-2 px-3">
+        <div class="d-flex gap-3 p-2 ps-0">
+            <div class="col-4 col-lg-2">
+                <h6>Produto</h6>
+                <h6 class="pt-1 mb-1" style="font-size: 16px;" align="right">Dias</h6>
+                <h6 align="right">{{ produto }}</h6>
+                {% for ikey in nome_materia_prima %}
+                <h6 class="text-muted" style="font-size: 12px;" align="right">{{ ikey }}</h6>
+                {% endfor %}
+            </div>
+            <div class="d-flex flex-column w-100" style="min-width:992px;">
+                <div class="d-flex gap-3 justify-content-around bg-secondary text-white rounded">
+                    {% for m in meses %}
+                    <h5 class="m-1">{{ m }}</h5>
+                    <br>
+                    {% endfor %}
+                </div>
+                <div class="d-flex justify-content-around">
+                    {% for d in dias %}
+                    <div class="row justify-content-center align-items-center text-muted w-100"
+                        style="font-size: 12px;">
+                        {{ d }}
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="d-flex justify-content-around mt-1">
+                    {% for p in prod_diaria %}
+                    <div class="pro-diaria row justify-content-center align-items-center text-muted w-100 mt-1"
+                        style="font-size: 12px;">
+                        {{ p }}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% for mp in materia_prima %}
+                <div class="mp d-flex justify-content-around text-muted pt-1" id="{{ mp }}">
+                    {% for p in mp %}
+                    <div class="mat-prima row justify-content-center align-items-center w-100" style="font-size: 12px;"
+                        id="{{ mp }}-{{ forloop.counter }}">
+                        {{ p }}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="hidden" id="total">
+    {{ previsao_dias }}
+</div>
+{% endblock %}
+
+
+{% block script %}
+<script>
+
+    function range(start, end) {
+        const ans = [];
+        for (let i = start; i <= end; i++) {
+            ans.push(i);
+        }
+        return ans;
+    }
+
+
+    $('.mp .mat-prima').each(function () {
+        var id = $(this).attr('id');
+        var vlr = document.getElementById(id).innerText;
+        // if (vlr == 0) {
+        //     document.getElementById(id).style.fontWeight = 'bolder';
+        //     document.getElementById(id).style.color = 'gold';
+        // }
+        if (vlr < 0) {
+            document.getElementById(id).style.fontWeight = 'bolder';
+            document.getElementById(id).style.color = 'red';
+        }
+    });
+
+</script>
+{% endblock %}

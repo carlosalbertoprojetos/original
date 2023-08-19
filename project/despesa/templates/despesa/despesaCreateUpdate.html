@@ -1,0 +1,208 @@
+{% extends 'index.html' %}
+
+{% load static crispy_forms_tags %}
+
+<title> {% block title %} Despesa {% endblock title%} </title>
+
+{% block index %}
+
+<div class="container">
+    <form method="post" action="" class="">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <div class="card">
+            <div class="card-header">
+                <label class="fs-5 fw-bold">{{ titulo }}</label>
+            </div>
+            <div class="card-body label">
+                <div class="row mb-2">
+                    <div class="col-12 col-md-5">
+                        <label for="id_fornecedor" class="">Fornecedor</label>
+                        {{ form.fornecedor }}
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <label for="id_categoria1" class="">Categoria 1</label>
+                        {{ form.categoria1 }}
+                    </div>
+                    <div class="col-3 col-lg-1">
+                        <label for="-d_num_parcelas" class="">Parcelas</label>
+                        {{ form.num_parcelas }}
+                    </div>
+                    <div class="col-4 col-md-2">
+                        <label for="id_total" class="">Total</label>
+                        {{ form.total }}
+                    </div>
+                    <div class="col-6 col-md-6">
+                        <label for="id_nome" class="">Nome da Despesa</label>
+                        {{ form.nome }}
+                    </div>
+                    <div class="col-6 col-md-6">
+                        <label for="id_descricao" class="">Descricao</label>
+                        {{ form.descricao }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if parcela %}
+        {{ parcela.management_form }}
+        {{ parcela.non_form_errors }}
+        <div class="card mt-2">
+            <div class="card-header"><label class="fs-5 fw-bold">Parcelas</label></div>
+            <div class="card-body label pt-0" id="parcela-form-list">
+                {% for parc in parcela %}
+                <div class="row parcela-form">
+                    {{ parc.id }}
+                    {{ parc.datadocumento }}
+                    <div class="col-6 col-lg-2">
+                        {{ parc.valor.label_tag }}
+                        {{ parc.valor.errors }}
+                        {{ parc.valor }}
+                    </div>
+                    <div class="col-6 col-lg-2">
+                        {{ parc.datavencimento.label_tag }}
+                        {{ parc.datavencimento.errors }}
+                        {{ parc.datavencimento }}
+                    </div>
+                    <div class="col-12 col-lg-2">
+                        {{ parc.formapgto.label_tag }}
+                        {{ parc.formapgto.errors }}
+                        {{ parc.formapgto }}
+                    </div>
+                    {%if 'financeiro.change_contapagar' in perms %}
+                    <div class="col-6 col-lg-2">
+                        {{ parc.datapagamento.label_tag }}
+                        {{ parc.datapagamento.errors }}
+                        {{ parc.datapagamento }}
+                    </div>
+                    <div class="col-12 col-lg-4">
+                        {{ parc.detalhes.label_tag }}
+                        {{ parc.detalhes.errors }}
+                        {{ parc.detalhes }}
+                    </div>
+                    {% else %}
+                    <div class="col-12 col-lg-5">
+                        {{ parc.detalhes.label_tag }}
+                        {{ parc.detalhes.errors }}
+                        {{ parc.detalhes }}
+                    </div>
+                    {% endif %}
+                    <!-- <div class="col-6 col-lg-1 d-flex align-items-center">
+                        <label class="pe-2" for="">Apagar </label>
+                        {{ parc.DELETE}}
+                    </div> -->
+                </div>
+                <hr class="d-block d-lg-none mt-2 mb-0">
+                {% endfor %}
+            </div>
+            <div id='empty-parcela' class="hidden">
+                {{ parcela.empty_form.id }}
+                {{ parcela.empty_form.datadocumento }}
+                <div class="col-6 col-lg-2">
+                    {{ parcela.empty_form.valor.label_tag }}
+                    {{ parcela.empty_form.valor.errors }}
+                    {{ parcela.empty_form.valor }}
+                </div>
+                <div class="col-6 col-lg-2">
+                    {{ parcela.empty_form.datavencimento.label_tag }}
+                    {{ parcela.empty_form.datavencimento.errors }}
+                    {{ parcela.empty_form.datavencimento }}
+                </div>
+                <div class="col-12 col-lg-2">
+                    {{ parcela.empty_form.formapgto.label_tag }}
+                    {{ parcela.empty_form.formapgto.errors }}
+                    {{ parcela.empty_form.formapgto }}
+                </div>
+                {% if request.user.is_superuser %}
+                <div class="col-6 col-lg-2">
+                    {{ parcela.empty_form.datapagamento.label_tag }}
+                    {{ parcela.empty_form.datapagamento.errors }}
+                    {{ parcela.empty_form.datapagamento }}
+                </div>
+                <div class="col-12 col-lg-4">
+                    {{ parcela.empty_form.detalhes.label_tag }}
+                    {{ parcela.empty_form.detalhes.errors }}
+                    {{ parcela.empty_form.detalhes }}
+                </div>
+                {% else %}
+                <div class="col-12 col-lg-5">
+                    {{ parcela.empty_form.detalhes.label_tag }}
+                    {{ parcela.empty_form.detalhes.errors }}
+                    {{ parcela.empty_form.detalhes }}
+                </div>
+                {% endif %}
+                <!-- <div class="col-6 col-lg-1 d-flex align-items-center">
+                    <label class="pe-2" for="">Apagar </label>
+                    {{ parc.DELETE}}
+                </div> -->
+                <hr class="d-block d-lg-none mt-2 mb-0">
+            </div>
+            <div class="m-2 btnMaster px-2"><button id="add-parcela" class="btnMaster btn btn-sm"
+                    type="button">Adicionar nova parcela</button><i class="fa fa-plus-square" aria-hidden="true"></i>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="d-flex float-end m-3">
+            <div class="col-3 d-flex gap-2 align-middle">
+                <a role="button" class="btn btn-secondary btn-sm" href="{% url 'despesa:despesaList' %}">Cancelar</a>
+                <div class="form-group form-button">
+                    <input type="submit" class="btn btn-primary btn-sm" value="Salvar" />
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+<script>
+
+    // select2 fornecedor
+    $(document).ready(function () {
+        $('#id_fornecedor').select2();
+    });
+
+    const addParcelaBtn = document.getElementById('add-parcela')
+    const totalPacelasrForms = document.getElementById('id_contapagar_set-TOTAL_FORMS')
+
+    addParcelaBtn.addEventListener('click', add_new_parcela_form)
+
+    function add_new_parcela_form(event) {
+        if (event) {
+            event.preventDefault()
+        }
+        const currentParcelaForms = document.getElementsByClassName("parcela-form")
+        const currentParcelaFormCount = currentParcelaForms.length // + 1
+
+        const formParcelaCopyTarget = document.getElementById("parcela-form-list")
+        const copyParcelaEmptyFormEl = document.getElementById('empty-parcela').cloneNode(true)
+        copyParcelaEmptyFormEl.setAttribute('class', 'row parcela-form')
+        copyParcelaEmptyFormEl.setAttribute('id', `contapagar_set-${currentParcelaFormCount}`)
+        const regexParcela = new RegExp('__prefix__', 'g')
+        copyParcelaEmptyFormEl.innerHTML = copyParcelaEmptyFormEl.innerHTML.replace(regexParcela, currentParcelaFormCount)
+        totalPacelasrForms.setAttribute('value', currentParcelaFormCount + 1)
+
+        formParcelaCopyTarget.append(copyParcelaEmptyFormEl)
+    }
+
+    function somaTotal() {
+        var parc = document.getElementById('id_num_parcelas');
+        parc.setAttribute('value', totalPacelasrForms.value);
+        var total = document.getElementById('id_total');
+        let sum = 0;
+
+        for (let i = 0; i < totalPacelasrForms.value; i++) {
+            var preco = $(`#id_contapagar_set-${i}-valor`).val();
+            sum += Number(preco)
+        }
+        total.setAttribute('value', sum.toFixed(2));
+    }
+
+</script>
+{% endblock %}
+
+
+{% block script %}
+<script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+<script src="{% static 'js/select2.min.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends 'index.html' %}
+
+{% load static %}
+
+<title> {% block title %} Delete Transportadora {% endblock title%} </title>
+
+
+{% block index %}
+<main class="py-4">
+    <div class="container">
+        <h5>Delete</h5>
+        <div class="cols-6">
+            <form action="." method="POST">
+                <div class="col-sm-6">
+                    {% csrf_token %}
+                    <p>Esse registro não pode ser deletado porque tem venda utilizando ele.</p>
+                    <div class="form-group">
+                        <a class="btn btn-secondary btn-sm" href="{% url 'transportadora:transporteList' %}">Voltar</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+{% endblock %}

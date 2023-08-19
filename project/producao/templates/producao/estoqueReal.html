@@ -1,0 +1,125 @@
+{% extends 'index.html' %}
+
+{% load static widget_tweaks %}
+
+
+<title> {% block title %} Estoque Real {% endblock title%} </title>
+
+{% block index %}
+<div class="container px-2">
+    <div class="d-flex gap-5 justify-content-between px-1">
+        <h6 class="fw-bold">VENDA REAL</h6>
+    </div>
+    <div class="overflow-auto card py-2 px-3">
+        <div class="d-flex gap-3 p-2 ps-0">
+            <div class="col-4 col-lg-2">
+                <p class="m-0">Produtos</p>
+                <h6 class="m-0 py-1" align="right">Dias</h6>
+                <h6 class="m-0 py-1" align="right">Produção Geral</h6>
+                {% for pkey, pvalue in nome_materia_prima.items %}
+                <hr class="m-1">
+                <h6 class="fs-6 m-0" align="right">{{ pkey }}</h6>
+                {{ prod_diaria.pkey }}
+                {% for key, value in pvalue.items %}
+                <h6 class="text-muted m-0 py-1" style="font-size: 12px;" align="right">
+                    {{ key }}
+                    ({{ value|floatformat:"0"}})
+                </h6>
+                {% endfor %}
+                {% endfor %}
+                <hr class="m-1">
+            </div>
+            <div class="d-flex flex-column w-100" style="min-width:992px;">
+                <div class="d-flex gap-3 justify-content-around bg-secondary text-white rounded">
+                    {% for m in meses %}
+                    <h6 class="fs-6 m-0">{{ m }}</h6>
+                    <br>
+                    {% endfor %}
+                </div>
+                <div class="d-flex justify-content-around m-0 py-1">
+                    {% for d in dias %}
+                    <h6 class="row justify-content-center align-items-center text-muted w-100 fs-6 m-0">
+                        {{ d }}
+                    </h6>
+                    {% endfor %}
+                </div>
+                <div class="d-flex justify-content-around m-0 py-1">
+                    {% for p in tot_diaria %}
+                    <h6 class="pro-diaria row justify-content-center align-items-center text-muted w-100 fs-6 m-0">
+                        {{ p }}
+                    </h6>
+                    {% endfor %}
+                </div>
+                <hr class="m-1">
+                {% for pkey, pvalue in nome_materia_prima.items %}
+                {% for pdk, pdv in prod_diaria.items %}
+                <div class="mp d-flex justify-content-around text-muted" id="{{ pkey }}">
+                    {% if pdk == pkey %}
+                    {% for pd in pdv %}
+                    <h6 class="mat-prima row justify-content-center align-items-center w-100 m-0"
+                        id="{{ pkey }}/{{ forloop.counter }}/{{ pd }}">
+                        {{ pd }}
+                    </h6>
+                    {% endfor %}
+                    {% endif %}
+                </div>
+                {% endfor %}
+                {% for key, value in pvalue.items %}
+                <div class="mp d-flex justify-content-around text-muted" id="{{ pkey }}">
+                    {% for mpkey, mpvalue in materia_prima.items %}
+                    {% if key == mpkey %}
+                    {% for m in mpvalue %}
+                    <h6 class="mat-prima row justify-content-center align-items-center w-100 m-0 py-1"
+                        style="font-size: 12px;" id="{{ pkey }}/{{ mpkey }}/{{ forloop.counter }}/{{ m }}">{{ m }}
+                    </h6>
+                    {% endfor %}
+                    {% endif %}
+                    {% endfor %}
+                </div>
+                {% endfor %}
+                <hr class="m-1">
+                {% endfor %}
+            </div>
+            <br>
+        </div>
+    </div>
+</div>
+
+<div class="amarelos hidden">
+    {% for va in vlrs_amarelos %}
+    <h6 class="amarelos2" id="{{ va }}">{{ va }}</h6>
+    {% endfor %}
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+    function range(start, end) {
+        const ans = [];
+        for (let i = start; i <= end; i++) {
+            ans.push(i);
+        }
+        return ans;
+    }
+
+    $('.mp .mat-prima').each(function () {
+        var id = $(this).attr('id');
+        var vlr = document.getElementById(id).innerText;
+        if (vlr < 0) {
+            document.getElementById(id).style.fontWeight = 'bolder';
+            document.getElementById(id).style.color = 'red';
+        }
+    });
+
+    $('.amarelos .amarelos2').each(function () {
+        var id = $(this).attr('id');
+        var vlr = document.getElementById(id).innerText;
+        if (isNaN(vlr) == false) {
+            document.getElementById(id).style.fontWeight = 'bolder';
+            document.getElementById(id).style.color = 'gold';
+        }
+    });
+
+</script>
+{% endblock %}

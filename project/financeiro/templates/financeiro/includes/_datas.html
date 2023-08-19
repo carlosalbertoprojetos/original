@@ -1,0 +1,40 @@
+<table class="table table-sm" id="id_table">
+    <div class="d-flex justify-content-end">
+        <a class="btnMaster" href="/compra/cadastrar/">Nova conta a pagar
+            <i class="fa fa-plus-square" aria-hidden="true"></i>
+        </a>
+    </div>
+    <div class="col-12 d-flex justify-content-end">
+    </div>
+    <thead>
+        <tr>
+            <th>Compra</th>
+            <th>Despesa</th>
+            <th>Valor</th>
+            <th>Data do Documento</th>
+            <th>Vencimento</th>
+            <th>Data do Pagamento</th>
+            <th>Forma de Pagamento</th>
+            <th>Detalhes</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for obj in object_list %}
+        <tr>
+            <td>{{ obj.compra }}</td>
+            <td>{{ obj.despesa }}</td>
+            <td>{{ obj.valor }}</td>
+            <td>{{ obj.datadocumento|date:"d/m/Y" }}</td>
+            <td>{{ obj.datavencimento|date:"d/m/Y" }}</td>
+            <td>{{ obj.datapagamento|date:"d/m/Y" }}</td>
+            <td>{{ obj.formapgto }}</td>
+            <td>{{ obj.detalhes }}</td>
+            <td> <select name="compramateriaprima_set-0-produto" id="tipoprevisao" class="form-control form-control-sm"
+                    tabindex="-1" aria-hidden="true">
+                    <option value="1"> Ações</option>
+                </select></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

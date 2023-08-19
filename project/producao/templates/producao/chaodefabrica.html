@@ -1,0 +1,286 @@
+{% extends 'index.html' %}
+
+{% load static %}
+
+<title> {% block title %} Chão de Fabrica {% endblock title%} </title>
+
+{% block index %}
+
+<head>
+    <meta http-equiv="refresh" content="60">
+</head>
+
+<script>
+
+    function cria_produto(id_produto) {
+        $.ajax({
+            url: "{% url 'producao:criar_produto_ajax' %}",
+            data: { 'id_produto': id_produto },
+            cache: false,
+            success: function (html) {
+                location.reload();
+            }
+        });
+    }
+    function change_status(id, status) {
+
+        $.ajax({
+            url: "{% url 'producao:edit_status_ajax' %}",
+            data: { 'id': id, 'status': status },
+            cache: false,
+            success: function (html) {
+                location.reload();
+            }
+        });
+
+    }
+</script>
+
+<style>
+    .board {
+        display: flex;
+        justify-content: center;
+        margin-top: 50px;
+        height: 1000px
+    }
+
+    .card2 {
+        background: #3F4447;
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 3px;
+        border-bottom: 2px;
+        cursor: pointer;
+        width: 150px;
+        height: 60px;
+        cursor: grab;
+        transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+        border: 1px solid #3F4447;
+    }
+
+    .card2 h4 {
+        font-size: 1.2rem;
+    }
+
+    main .card:active {
+        cursor: grabbing;
+    }
+
+    main .card.dragging {
+        opacity: .5;
+        transform: scale(.8);
+    }
+
+    .column {
+        padding: 10px;
+        background: white;
+        border: 2px solid white;
+        transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+    }
+
+    main .green {
+        background-color: #3DED07;
+    }
+
+    main .yellow {
+        background-color: #F6F943;
+    }
+
+    main .red {
+        background-color: #DA2427;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .show {
+        display: show;
+    }
+
+
+    .column.column-todo h2 {
+        background: #3498DB;
+    }
+
+    .column.column-ip h2 {
+        background: #F39C12;
+    }
+
+    .column.column-ip {
+        margin: 0 20px;
+    }
+
+    .column.drop {
+        border: 2px dashed #3F4447;
+    }
+
+    .column.drop article {
+        pointer-events: none;
+    }
+
+    h3 {
+        font-size: 21px;
+        font-family: Helvetica;
+        margin: 0;
+    }
+
+    .card:last-child {
+        margin-bottom: 0;
+    }
+
+    h2 {
+        background: rgb(145, 85, 253);
+        margin: -10px -10px 10px;
+        padding: 4px 10px;
+        font-family: Helvetica;
+        font-size: 21px;
+    }
+
+    h2 center {
+        color: white;
+    }
+</style>
+
+<div class="container">
+    <div class="card-header">
+        <label class="fs-5 fw-bold">Bebedouros em produção</label>
+    </div>
+    <div class="container">
+        <div class="row gap-3 justify-content-center">
+            {%for produto in lista_produtos%}
+            <div class="card col-12 col-md align-items-start p-4 bg-light">
+                <div class="box d-flex gap-4">
+                    <div onMouseOver="this.style.cursor='pointer'" onclick="javascript:cria_produto({{produto.id}})"
+                        class="imageBlock d-flex justify-content-center align-items-center bg-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                            <path fill="currentColor"
+                                d="M20 21H4V10h2v9h12v-9h2v11M3 3h18v6H3V3m6.5 8h5c.28 0 .5.22.5.5V13H9v-1.5c0-.28.22-.5.5-.5M5 5v2h14V5H5Z"
+                                style="color: rgb(145, 85, 253);" />
+                        </svg>
+                    </div>
+                    <div class="">
+                        <span class="">{{produto.get_nome_abreviado}}</span>
+                        <div class="d-flex align-items-center justify-content-end">
+                            <h6 class="" style="color: rgb(86, 202, 0);">{{produto.quantidade_em_producao}}</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {%endfor%}
+        </div>
+    </div>
+
+
+
+    <div class="card-header my-3">
+        <legend class="fs-5 fw-bold mb-0">Relatórios</legend>
+        <a href="{% url 'producao:relatorioProducao' %}" class="btn btn-primary btn-sm">Produtos</a>
+        <a href="{% url 'producao:relatorioVenda' %}" class="btn btn-primary btn-sm">Vendas</a>
+    </div>
+
+
+    <hr>
+    <main class="board justify-content-between mt-2">
+        <div class="column" ondrop="drop(event)" ondragover="allowDrop(event)" data-status="excluir">
+            <h2>Excluir <br />&nbsp;</h2>
+            {%for produto in excluir%}
+            <article class="card2 {{produto.get_momento}}" draggable="true" ondragstart="drag(event)"
+                data-id="{{produto.id}}">
+                <h3>{{produto.get_nome_abreviado}}&nbsp&nbsp{{produto.get_tempototal}}</h3>
+                <h4>{{produto.get_tempo}}</h4>
+            </article>
+            {%endfor%}
+        </div>
+        <div class="column" ondrop="drop(event)" ondragover="allowDrop(event)" data-status="faltandomateriaprima">
+            <h2>Faltando peças <br />
+                <center>{{media_faltandomateriaprima}}</center>
+            </h2>
+            {%for produto in faltandomateriaprima%}
+            <article class="card2 {{produto.get_momento}}" draggable="true" ondragstart="drag(event)"
+                data-id="{{produto.id}}">
+                <h3>{{produto.get_nome_abreviado}}&nbsp&nbsp{{produto.get_tempototal}}</h3>
+                <h4>{{produto.get_tempo}}</h4>
+            </article>
+            {%endfor%}
+        </div>
+        <div class="column" ondrop="drop(event)" ondragover="allowDrop(event)" data-status="montagem">
+            <h2>Montagem <br />
+                <center>{{media_montagem}}</center>
+            </h2>
+            {%for produto in montagem%}
+            <article class="card2 {{produto.get_momento}}" draggable="true" ondragstart="drag(event)"
+                data-id="{{produto.id}}">
+                <h3>{{produto.get_nome_abreviado}}&nbsp&nbsp{{produto.get_tempototal}}</h3>
+                <h4>{{produto.get_tempo}}</h4>
+            </article>
+            {%endfor%}
+        </div>
+        <div class="column" ondrop="drop(event)" ondragover="allowDrop(event)" data-status="eletrica">
+            <h2>Elétrica <br />
+                <center>{{media_eletrica}}</center>
+            </h2>
+            {%for produto in eletrica%}
+            <article class="card2 {{produto.get_momento}}" draggable="true" ondragstart="drag(event)"
+                data-id="{{produto.id}}">
+                <h3>{{produto.get_nome_abreviado}}&nbsp&nbsp{{produto.get_tempototal}}</h3>
+                <h4>{{produto.get_tempo}}</h4>
+            </article>
+            {%endfor%}
+        </div>
+        <div class="column" ondrop="drop(event)" ondragover="allowDrop(event)" data-status="refrigeracao">
+            <h2>Refrigeração <br />
+                <center>01:12</center>
+            </h2>
+            {%for produto in refrigeracao%}
+            <article class="card2 {{produto.get_momento}}" draggable="true" ondragstart="drag(event)"
+                data-id="{{produto.id}}" ondxxblclick="adiciona_input(this)">
+                <h3>{{produto.get_nome_abreviado}}&nbsp&nbsp{{produto.get_tempototal}}</h3>
+                <h4>{{produto.get_tempo}}</h4>
+            </article>
+            {%endfor%}
+        </div>
+        <div class="column" ondrop="drop(event)" ondragover="allowDrop(event)" data-status="acabamento">
+            <h2>Acabamento <br />
+                <center>{{media_acabamento}}</center>
+            </h2>
+            {%for produto in acabamento%}
+            <article class="card2 {{produto.get_momento}}" draggable="true" ondragstart="drag(event)"
+                data-id="{{produto.id}}">
+                <h3>{{produto.get_nome_abreviado}}&nbsp&nbsp{{produto.get_tempototal}}</h3>
+                <h4>{{produto.get_tempo}}</h4>
+            </article>
+            {%endfor%}
+        </div>
+        <div class="column" ondrop="drop(event)" ondragover="allowDrop(event)" data-status="embalagem">
+            <h2>Embalagem <br />
+                <center>{{media_embalagem}}</center>
+            </h2>
+            {%for produto in embalagem%}
+            <article class="card2 {{produto.get_momento}}" draggable="true" ondragstart="drag(event)"
+                data-id="{{produto.id}}">
+                <h3>{{produto.get_nome_abreviado}}&nbsp&nbsp{{produto.get_tempototal}}</h3>
+                <h4>{{produto.get_tempo}}</h4>
+            </article>
+            {%endfor%}
+        </div>
+        <div class="column" ondrop="drop(event)" ondragover="allowDrop(event)" data-status="estoque">
+            <h2>Estoque <br />
+                <center>{{media_estoque}}</center>
+            </h2>
+            </h2>
+            {%for produto in estoque%}
+            <article class="card2 {{produto.get_momento}}" draggable="true" ondragstart="drag(event)"
+                data-id="{{produto.id}}">
+                <h3>{{produto.get_nome_abreviado}}&nbsp&nbsp{{produto.get_tempototal}}</h3>
+                <h4>{{produto.get_tempo}}</h4>
+            </article>
+            {%endfor%}
+        </div>
+    </main>
+    <script src="{% static 'js/drag-n-drop.js' %}"></script>
+
+</div>
+</div>
+
+{% endblock %}

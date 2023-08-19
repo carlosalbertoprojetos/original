@@ -1,0 +1,77 @@
+{% extends 'index.html' %}
+
+{% load static %}
+
+<title> {% block title %} Produção {% endblock title%} </title>
+
+{% block index %}
+<style>
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+
+        button,
+        button * {
+            display: none !important;
+        }
+
+        #content,
+        #content * {
+            visibility: visible;
+        }
+
+        #content {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+        }
+    }
+</style>
+
+<body>
+    <div class="container">
+        <div class="filters my-2 p-3" id="content">
+            <div class="d-flex justify-content-between">
+                <label class="fs-5 fw-bold">Relatório de Produtos</label>
+                <button class="btn btn-primary btn-sm" onclick="window.print()">Imprimir</button>
+            </div>
+            {% for prod in produto %}
+            <div class="card mt-1">
+                <div class="card-header">
+                    <h5 class="mb-0">{{ prod }}</h5>
+                </div>
+                <table class="table table-sm" id="id_table">
+                    <thead>
+                        <tr>
+                            <th>Série</th>
+                            <th>Situação</th>
+                            <th>Produção</th>
+                            <th>Inicio</th>
+                            <th>Fim</th>
+                            <th>Duracao</th>
+                        </tr>
+                    </thead>
+                    {% for p in producao %}
+                    {% if prod == p.produto %}
+                    <tbody>
+                        <tr>
+                            <td>{{ p.numeroserie }}</td>
+                            <td>{{ p.status }}</td>
+                            <td>{{ p.data_producao|default:''}}</td>
+                            <td>{{ p.hora_inicio|date:'d/m/Y H:i'}}</td>
+                            <td>{{ p.hora_fim|date:'d/m/Y H:i'}}</td>
+                            <td>{{ p.duracao }}</td>
+                        </tr>
+                    </tbody>
+                    {% endif %}
+                    {% endfor %}
+                </table>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+
+{% endblock %}

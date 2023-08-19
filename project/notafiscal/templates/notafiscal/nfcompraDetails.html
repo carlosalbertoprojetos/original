@@ -1,0 +1,237 @@
+{% extends 'index.html' %}
+
+{% load static %}
+
+<title> {% block title %} Detalhes da Nota Fiscal {% endblock title%} </title>
+
+
+{% block index %}
+<div class="container">
+    <div class="invoice bg-white rounded-3">
+        <div class="row d-flex justify-content-between px-0 p-lg-4">
+            <div class="col-12 col-md-8 mb-3">
+                <div class="d-flex">
+                    <img src="{% static 'img/logo.png' %}" width="30" height="30">
+                    <h6 class="m-0 ps-2 fs-5 text-dark text-uppercase">Original</h6>
+                </div>
+                <div class="mt-4 p-0">
+                    <p class="fw-bold ">Emitente</p>
+                    {% for fornec in fornec %}
+                    <b>{{ fornec.nome }}</b>
+                    <p class="m-0">{{ fornec.logradouro }}, {{ fornec.numero }} {{ fornec.complemento }}</p>
+                    <p class="m-0">{{ fornec.cidade }}, {{ fornec.estado }} {{ fornec.cep }}</p>
+                    <p class="m-0">{{ fornec.telefone1|default:"" }} {{fornec.telefone2|default:"" }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="col-7 col-md-4 mb-2" align="right">
+                <div class="d-flex justify-content-center pb-1" align="left">
+                    <h6 class="col-6 col-md-5 fs-5 text-dark">Nota Fiscal</h6>
+                    <h6 class="col-6 col-md-5 fs-5 fw-bold text-dark">{{ num_nf }}</h6>
+                </div>
+                <div class="d-flex justify-content-center py-0" align="left">
+                    <p class="col-6 col-md-5">Date da Emissão: </p>
+                    <p class="col-6 col-md-5 fw-bold">{{ data_emissao }}</p>
+                </div>
+                <div class="d-flex justify-content-center pt-0" align="left">
+                    <p class="col-6 col-md-5"></p>
+                    <p class="col-6 col-md-5 fw-bold"></p>
+                </div>
+            </div>
+        </div>
+        <hr class="my-0">
+        <div class="row d-flex justify-content-between px-0 p-lg-4">
+            <div class="col-12 col-md-6">
+                {% for d in dest %}
+                <p class="fw-bold ">Recebedor</p>
+                <div class="row align-items-center p-0">
+                    <p class="col-8 col-md-8">{{ d.xNome }}</p>
+                </div>
+                <div class="row align-items-center p-0">
+                    <p class="col-9 col-md-8 m-0">CNPJ {{ d.CNPJ }}</p>
+                </div>
+                <div class="row align-items-center p-0">
+                    <p class="col-9 col-md-8 m-0">{{ d.xLgr }}, {{ d.nro }}, {{ d.xBairro }}</p>
+                </div>
+                <div class="row align-items-center p-0">
+                    <p class="col-9 col-md-8 m-0">{{ d.xMun }}, {{ d.UF }}</p>
+                </div>
+                {% endfor %}
+            </div>
+            {% for destinatario in dest %}
+            <div class="col-12 col-md-5">
+                <div class="row align-items-center p-0">
+                    <p class="col-2 m-0">
+                        Total: </p>
+                    <p class="col-10 m-0">{{ destinatario.total }}</p>
+                </div>
+                <div class="row align-items-center p-0">
+                    <p class="col-2 m-0">
+                        NatOp:</p>
+                    <p class="col-10 m-0">{{ destinatario.natop }}</p>
+                </div>
+                <div class="row align-items-center p-0">
+                    <p class="col-2 m-0">
+                        Série:</p>
+                    <p class="col-10 m-0">{{ destinatario.serie }}</p>
+                </div>
+                <div class="row align-items-center p-0">
+                    <p class="col-2 m-0">
+                        Chave:</p>
+                    <p class="col-12 col-lg-10 m-0">{{ destinatario.chave }}</p>
+                </div>
+                <div class="row align-items-center p-0">
+                    <p class="col-2 m-0">
+                        AutUso:</p>
+                    <p class="col-10 m-0">{{ destinatario.autuso }}</p>
+                </div>
+            </div>
+        </div>
+        <hr class="m-0">
+        <div class="px-lg-3">
+            <table class="table table-sm" id="id_table">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Produto</th>
+                        <th>UniMed</th>
+                        <th>Valor(R$)</th>
+                        <th>Quant</th>
+                        <th>NCM</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for prod in items %}
+                    <tr>
+                        <td>{{ prod.codigo_produto }}</td>
+                        <td>{{ prod.materiaprima }}</td>
+                        <td>{{ prod.un }}</td>
+                        <td>{{ prod.valor_unitario }}</td>
+                        <td>{{ prod.quantidade }}</td>
+                        <td>{{ prod.ncm }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="row d-flex justify-content-between mx-1 px-3">
+            <div class="col-12 col-md-6 d-none d-md-block">
+                <div class="row align-items-center p-0">
+                    <p class="col">Forma de Pagamento:</p>
+                    <p class="col">{{ destinatario.forpgto }}</p>
+                </div>
+                <div class="row align-items-center p-0">
+                    <p class="col">Base cálculo ICMS:</p>
+                    <p class="col">{{ destinatario.bcicms }}</p>
+                </div>
+                <div class="row align-items-center p-0">
+                    <p class="col">ICMS</p>
+                    <p class="col">{{ destinatario.vlricms }}</p>
+                </div>
+                <div class="row align-items-center p-0">
+                    <p class="col">Valor do PIS:</p>
+                    <p class="col">{{ destinatario.vlrpis }}</p>
+                </div>
+                <div class="row align-items-center p-0">
+                    <p class="col">Valor do Frete:</p>
+                    <p class="col">{{ destinatario.vlrfrete }}</p>
+                </div>
+                <div class="row align-items-center p-0">
+                    <p class="col">Valor do Seguro:</p>
+                    <p class="col">{{ destinatario.vlrseguro }}</p>
+                </div>
+            </div>
+            <div class="col-12 col-md-4 justify-content-end p-0 ">
+                <div class="row align-items-center p-0">
+                    <p class="col">Subtotal:</p>
+                    <p class="col">{{ destinatario.subtotal }}</p>
+                </div>
+                <div class="row align-items-center p-0">
+                    <p class="col">Desconto:</p>
+                    <p class="col">{{ destinatario.desconto }}</p>
+                </div>
+                <div class="row align-items-center p-0">
+                    <p class="col">Outras despesas:</p>
+                    <p class="col">{{ destinatario.odespesas }}</p>
+                </div>
+                <div class="row align-items-center p-0">
+                    <p class="col">Valor Total IPI</p>
+                    <p class="col">{{ destinatario.vlripi }}</p>
+                </div>
+                <div class="row align-items-center p-0">
+                    <p class="col">Valor da COFINS:</p>
+                    <p class="col">{{ destinatario.vlrcofins }}</p>
+                </div>
+                <hr class="my-2">
+                <div class="row align-items-center p-0">
+                    <p class="col">total:</p>
+                    <p class="col">{{ destinatario.total }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="col-12 d-flex gap-2 justify-content-end pe-3 pb-3">
+            <a role="button" class="btn btn-primary btn-sm" href="{% url 'notafiscal:nfcompraList' %}">Sair</a>
+        </div>
+        <hr class="my-1">
+        <div class="row d-flex mx-1 px-3">
+            <p class="text-left p-0"><strong>Note:</strong> </p>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Cadastrar Produtos</h5>
+            </div>
+            <div class="modal-body">
+                Selecione um Nome para cada Produto
+                <form method="POST">
+                    {% csrf_token %}
+                    {{ formset.management_form }}
+                    {{ formset.non_form_errors }}
+                    {% for form in formset %}
+                    <div class="card mb-2 p-2">
+                        <div class="row gap-2">
+                            <div class="col-12">{{ form.materiaprima }}</div>
+                            <div class="col-12">{{ form.fornecedor }}
+                            </div>
+                            <div class="row">
+                                <div class="col-4">{{ form.codigoproduto }}</div>
+                                <div class="col-8">{{ form.nome }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% if show_modal %}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#staticBackdrop").modal('show');
+    });
+</script>
+{% endif %}
+
+<script>
+    var Modal = document.getElementById('Modal')
+    var Input = document.getElementById('Input')
+
+    Modal.addEventListener('shown.bs.modal', function () {
+        Input.focus()
+    })
+</script>
+
+{% endblock %}
