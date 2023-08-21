@@ -32,7 +32,7 @@
                         <td>{{ object.chNFe|truncatechars:15 }}</td>
                         <td>{{ object.CNPJ }}</td>
                         <td>{{ object.xNome }}</td>
-                        <td>{{ object.dhEmi|truncatechars:12 }}</td>
+                        <td>{{ object.dhEmi|date:"d/m/Y" }}</td>
                         <td>{{ object.vNF|floatformat:2 }}</td>
                         <td align="center">
                             {% if exists %}

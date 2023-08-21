@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy as _
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -14,10 +14,8 @@ from notafiscal.models import NFCompra, NFItem
 from fornecedor.models import Fornecedor
 from materiaprima.models import MateriaPrimaFornecedor
 from materiaprima.forms import MPFForm
-from estoque.models import EstoqueMateriaPrima
-from estoque.forms import EstoqueMateriaPrimaForm
 
-from integracoes.integracaonf import descompacta_dados_listagem_nota, retorna_dados_nota
+from integracoes.integracaonf import descompacta_dados_listagem_nota
 
 data_atual = date.today()
 
@@ -44,13 +42,20 @@ nfcompraDelete = NFCompraDelete.as_view()
 
 
 @login_required
-def notafiscalList(request):
+def notafiscal_list(request):
     template_name = "notafiscal/notafiscalList.html"
     baixadas = NFCompra.objects.all()
 
     ob = []
     for nota in descompacta_dados_listagem_nota():
-        ob.append(nota)
+        nf = {}
+        for nk, nv in nota.items():
+            nf.update({nk: nv})
+            if nk == "dhEmi":
+                datenf = nv[:10]
+                date = datetime.strptime(datenf, "%Y-%m-%d").date()
+                nf.update({nk: date})
+        ob.append(nf)
 
     # lista de chaves já baixadas
     chaves = []
@@ -62,34 +67,31 @@ def notafiscalList(request):
     for ol in ob:
         if not ol["chNFe"] in chaves:
             object_list.append(ol)
-
     context = {"object_list": object_list}
     return render(request, template_name, context)
 
 
 # verifica se os dados baixados do xml estão completos
-def checkXml(request, chave):
+def check_xml(request, chave):
     try:
         from integracoes.transf import xml
 
-        # xml = retorna_dados_nota(chave)
         # verifica se os dados baixados da sefaz contém os produtos
         for i in xml.values():
-            a = i["NFe"]
             op = 1
-            return baixarNotaFiscal(request, chave, op)
+            return baixar_notafiscal(request, chave, op)
     except:
         # verifica se já existe o arquivo xml na pasta media
         key = f"{chave}.xml"
         arquivos = os.listdir("media/")
         if not key in arquivos:
-            return baixarxml(request, chave)
+            return baixar_xml(request, chave)
         else:
             op = 2
-            return baixarNotaFiscal(request, chave, op)
+            return baixar_notafiscal(request, chave, op)
 
 
-def baixarxml(request, chave):
+def baixar_xml(request, chave):
     show_modal = True
     if request.method == "POST" and request.FILES["filexml"]:
         myfile = request.FILES.get("filexml")
@@ -103,7 +105,7 @@ def baixarxml(request, chave):
 
 
 @login_required
-def baixarNotaFiscal(request, chave, op):
+def baixar_notafiscal(request, chave, op):
     xml = []
     if op == 1:
         # xml = retorna_dados_nota(chave)
