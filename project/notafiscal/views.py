@@ -65,7 +65,7 @@ def notafiscal_list(request):
     # criar lista das notas a serem baixadas
     object_list = []
     for ol in ob:
-        if not ol["chNFe"] in chaves:
+        if ol["chNFe"] != chaves:
             object_list.append(ol)
     context = {"object_list": object_list}
     return render(request, template_name, context)
@@ -261,7 +261,7 @@ def baixar_notafiscal(request, chave, op):
                 "codigo_produto": codigo_produto,
                 "un": un,
                 "quantidade": quantidade,
-                "valor_unitario": prod["prod"]["vUnCom"][:-6],
+                "valor_unitario": prod["prod"]["vUnCom"],
                 "ncm": prod["prod"]["NCM"],
                 "cfop": prod["prod"]["CFOP"],
             }

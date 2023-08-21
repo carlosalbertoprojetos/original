@@ -6,7 +6,24 @@ from .models import Cliente
 class ClienteForm(forms.ModelForm):
     class Meta:
         model = Cliente
-        fields = "__all__"
+        fields = (
+            "nome",
+            "nome_fantasia",
+            "tel_principal",
+            "tel_contato",
+            "email",
+            "cpf",
+            "cnpj",
+            "insc_estadual",
+            "logradouro",
+            "numero",
+            "complemento",
+            "bairro",
+            "cep",
+            "estado",
+            "cidade",
+            "status_cliente",
+        )
         widgets = {
             "nome": forms.TextInput(attrs={"class": "form-control form-control-sm"}),
             "nome_fantasia": forms.TextInput(

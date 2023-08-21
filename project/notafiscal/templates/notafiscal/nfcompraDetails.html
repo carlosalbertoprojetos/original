@@ -106,7 +106,7 @@
                         <td>{{ prod.codigo_produto }}</td>
                         <td>{{ prod.materiaprima }}</td>
                         <td>{{ prod.un }}</td>
-                        <td>{{ prod.valor_unitario }}</td>
+                        <td>{{ prod.valor_unitario|floatformat:2 }}</td>
                         <td>{{ prod.quantidade }}</td>
                         <td>{{ prod.ncm }}</td>
                     </tr>
