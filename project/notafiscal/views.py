@@ -23,7 +23,6 @@ success_url_nfcompra = _("notafiscal:nfcompraList")
 template_name_baixar_nf = "notafiscal/nfcompraDetails.html"
 
 
-# NFCompra  --------------------------------------------------------------------
 class NFCompraList(LoginRequiredMixin, ListView):
     model = NFCompra
     template_name = "notafiscal/nfcompraList.html"
