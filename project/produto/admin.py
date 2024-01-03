@@ -1,34 +1,48 @@
 from django.contrib import admin
 
-from .models import Produto, MateriaPrimaProduto, ProdutosMatPri
+from .models import (
+    Produto,
+    Peca,
+    ProdutoMatPri,
+    UnidadeMedida,
+)
 
 
-class ProdutosMatPriAdmin(admin.TabularInline):
-    model = ProdutosMatPri
-    extra = 3
+@admin.register(ProdutoMatPri)
+class ProdutosMatPriAdmin(admin.ModelAdmin):
+    list_display = ("materiaprima", "peca", "produto")
+    ...
 
 
-class MateriaPrimaProdutoAdmin(admin.ModelAdmin):
-    model = MateriaPrimaProduto
-    fieldsets = [
-        ("INFORMAÇÕES", {"fields": (("materiaprima", "valor"))}),
-    ]
-    inlines = (ProdutosMatPriAdmin,)
+@admin.register(Peca)
+class PecaAdmin(admin.ModelAdmin):
+    list_display = ("nome", "produto")
+    ...
 
 
-admin.site.register(MateriaPrimaProduto, MateriaPrimaProdutoAdmin)
-
-
+@admin.register(Produto)
 class ProdutoAdmin(admin.ModelAdmin):
     model = Produto
-    list_display = ("nome", "preco")
+    list_display = ("empresa", "nome", "ncm", "cfop", "aliq_ipi", "preco")
     fieldsets = [
         (
             "INFORMAÇÕES",
             {
                 "fields": (
+                    ("empresa"),
                     ("nome", "codigoproduto"),
-                    ("preco", "unimed", "ncm", "cst", "cfop", "estoque_ini"),
+                    (
+                        "unimed",
+                        "ncm",
+                        "cest",
+                        "cst",
+                        "cfop",
+                        "aliq_ipi",
+                        "aliq_icms_interno",
+                        "preco",
+                        "peso",
+                    ), 
+                    ("estoque_ini"),
                     "status_produto",
                 )
             },
@@ -37,4 +51,13 @@ class ProdutoAdmin(admin.ModelAdmin):
     readonly_fields = ["criadoem", "atualizadoem"]
 
 
-admin.site.register(Produto, ProdutoAdmin)
+@admin.register(UnidadeMedida)
+class UnidadeMedidaAdmin(admin.ModelAdmin):
+    model = UnidadeMedida
+    list_display = ("unidade",)
+    fieldsets = [
+        (
+            "INFORMAÇÕES",
+            {"fields": (("unidade", "descricao"),)},
+        ),
+    ]

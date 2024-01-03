@@ -1,6 +1,6 @@
 {% extends 'index.html' %}
 
-{% load static crispy_forms_tags %}
+{% load static %}
 
 <title> {% block title %} Cliente {% endblock title%} </title>
 
@@ -9,7 +9,20 @@
 <div class="container">
     <form method="post" action="" class="">
         {% csrf_token %}
-        {{ form.non_field_errors }}
+        {% if form.errors %}
+        {% for field in form %}
+        {% for error in field.errors %}
+        <div class="alert alert-danger">
+            <strong>{{ error|escape }}</strong>
+        </div>
+        {% endfor %}
+        {% endfor %}
+        {% for error in form.non_field_errors %}
+        <div class="alert alert-danger">
+            <strong>{{ error|escape }}</strong>
+        </div>
+        {% endfor %}
+        {% endif %}
         <div class="card">
             <div class="card-header">
                 <label class="fs-5 fw-bold">
@@ -83,6 +96,10 @@
                         <label for="id_cidade" class="">Cidade</label>
                         {{ form.cidade }}
                     </div>
+                    <div class="col-12 col-md-4">
+                        <label for="id_descricao" class="">Descrição</label>
+                        {{ form.descricao }}
+                    </div>
                     <div class="col-6 col-md-1 mt-3">
                         <label for="id_status_cliente" class="">Ativo</label>
                         {{ form.status_cliente }}
@@ -101,4 +118,11 @@
         </div>
     </form>
 </div>
+{% endblock %}
+
+
+{% block script %}
+<script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+<script src="{% static 'js/jquery.mask.min.js' %}"></script>
+<script src="{% static 'js/jquery.masks.js' %}"></script>
 {% endblock %}

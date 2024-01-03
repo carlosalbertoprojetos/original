@@ -25,7 +25,9 @@ def receitaCreate(request):
     Formset_contaReceber_Factory = inlineformset_factory(
         Receita, ContaReceber, form=ContaReceberForm, extra=1, can_delete=False
     )
-    parcela_form = Formset_contaReceber_Factory(request.POST or None)
+    parcela_form = Formset_contaReceber_Factory(
+        request.POST or None, request.FILES or None
+    )
 
     if request.method == "POST":
         if form.is_valid() and parcela_form.is_valid():
@@ -62,7 +64,11 @@ def receitaUpdate(request, pk):
     Formset_contaReceber_Factory = inlineformset_factory(
         Receita, ContaReceber, form=ContaReceberForm, extra=0, can_delete=False
     )
-    parcela_form = Formset_contaReceber_Factory(request.POST or None, instance=objeto)
+    parcela_form = Formset_contaReceber_Factory(
+        request.POST or None,
+        request.FILES or None,
+        instance=objeto,
+    )
 
     if request.method == "POST":
         if form.is_valid() and parcela_form.is_valid():
@@ -71,14 +77,18 @@ def receitaUpdate(request, pk):
             parcela_form.save()
             return redirect(success_url_receita)
         else:
+            codigo = True
             context = {
+                "codigo": codigo,
                 "titulo": titulo,
                 "form": form,
                 "parcela": parcela_form,
             }
             return render(request, "receita/receitaCreateUpdate.html", context)
     else:
+        codigo = True
         context = {
+            "codigo": codigo,
             "titulo": titulo,
             "form": form,
             "parcela": parcela_form,

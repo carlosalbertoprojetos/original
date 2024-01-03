@@ -219,6 +219,7 @@
     <script
         src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 
+    <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
     <script src="{% static 'js/js.js' %}"></script>
     <script>
         window.onload = function () {
@@ -242,8 +243,8 @@
                 },
 
                 success: function (data) {
-                    var total = data.total_mes
-                    document.getElementById("id_totalMes").innerHTML = `R$ ${Number(total).toFixed(2)}`
+                    total = data.total_mes
+                    document.getElementById("id_totalMes").innerHTML = `&nbspR$ ${Number(total).toFixed(2)}`
 
                     const ctx = document.getElementById('total_vendido_mes').getContext('2d');
                     // limpa o charts anterior
@@ -320,7 +321,6 @@
                 }
             })
         }
-
     </script>
 </main>
 

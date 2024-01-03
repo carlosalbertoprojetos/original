@@ -1,7 +1,6 @@
 {% extends 'index.html' %}
 
-{% load static %}
-{% load widget_tweaks %}
+{% load static widget_tweaks %}
 
 <title> {% block title %} Venda {% endblock title%} </title>
 
@@ -11,337 +10,448 @@
     <link rel="stylesheet" href="{% static 'css/select2.min.css' %}">
 </head>
 <div class="container">
-    <!-- {% if msgerro %}
-    <div id="div_mensagem" class="alert alert-danger" role="alert">
-        <label id="mensagem">Voce não pode colocar o preco abaixo do preco minimo.</label>
-    </div>
-    {% endif %} -->
-
-    <div id="div_mensagem" class="hidden" role="alert">
-        <label id="mensagem"></label>
-    </div>
     <form method="post" enctype="multipart/form-data" id="form">
         {% csrf_token %}
-        {{ form.non_field_errors }}
         <div class="card">
             <div class="card-header">
                 <label class="fs-5 fw-bold">{{ texto }} Pedido de Venda {{ id }}</label>
+                {% if codigo %}
+                <div class="float-end">
+                    <a class="text-black text-decoration-none fw-bold align-middle"
+                        href="{% url 'suporte:suporteCreate' venda=id %}">
+                        Suporte<i class="fas fa-solid fa-headset ps-2"></i></a>
+                </div>
+                {% endif %}
             </div>
-            <div class="card-body label pt-0">
+            <div class="card-body label pt-0 ">
                 <div class="row mb-2">
-                    <div class="col-12 col-lg-4">
-                        <label for="id_cliente" class="">Cliente</label>
+                    {% if codigo %}
+                    <div class="col-12 float-end">
+                        <a class="text-primary text-decoration-none fw-bold float-end mt-2"
+                            href="{% url 'garantia:produtosVenda' venda=id %}">Garantia<i
+                                class="fas fa-solid fa-award ps-2"></i></a>
+                    </div>
+                    {% endif %}
+                    <div class="col-11 col-lg-5">
+                        <label for="id_cliente">Cliente</label>
                         {{ form.cliente }}
                     </div>
-                    <div class="col-12 col-lg-2">
-                        <label for="id_vendedor" class="">Vendedor</label>
-                        <p class="form-control form-control-sm m-0">{{ request.user }}</p>
+                    <div class="col-1 col-lg-1 p-0"><br />
+                        <a href="/cliente/{{form.cliente.value}}/editar/" target="_blank" /><svg
+                            xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" font-size="1.5rem"
+                            class="iconify iconify--mdi me-2" width="1em" height="1em" viewBox="0 0 24 24">
+                            <path fill="currentColor"
+                                d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5l-1.5 1.5l-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16A6.5 6.5 0 0 1 3 9.5A6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14S14 12 14 9.5S12 5 9.5 5Z">
+                            </path>
+                        </svg>
+                        </a>
                     </div>
-                    <div class="col-6 col-lg-2 p-0">
-                        <label for="id_data_pedido" class="">Pedido</label>
+                    <div class="col-12 col-lg-2">
+                        <label for="id_vendedor">Vendedor</label>
+                        {% if pk %}
+                        <div class="form-control form-control-sm">{{ form.instance.vendedor.username }}</div>
+                        {% else %}
+                        <div class="form-control form-control-sm">{{ request.user }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-6 col-lg-2 p-lg-0">
+                        <label for="id_data_pedido">Pedido</label>
                         {{ form.data_pedido }}
                     </div>
                     <div class="col-6 col-lg-2">
-                        <label for="id_data_entrega" class="">Data de Produção</label>
+                        <label for="id_data_entrega">Data de Produção</label>
                         {{ form.data_entrega }}
                     </div>
                     <div class="col-7 col-lg-4">
-                        <label for="id_transportadora" class="">Transportadora</label>
+                        <label for="id_transportadora">Transportadora</label>
                         {{ form.transportadora }}
                     </div>
                     <div class="col-5 col-lg-3">
-                        <label for="id_status_venda" class="">Status</label>
+                        <label for="id_status_venda">Status</label>
                         {{ form.status_venda }}
                     </div>
                     <div class="col-12 col-lg-12">
-                        <label for="id_detalhes" class="">Detalhes</label>
+                        <label for="id_detalhes">Detalhes</label>
                         {{ form.detalhes }}
                     </div>
+                    {%if form.codigo_mercadolivre.value%}
+                    <div class="col-3">
+                        <label for="id_codigomercadolivre">Código MercadoLivre</label>
+                        {{ form.codigo_mercadolivre }}
+                    </div>
+                    <div class="col-3">
+                        <label for="id_codigomercadolivre">NickName MercadoLivre</label>
+                        {{ form.nickname_mercadolivre }}
+                    </div>
+                    <div class="col-3">
+                        <label for="id_codigomercadolivre">Quem Recebe</label>
+                        {{ form.quemrecebe_mercadolivre }}
+                    </div>
+                    <div class="col-3">
+                        <label for="id_codigomercadolivre">Telefone Quem Recebe</label>
+                        {{ form.telefonequemrecebe_mercadolivre }}
+                    </div>
+                    {%endif%}
                 </div>
+                {%if erros_NF%}
+                <div id="div_mensagem" class="alert alert-danger" role="alert">
+                    Para emissão de NF falta:<br />
+                    {%for erro in erros_NF%}
+                    <label id="mensagem">{{erro}}</label><br />
+                    {%endfor%}
+                </div>
+                {%endif%}
+                {% include "venda/includes/dadosnf.html" %}
             </div>
-        </div>
-
-        {% if produto %}
-        {{ produto.management_form }}
-        {{ produto.non_form_errors }}
-        <div class="card my-2">
-            <div class="card-header"><label class="fs-5 fw-bold">Produtos</label></div>
-            <div class="card-body label py-0" id="produto-form-list">
-                {% for prod in produto %}
-                <div class="row produto-form">
-                    {{ prod.id }}
+            <div id="div_mensagem" class="hidden" role="alert">
+                <label id="mensagem"></label>
+            </div>
+            {% if produto %}
+            {{ produto.management_form }}
+            {%if erros_produto%}
+            <div id="div_mensagem" class="alert alert-danger" role="alert">
+                {%for erro in erros_produto%} <label id="mensagem">{{erro}}</label><br /> {%endfor%}
+            </div>
+            {%endif%}
+            <div class="card my-2">
+                <div class="card-header"><label class="fs-5 fw-bold">Produtos</label></div>
+                <div class="card-body label py-0" id="produto-form-list">
+                    {% for prod in produto %}
+                    <div class="row produto-form">
+                        {{ prod.id }}
+                        <div class="col-12 col-lg-4 px-1">
+                            {{ prod.produto.label_tag }}
+                            {{ prod.produto }}
+                        </div>
+                        <div class="col-4 col-lg-1 px-1">
+                            {{ prod.voltagem.errors }}
+                            {{ prod.voltagem.label_tag }}
+                            {{ prod.voltagem }}
+                        </div>
+                        <div class="col-4 col-lg-1 px-1">
+                            {{ prod.torneira.errors }}
+                            {{ prod.torneira.label_tag }}
+                            {{ prod.torneira }}
+                        </div>
+                        <div class="col-4 col-lg-1 px-1">
+                            {{ prod.adesivado.errors }}
+                            {{ prod.adesivado.label_tag }}
+                            {{ prod.adesivado }}
+                        </div>
+                        <div class="col-3 col-lg-1 px-1">
+                            {{ prod.quantidade.label_tag }}
+                            {{ prod.quantidade }}
+                        </div>
+                        <div class="col-3 col-lg-2 px-1">
+                            {{ prod.preco.label_tag }}
+                            {{ prod.preco }}
+                        </div>
+                        <div class="col-6 col-lg-2 px-1">
+                            {{ prod.subtotal.label_tag }}
+                            {{ prod.subtotal }}
+                        </div>
+                        {% if codigo %}
+                        <div class="col-6 col-lg-1 d-flex flex-column align-items-top me-5 p-0 pt-1 pe-3">
+                            <label class="mb-2 text-center" for="">Apagar </label>
+                            {{ prod.DELETE}}
+                        </div>
+                        {% endif %}
+                        <hr class="d-block d-lg-none mt-2 mb-0">
+                    </div>
+                    {% endfor %}
+                </div>
+                <div id='empty-produto' class="hidden">
+                    {{ produto.empty_form.id }}
                     <div class="col-12 col-lg-4 px-1">
-                        {{ prod.produto.label_tag }}
-                        {{ prod.produto.errors }}
-                        {% render_field prod.produto onChange='filtroPreco()' %}
+                        {{ produto.empty_form.produto.label_tag }}
+                        {{ produto.empty_form.produto }}
                     </div>
                     <div class="col-4 col-lg-1 px-1">
-                        {{ prod.voltagem.label_tag }}
-                        {{ prod.voltagem.errors }}
-                        {{ prod.voltagem }}
+                        {{ produto.empty_form.voltagem.label_tag }}
+                        {{ produto.empty_form.voltagem }}
                     </div>
                     <div class="col-4 col-lg-1 px-1">
-                        {{ prod.torneira.label_tag }}
-                        {{ prod.torneira.errors }}
-                        {{ prod.torneira }}
+                        {{ produto.empty_form.torneira.label_tag }}
+                        {{ produto.empty_form.torneira }}
                     </div>
                     <div class="col-4 col-lg-1 px-1">
-                        {{ prod.adesivado.label_tag }}
-                        {{ prod.adesivado.errors }}
-                        {{ prod.adesivado }}
+                        {{ produto.empty_form.adesivado.label_tag }}
+                        {{ produto.empty_form.adesivado }}
                     </div>
                     <div class="col-3 col-lg-1 px-1">
-                        {{ prod.quantidade.label_tag }}
-                        {{ prod.quantidade.errors }}
-                        {{ prod.quantidade }}
+                        {{ produto.empty_form.quantidade.label_tag }}
+                        {{ produto.empty_form.quantidade }}
                     </div>
                     <div class="col-3 col-lg-2 px-1">
-                        {{ prod.preco.label_tag }}
-                        {{ prod.preco.errors }}
-                        {{ prod.preco }}
+                        {{ produto.empty_form.preco.label_tag }}
+                        {{ produto.empty_form.preco }}
                     </div>
                     <div class="col-6 col-lg-2 px-1">
-                        {{ prod.subtotal.label_tag }}
-                        {{ prod.subtotal.errors }}
-                        {{ prod.subtotal }}
+                        {{ produto.empty_form.subtotal.label_tag }}
+                        {{ produto.empty_form.subtotal }}
                     </div>
                     {% if codigo %}
                     <div class="col-6 col-lg-1 d-flex flex-column align-items-top me-5 p-0 pt-1 pe-3">
-                        <label class="mb-2 ps-3" for="">Apagar </label>
-                        {{ prod.DELETE}}
+                        <label class="mb-2 text-center" for="">Apagar </label>
+                        {{ produto.empty_form.DELETE}}
                     </div>
                     {% endif %}
                     <hr class="d-block d-lg-none mt-2 mb-0">
                 </div>
+                <div class="btnMaster p-0 ps-2"><button id="add-produto" class="btnMaster btn btn-sm"
+                        type="button">Adicionar
+                        novo produto</button><i class="fa fa-plus-square" aria-hidden="true"></i>
+                </div>
+                <div class="card-header border-0">
+                    <div class="row justify-content-end label">
+                        <div class="col-4 col-lg-2 px-1">
+                            <label for="id_valor_venda">Valor da Venda</label>
+                            {{ form.valor_venda }}
+                        </div>
+                        <div class="col-4 col-lg-2 px-1">
+                            <label for="id_porcentagem_desconto">Desconto</label>
+                            {{ form.porcentagem_desconto }}
+                        </div>
+                        <div class="col-4 col-lg-2 px-1">
+                            <label for="id_valor_frete">Valor do Frete</label>
+                            {{ form.valor_frete }}
+                        </div>
+                        <div class="col-4 col-lg-2 px-1">
+                            <label for="id_valor_frete">Cotação Transportadora</label>
+                            {{ form.cotacao_transportadora }}
+                        </div>
+                        <div class="col-4 col-lg-2 px-1">
+                            <label for="id_subtotal">Total</label>
+                            {{ form.subtotal }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            <div class="card my-2">
+                <div class="card-header"><label class="fs-5 fw-bold">Parcelas</label></div>
+                <div class="row label justify-content-evenly justify-content-lg-start mx-2 mb-2">
+                    <div class="col-12 col-lg-3 pe-lg-0 p-0">
+                        <label for="id_condicaopgto">Condição</label>
+                        {{ form.condicaopgto }}
+                    </div>
+                    <div class="col-4 col-lg-1 pe-lg-0">
+                        <label for="id_parcelas" class="text-center">Parcelas</label>
+                        {{ form.parcelas }}
+                    </div>
+                    <div class="col-6 col-lg-2 pe-lg-0">
+                        <label for="id_parcelas">Forma Pagamento</label>
+                        {{ form.formapgto }}
+                    </div>
+                    <div class="col-4 col-lg-2 pt-lg-0">
+                        <label for="id_dias_prim_par">Dias primeira</label>
+                        {{ form.dias_prim_par }}
+                    </div>
+                    <div class="col-6 col-lg-2 p-lg-0">
+                        <label for="id_dias_outras_par">Dias demais parcelas</label>
+                        {{ form.dias_outras_par }}
+                    </div>
+                </div>
+            </div>
+            {% if erros_boleto %}
+            <div id="div_mensagem_boleto" class="alert alert-danger mb-1" role="alert">
+                {% for erro in erros_boleto %}
+                <label id="mensagem_boleto">{{ erro }}</label><br />
                 {% endfor %}
             </div>
-            <div id='empty-produto' class="hidden">
-                {{ produto.empty_form.id }}
-                <div class="col-12 col-lg-4 px-1">
-                    {{ produto.empty_form.produto.label_tag }}
-                    {{ produto.empty_form.produto.errors }}
-                    {{ produto.empty_form.produto }}
-                </div>
-                <div class="col-4 col-lg-1 px-1">
-                    {{ produto.empty_form.voltagem.label_tag }}
-                    {{ produto.empty_form.voltagem.errors }}
-                    {{ produto.empty_form.voltagem }}
-                </div>
-                <div class="col-4 col-lg-1 px-1">
-                    {{ produto.empty_form.torneira.label_tag }}
-                    {{ produto.empty_form.torneira.errors }}
-                    {{ produto.empty_form.torneira }}
-                </div>
-                <div class="col-4 col-lg-1 px-1">
-                    {{ produto.empty_form.adesivado.label_tag }}
-                    {{ produto.empty_form.adesivado.errors }}
-                    {{ produto.empty_form.adesivado }}
-                </div>
-                <div class="col-3 col-lg-1 px-1">
-                    {{ produto.empty_form.quantidade.label_tag }}
-                    {{ produto.empty_form.quantidade.errors }}
-                    {{ produto.empty_form.quantidade }}
-                </div>
-                <div class="col-3 col-lg-2 px-1">
-                    {{ produto.empty_form.preco.label_tag }}
-                    {{ produto.empty_form.preco.errors }}
-                    {{ produto.empty_form.preco }}
-                </div>
-                <div class="col-6 col-lg-2 px-1">
-                    {{ produto.empty_form.subtotal.label_tag }}
-                    {{ produto.empty_form.subtotal.errors }}
-                    {{ produto.empty_form.subtotal }}
-                </div>
-                {% if codigo %}
-                <div class="col-6 col-lg-1 d-flex flex-column align-items-top me-5 p-0 pt-1 pe-3">
-                    <label class="mb-2 ps-3" for="">Apagar </label>
-                    {{ produto.empty_form.DELETE}}
-                </div>
-                {% endif %}
-                <hr class="d-block d-lg-none mt-2 mb-0">
-            </div>
-            <div class="btnMaster p-0 ps-2"><button id="add-produto" class="btnMaster btn btn-sm"
-                    type="button">Adicionar
-                    novo produto</button><i class="fa fa-plus-square" aria-hidden="true"></i>
-            </div>
-            <div class="card-header border-0">
-                <div class="row justify-content-end px-3 me-lg-5 pe-lg-5 label">
-                    <div class="col-4 col-lg-2 p-0 p-lg-2">
-                        <label for="id_valor_venda" class="">Valor da Venda</label>
-                        {{ form.valor_venda }}
-                    </div>
-                    <div class="col-4 col-lg-2 p-0 p-lg-2">
-                        <label for="id_porcentagem_desconto" class="">Desconto</label>
-                        {{ form.porcentagem_desconto }}
-                    </div>
-                    <div class="col-4 col-lg-2 px-1 p-lg-2">
-                        <label for="id_valor_frete" class="">Valor do Frete</label>
-                        {{ form.valor_frete }}
-                    </div>
-                    <div class="col-6 col-lg-2 pe-0 p-lg-2">
-                        <label for="id_subtotal" class="">Total</label>
-                        {{ form.subtotal }}
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% endif %}
-        <div class="card my-2">
-            <div class="card-header"><label class="fs-5 fw-bold">Parcelas</label></div>
-            <div class="row label justify-content-evenly justify-content-lg-start px-3">
-                <div class="col-12 col-lg-2 pe-lg-0">
-                    <label for="id_condicaopgto" class="">Condição</label>
-                    {% render_field form.condicaopgto onChange='condicao()' %}
-                </div>
-                <div class="col-4 col-lg-1 pe-lg-0">
-                    <label for="id_parcelas" class="text-center">Parcelas</label>
-                    {{ form.parcelas }}
-                </div>
-                <div class="col-6 col-lg-2 pe-lg-0">
-                    <label for="id_parcelas" class="">Forma Pagamento</label>
-                    {{ form.formapgto }}
-                </div>
-                <div class="col-4 col-lg-2 pt-lg-0">
-                    <label for="id_dias_prim_par" class="">Dias primeira</label>
-                    {{ form.dias_prim_par }}
-                </div>
-                <div class="col-6 col-lg-2 p-lg-0">
-                    <label for="id_dias_outras_par" class="">Dias demais parcelas</label>
-                    {{ form.dias_outras_par }}
-                </div>
-            </div>
-            <hr class="mt-2 mb-0">
+            {% endif %}
             {% if parcela %}
             {{ parcela.management_form }}
-            {{ parcela.non_form_errors }}
-            <div class="card-body label pt-0" id="parcela-form-list">
-                {% for parc in parcela %}
-                <div class="row parcela-form">
-                    {{ parc.id }}
-                    {{ parc.receita }}
-                    {{ parc.datadocumento }}
-                    <div class="col-6 col-lg-3">
-                        {{ parc.parcela.label_tag }}
-                        {{ parc.parcela.errors }}
-                        {{ parc.parcela }}
+            <div class="card my-2 p-2">
+                <div class="card-body label pt-0" id="parcela-form-list">
+                    {% for parc in parcela %}
+                    <div class="row parcela-form">
+                        {{ parc.id }}
+                        {{ parc.receita }}
+                        {{ parc.datadocumento }}
+                        <div class="col-6 col-lg-3">
+                            {{ parc.parcela.label_tag }}
+                            {{ parc.parcela }}
+                        </div>
+                        <div class="col-6 col-lg-2">
+                            {{ parc.valor.label_tag }}
+                            {{ parc.valor }}
+                        </div>
+                        <div class="col-6 col-lg-2">
+                            {{ parc.datavencimento.label_tag }}
+                            {{ parc.datavencimento }}
+                        </div>
+                        <div class="col-6 col-lg-3">
+                            {{ parc.formapgto.label_tag }}
+                            {{ parc.formapgto }}
+                        </div>
+                        {% if 'financeiro.change_contapagar' in perms %}
+                        <div class="col-6 col-lg-2">
+                            {{ parc.datapagamento.label_tag }}
+                            {{ parc.datapagamento }}
+                        </div>
+                        <div class="col-9 col-lg-10">
+                            {{ parc.detalhes.label_tag }}
+                            {{ parc.detalhes }}
+                        </div>
+                        {% if not parc.parcela.value in boletos %}
+                        <div class="hidden" id="botao_gerarboleto-{{ forloop.counter0 }}">
+                            <button type="submit" class="btn btn-primary btn-sm" name="validarBoleto"
+                                value="{{ id }},{{ parc.parcela.value }}" id="id_validar_boleto-{{ forloop.counter0 }}"
+                                style="font-size: 10px;">Gerar Boleto</button>
+                        </div>
+                        {% else %}
+                        <div class="row text-center col-4 col-lg-2">
+                            <label>Boleto</label>
+                            <div class="d-flex p-0">
+                                <div class="col-6 text-center" id="visualizar_boleto-{{ forloop.counter0 }}">
+                                    <button type="submit" href="" class="btn btn-primary btn-sm" name="exibirBoleto"
+                                        value="{{ id }},{{ parc.parcela.value }}"
+                                        style="font-size: 10px">Exibir</button>
+                                </div>
+                                <div class="col-6 text-center" id="deletar_boleto-{{ forloop.counter0 }}">
+                                    <button type="submit" href="" class="btn btn-primary btn-sm" name="deletarBoleto"
+                                        value="{{ id }},{{ parc.parcela.value }}"
+                                        style="font-size: 10px">Cancelar</button>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        <div class="col-12 col-lg-6">
+                            {{ parc.boleto.label_tag }}
+                            {{ parc.boleto }}
+                        </div>
+                        <div class="col-12 col-lg-6">
+                            {{ parc.comprovante.label_tag }}
+                            {{ parc.comprovante }}
+                        </div>
+                        {% else %}
+                        <div class="col-12 col-lg-6">
+                            {{ parc.detalhes.label_tag }}
+                            {{ parc.detalhes }}
+                        </div>
+                        <div class="col-12 col-lg-6">
+                            {{ parc.boleto.label_tag }}
+                            {{ parc.boleto }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <hr class="mt-2 mb-0">
+                    {% endfor %}
+                </div>
+                <div id='empty-parcela' class="hidden">
+                    {{ parcela.empty_form.id }}
+                    {{ parcela.empty_form.datadocumento }}
+                    <div class="col-6 col-lg-2">
+                        {{ parcela.empty_form.parcela.label_tag }}
+                        {{ parcela.empty_form.parcela }}
                     </div>
                     <div class="col-6 col-lg-2">
-                        {{ parc.valor.label_tag }}
-                        {{ parc.valor.errors }}
-                        {{ parc.valor }}
+                        {{ parcela.empty_form.valor.label_tag }}
+                        {{ parcela.empty_form.valor }}
                     </div>
                     <div class="col-6 col-lg-2">
-                        {{ parc.datavencimento.label_tag }}
-                        {{ parc.datavencimento.errors }}
-                        {{ parc.datavencimento }}
+                        {{ parcela.empty_form.datavencimento.label_tag }}
+                        {{ parcela.empty_form.datavencimento }}
                     </div>
-                    <div class="col-6 col-lg-3">
-                        {{ parc.formapgto.label_tag }}
-                        {{ parc.formapgto.errors }}
-                        {{ parc.formapgto }}
-                    </div>
-                    {% if codigo %}
-                    {% if request.user.is_superuser %}
                     <div class="col-6 col-lg-2">
-                        {{ parc.datapagamento.label_tag }}
-                        {{ parc.datapagamento.errors }}
-                        {{ parc.datapagamento }}
+                        {{ parcela.empty_form.formapgto.label_tag }}
+                        {{ parcela.empty_form.formapgto }}
+                    </div>
+                    {% if 'financeiro.change_contapagar' in perms %}
+                    <div class="col-6 col-lg-2">
+                        {{ parcela.empty_form.datapagamento.label_tag }}
+                        {{ parcela.empty_form.datapagamento }}
+                    </div>
+                    <div class="col-12 col-lg-12">
+                        {{ parcela.empty_form.detalhes.label_tag }}
+                        {{ parcela.empty_form.detalhes }}
                     </div>
                     <div class="col-12 col-lg-6">
-                        {{ parc.detalhes.label_tag }}
-                        {{ parc.detalhes.errors }}
-                        {{ parc.detalhes }}
+                        {{ parcela.empty_form.boleto.label_tag }}
+                        {{ parcela.empty_form.boleto }}
                     </div>
                     <div class="col-12 col-lg-6">
-                        {{ parc.imagem.label_tag }}
-                        {{ parc.imagem.errors }}
-                        {{ parc.imagem }}
+                        {{ parcela.empty_form.comprovante.label_tag }}
+                        {{ parcela.empty_form.comprovante }}
                     </div>
-                    {% endif%}
                     {% else %}
-                    <div class="col-12 col-lg-3">
-                        {{ parc.detalhes.label_tag }}
-                        {{ parc.detalhes.errors }}
-                        {{ parc.detalhes }}
+                    <div class="col-12 col-lg-6">
+                        {{ parcela.empty_form.detalhes.label_tag }}
+                        {{ parcela.empty_form.detalhes }}
                     </div>
-                    {% endif%}
-                </div>
-                <hr class="mt-2 mb-0">
-                {% endfor %}
-            </div>
-            <div id='empty-parcela' class="hidden">
-                {{ parcela.empty_form.id }}
-                {{ parcela.empty_form.receita }}
-                {{ parcela.empty_form.datadocumento }}
-                <div class="col-6 col-lg-2">
-                    {{ parcela.empty_form.parcela.label_tag }}
-                    {{ parcela.empty_form.parcela.errors }}
-                    {{ parcela.empty_form.parcela }}
-                </div>
-                <div class="col-6 col-lg-2">
-                    {{ parcela.empty_form.valor.label_tag }}
-                    {{ parcela.empty_form.valor.errors }}
-                    {{ parcela.empty_form.valor }}
-                </div>
-                <div class="col-6 col-lg-2">
-                    {{ parcela.empty_form.datavencimento.label_tag }}
-                    {{ parcela.empty_form.datavencimento.errors }}
-                    {{ parcela.empty_form.datavencimento }}
-                </div>
-                <div class="col-6 col-lg-2">
-                    {{ parcela.empty_form.formapgto.label_tag }}
-                    {{ parcela.empty_form.formapgto.errors }}
-                    {{ parcela.empty_form.formapgto }}
-                </div>
-                {% if codigo %}
-                {% if request.user.is_superuser %}
-                <div class="col-6 col-lg-2">
-                    {{ parcela.empty_form.datapagamento.label_tag }}
-                    {{ parcela.empty_form.datapagamento.errors }}
-                    {{ parcela.empty_form.datapagamento }}
-                </div>
-                <div class="col-12 col-lg-2">
-                    {{ parcela.empty_form.detalhes.label_tag }}
-                    {{ parcela.empty_form.detalhes.errors }}
-                    {{ parcela.empty_form.detalhes }}
-                </div>
-                <div class="col-12 col-lg-2">
-                    {{ parcela.empty_form.imagem.label_tag }}
-                    {{ parcela.empty_form.imagem.errors }}
-                    {{ parcela.empty_form.imagem }}
+                    <div class="col-12 col-lg-6">
+                        {{ parcela.empty_form.boleto.label_tag }}
+                        {{ parcela.empty_form.boleto }}
+                    </div>
+                    {% endif %}
                 </div>
                 {% endif %}
-                {% else %}
-                <div class="col-12 col-lg-3">
-                    {{ parcela.empty_form.detalhes.label_tag }}
-                    {{ parcela.empty_form.detalhes.errors }}
-                    {{ parcela.empty_form.detalhes }}
-                </div>
-                {% endif%}
-                <hr class="d-block d-lg-none mt-2 mb-0">
             </div>
-        </div>
-        {% endif %}
-
-        <div class="d-flex float-end m-3 mb-5">
-            <div class="col-3 d-flex gap-2 align-middle">
-                <a role="button" class="btn btn-secondary btn-sm" href="{% url 'venda:vendaList' %}">Cancelar</a>
-                <div class="form-group form-button">
-                    <input type="submit" class="btn btn-primary btn-sm" value="Salvar" id="id_salvar" />
+            <div class="d-flex float-end m-3 mb-5">
+                <div class="col-3 d-flex gap-2 align-middle">
+                    <a role="button" class="btn btn-secondary btn-sm" href="{% url 'venda:vendaList' %}">Cancelar</a>
+                    <div class="form-group form-button">
+                        <input type="submit" class="btn btn-primary btn-sm" value="Salvar" id="id_salvar" />
+                    </div>
                 </div>
             </div>
-        </div>
     </form>
 </div>
 
+
 <script type="text/javascript" language="javascript">
+    window.onload = function () {
+        boleto()
+        somenteLeitura()
+
+        // impedir que a última parcela seja alterada
+        tot_ids = $('#id_contareceber_set-TOTAL_FORMS').val()
+        read_only = document.getElementById(`id_contareceber_set-${tot_ids - 1}-valor`)
+        if (read_only) {
+            read_only = document.getElementById(`id_contareceber_set-${tot_ids - 1}-valor`).readOnly = true;
+        }
+    }
+
+    // controle de visibilidade botão gera boleto e dos links visualizar boleto / excluir boleto
+    function boleto() {
+        var status = $('#id_status_venda').val();
+        var ids = $('#id_contareceber_set-TOTAL_FORMS').val();
+
+        for (let i = 0; i < ids; i++) {
+            const botao = document.getElementById(`botao_gerarboleto-${i}`);
+            const link = document.getElementById(`visualizar_boleto-${i}`);
+            const del = document.getElementById(`del_boleto-${i}`);
+            const data = document.getElementById(`id_contareceber_set-${i}-datapagamento`);
+            var data_pgto = $(`#id_contareceber_set-${i}-datapagamento`).val();
+            var select = $(`#id_contareceber_set-${i}-formapgto :selected`).text();
+            if (link != null && del != null) {
+                if (select != "Boleto") {
+                    link.setAttribute("class", 'hidden');
+                    del.setAttribute("class", 'hidden');
+                } else {
+                    link.setAttribute("class", 'col-2 col-lg-1 mt-4 ps-4');
+                    del.setAttribute("class", 'col-2 col-lg-1 mt-4 p-0');
+                    window.location.reload(true);
+                }
+            }
+            if (botao != null) {
+                if ((status == 'enviado' || status == 'expedicao') && !data_pgto && select == "Boleto") {
+                    botao.setAttribute("class", 'col-3 col-lg-1 buttonBoleto mt-lg-3 ms-lg-1');
+                    window.location.href = '#div_mensagem_boleto';
+                } else {
+                    botao.setAttribute("class", 'hidden');
+                }
+            }
+        }
+    }
 
     // mensagens
     function aviso(texto) {
         var divmensagem = document.getElementById('div_mensagem');
-        divmensagem.setAttribute('class', 'alert alert-warning');
+        divmensagem.setAttribute('class', 'alert alert-danger mb-1 mt-2');
         mensagem.innerHTML = texto;
-        $(window).scrollTop(0);
+        window.location.href = '#div_mensagem';
     }
 
     // calcula quantidade, vezes o preco e retorna em subtotal
@@ -390,9 +500,9 @@
 
     // limita a quantidade de fabricação de produtos em 10 por dia
     function agendaProd() {
-
         var divmensagem = document.getElementById('div_mensagem');
         divmensagem.setAttribute('class', 'hidden');
+        // var quant = $(`#id_vendaproduto_set-${i}-quantidade`).val();
 
         var select = $("#id_data_entrega :selected").text();
         vlratual = select.slice(12, -1);
@@ -401,40 +511,29 @@
         var ids = $('#id_vendaproduto_set-TOTAL_FORMS').val();
         numprod = 0
         for (let i = 0; i < ids; i++) {
-            var quant = $(`#id_vendaproduto_set-${i}-quantidade`).val();
-            numprod += Number(quant)
-        }
-
-        if (numagen == 10 || numprod > 10 || (numagen + numprod) > 10) {
-            aviso(
-                texto = 'O limite de 10 produtos agendados para este dia já foram cadastrados!'
-            )
+            var quant = document.getElementById(`id_vendaproduto_set-${i}-quantidade`)
+            numprod += Number(quant.value)
+            if (numagen == 100 || numprod > 100 || (numagen + numprod) > 100) {
+                aviso(
+                    texto = 'O limite de 100 produtos agendados para este dia já foram cadastrados!'
+                )
+                quant.value = 0
+            }
         }
         change()
     }
 
-    // select2 inicial produto
-    window.onload = function () {
-        document.getElementById(`id_vendaproduto_set-0-produto`).click()
-    }
-
     // select2 produto
     function reply_click(clicked_id) {
-        $(`#${clicked_id}`).select2()
         var select = $("#id_data_entrega :selected").text();
         vlratual = select.slice(12, -1);
         var prodagendada = parseInt(vlratual)
-        if (prodagendada == 10) {
+        if (prodagendada == 100) {
             aviso('Atenção!\n O limite de 10 produtos agendados para este dia já foram cadastrados!');
         }
     }
 
-    // select2 cliente
-    $(document).ready(function () {
-        $('#id_cliente').select2()
-    });
-
-    // relaciona o preco do produto conforme o select do produto
+    // relaciona o preco conforme o produto selecionado
     function filtroPreco(change_id) {
         var a = change_id
         var id_formset = a[20]
@@ -457,7 +556,7 @@
         })
     }
 
-    // -------------------------PRODUTO--------------------------------
+    // adiciona de forma dinâmica novos formulários para produto
     const addProdutoBtn = document.getElementById('add-produto');
     const totalProdutosForms = document.getElementById('id_vendaproduto_set-TOTAL_FORMS');
 
@@ -477,7 +576,7 @@
         copyProdutoEmptyFormEl.innerHTML = copyProdutoEmptyFormEl.innerHTML.replace(regexProduto, currentProdutoFormCount);
         totalProdutosForms.setAttribute('value', currentProdutoFormCount + 1);
         formProdutoCopyTarget.append(copyProdutoEmptyFormEl);
-        document.getElementById(`id_vendaproduto_set-${currentProdutoFormCount}-produto`).click();
+        // document.getElementById(`id_vendaproduto_set-${currentProdutoFormCount}-produto`).click();
     }
 
     // -------------------------PARCELA--------------------------------
@@ -486,8 +585,16 @@
         return date;
     }
 
-    // retorna os dados das parcelas conforme o select da condição
     function condicao() {
+        const div_parcela = document.getElementsByClassName('parcela-form-list');
+
+        var id = $('#id_contareceber_set-TOTAL_FORMS').val();
+        for (let i = 0; i < id; i++) {
+            registro = document.getElementById(`id_contareceber_set-${i}-id`)
+            var teste = $(`#id_contareceber_set-${i}-id`).val();
+        }
+
+        // retorna a identificação das parcelas, a quantidade, a forma de pagamento, a data do pagamento e o valor de cada parcela
         let data = $("#id_data_entrega").val();
         let total = $("#id_subtotal").val();
         var id_condicao = document.getElementById('id_condicaopgto');
@@ -610,6 +717,33 @@
         document.getElementById(`id_contareceber_set-${qua}-formapgto`).value = fpg;
     }
 
+    function recalcularParcelas(id) {
+        // recalcula valores das parcelas quando um valor é alterado
+        // somente as parcelas seguintes poderão ser alteradas
+        // OBS.: a última parcela não poderá ser alterada
+        var numsStr = id.replace(/[^0-9]/g, '');
+        id_atual = parseInt(numsStr)
+        tot_ids = $('#id_contareceber_set-TOTAL_FORMS').val()
+        let total = $("#id_subtotal").val();
+
+        soma = 0
+        for (let i = 0; i <= id_atual; i++) {
+            valor = $(`#id_contareceber_set-${i}-valor`).val()
+            soma = soma + Number(valor)
+        }
+
+        calc = total - soma
+        var demais_parc = []
+        parcelas = Number(tot_ids - 1) - id_atual
+        var vlr_demais_parc = calc / parcelas
+
+        // atribui a diferença do valor total às demais parcelas
+        for (let i = (id_atual + 1); i <= Number(tot_ids - 1); i++) {
+            let parcs = document.getElementById(`id_contareceber_set-${i}-valor`);
+            parcs.setAttribute('value', vlr_demais_parc.toFixed(2))
+        }
+    }
+
     function preco_min(data) {
         id_formset = data.id
         value = data.value
@@ -622,20 +756,51 @@
         }
     }
 
-    function dataPagamento(id) {
-        var a = id
-        var id_formset = a[20]
-        var data = document.getElementById(`id_contareceber_set-${id_formset}-datapagamento`);
-        var required = document.getElementById(`id_contareceber_set-${id_formset}-imagem`);
-        var checkbox = document.querySelector(`#contareceber_set-${id_formset}-imagem-clear_id`);
-        // verifica se o campo 'Data do Pagamento' está preenchido, caso esteja, obriga a inserir arquivo de imagem
-        if (data.value) {
-            required.setAttribute('required', 'required');
-            if (typeof checkbox === "undefined") {
-                checkbox.checked = true;
+    function somenteLeitura() {
+        var ids = $('#id_contareceber_set-TOTAL_FORMS').val();
+        for (let i = 0; i < ids; i++) {
+            var data = document.getElementById(`id_contareceber_set-${i}-datapagamento`);
+            var boleto = document.getElementById(`visualizar_boleto-${i}`);
+
+            if (data.value || boleto) {
+                document.getElementById(`id_contareceber_set-${i}-valor`).readOnly = true;
+                document.getElementById(`id_contareceber_set-${i}-datavencimento`).readOnly = true;
+                var fpg = document.getElementById(`id_contareceber_set-${i}-formapgto`)
+                document.getElementById(`id_contareceber_set-${i}-formapgto`).setAttribute("onchange", `this.value=${fpg.value}`)
             }
         }
     }
+
+    function dataPagamento() {
+        var ids = $('#id_contareceber_set-TOTAL_FORMS').val();
+        for (let i = 0; i < ids; i++) {
+            const botao = document.getElementById(`botao_gerarboleto-${i}`);
+            const data = document.getElementById(`id_contareceber_set-${i}-datapagamento`);
+            const del = document.getElementById(`deletar_boleto-${i}`);
+            var select = $(`#id_contareceber_set-${i}-formapgto :selected`).text();
+            const valor = document.getElementById(`id_contareceber_set-${i}-valor`)
+            const datavenc = document.getElementById(`id_contareceber_set-${i}-datavencimento`)
+            const formapgto = document.getElementById(`id_contareceber_set-${i}-formapgto`)
+
+            if (data.value) {
+                if (select == "Boleto" && botao) {
+                    aviso("O boleto deve ser gerado antes de inserir a data do pagamento")
+                    data.value = ""
+                    botao.setAttribute("class", 'col-2 m-auto pt-3')
+                }
+                if (!data.value == "") {
+                    valor.readOnly = true;
+                    datavenc.readOnly = true;
+                    formapgto.disabled = true;
+                }
+            } else {
+                valor.readOnly = false;
+                datavenc.readOnly = false;
+                formapgto.disabled = false;
+            }
+        }
+    }
+
 
 </script>
 </body>
@@ -645,4 +810,41 @@
 {% block script %}
 <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
 <script src="{% static 'js/select2.min.js' %}"></script>
+
+
+<script>
+    $(document).ready(function () {
+        dataPagamento()
+        $('#id_cliente').select2({
+            ajax: {
+                url: "{% url 'venda:clienteAjax' %}",
+                dataType: 'json',
+                processResults: function (data) {
+                    return {
+                        results: $.map(data, function (item) {
+                            return { id: item.id, text: item.nome };
+                        })
+                    };
+                }
+            },
+            minimumInputLength: 1
+        });
+    });
+
+
+    $('#id_status_venda').change(function () {
+        boleto()
+    });
+</script>
+
+<script>
+    var formID = document.getElementById("form");
+    var send = $("#id_salvar");
+
+    $(formID).submit(function (event) {
+        if (formID.checkValidity()) {
+            send.attr('disabled', 'disabled');
+        }
+    });
+</script>
 {% endblock %}

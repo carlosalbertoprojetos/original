@@ -34,7 +34,7 @@ class ConferenciaEstoqueForm(forms.ModelForm):
     class Meta:
         model = ConferenciaEstoque
         fields = "__all__"
-        exclude = ("produto", "usuario", "qtde")
+        exclude = ("materiaprima", "usuario", "qtde")
         widgets = {
             "conferencia": forms.TextInput(
                 attrs={"class": "form-control form-control-sm"}

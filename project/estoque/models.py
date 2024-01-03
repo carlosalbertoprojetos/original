@@ -2,13 +2,11 @@ from django.db import models
 from django.urls import reverse_lazy as _
 import datetime
 
-
-# from producao.models import ProdutoAcabado
+from produto.models import Peca
+from producao.models import ProdutoAcabado
 from materiaprima.models import MateriaPrima
 
-
-class ProdutoAcabado(models.Model):
-    pass
+# from produto.models import ProdutoManufaturado
 
 
 # Create your models here.
@@ -45,7 +43,7 @@ class EstoqueMateriaPrima(models.Model):
 
 
 class ConferenciaEstoque(models.Model):
-    produto = models.ForeignKey(EstoqueMateriaPrima, on_delete=models.RESTRICT)
+    materiaprima = models.ForeignKey(EstoqueMateriaPrima, on_delete=models.RESTRICT)
     usuario = models.CharField(max_length=255, null=True, blank=True)
     qtde = models.IntegerField()
     data = models.DateField(default=datetime.date.today)
@@ -53,7 +51,37 @@ class ConferenciaEstoque(models.Model):
     relatorio = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
-        return self.produto.materiaprima
+        return self.materiaprima.materiaprima.nome
+
+
+class EstoquePecaAcabada(models.Model):
+    peca = models.ForeignKey(Peca, on_delete=models.RESTRICT)
+    usuario = models.CharField(max_length=255, null=True, blank=True)
+    enderecoestoque = models.ForeignKey(
+        EnderecoEstoque, on_delete=models.RESTRICT, default=1
+    )
+    quantidade = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    criadoem = models.DateTimeField(auto_now_add=True)
+    atualizadoem = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = verbose_name_plural = "Estoque de Peças"
+        ordering = ["peca"]
+
+    def __str__(self):
+        return self.peca.nome
+
+
+class ConferenciaEstoquePeca(models.Model):
+    peca = models.ForeignKey(Peca, on_delete=models.RESTRICT)
+    usuario = models.CharField(max_length=255, null=True, blank=True)
+    quantidade = models.IntegerField()
+    data = models.DateField(default=datetime.date.today)
+    conferencia = models.IntegerField(default=0)
+    relatorio = models.CharField(max_length=255, null=True, blank=True)
+
+    def __str__(self):
+        return self.peca.nome
 
 
 {

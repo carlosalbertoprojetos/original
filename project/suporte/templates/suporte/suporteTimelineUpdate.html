@@ -1,0 +1,122 @@
+{% extends 'index.html' %}
+
+{% load static %}
+
+<title> {% block title %} TimeLine Suporte {% endblock title%} </title>
+
+{% block index %}
+
+<div class="container my-2">
+    {% for d in dados %}
+    <div class="card">
+        <div class="card-header d-lg-flex justify-content-between justify-content-lg-between align-items-center">
+            <h6 class="col-lg-4 text-center text-lg-start 
+        fs-5 fw-bold mb-0">Dados do Cliente</h6>
+            {% if concluido %}
+            <div class="col-lg-6">
+                <h6 class="text-end text13 mb-0 px-1">
+                    concluído em {{ dias|default:"0" }} dias,
+                    de {{ d.suporte.data|date:"d/m/Y"}} a {{ concluido|date:"d/m/Y"}}
+                </h6>
+            </div>
+            {% else %}
+            <div class="col-lg-6">
+                <h6 class="text-end text13 mb-0 px-1">
+                    Aberto há {{ dias|default:"0" }} dias,
+                    desde {{ d.suporte.data|date:"d/m/Y H:m" }}
+                </h6>
+            </div>
+            {% endif %}
+            <div id="status" class="col-12 col-lg-2 text-center bg-warning bg-opacity-25 rounded pb-1">
+                <label for="">Status da Timeline</label>
+                <h6 class="mb-0" id="statusSuporte">{{ d.status }}</h6>
+            </div>
+        </div>
+        <div class="card-body p-0 px-3">
+            <div class="form-floating">
+                <div class="cabecalho row">
+                    <div class="col-12 col-lg-6">
+                        <label class="text-muted" for="">Cliente</label>
+                        <h6>{{ d.suporte.venda.cliente }}</h6>
+                    </div>
+                    <div class="col-6 col-lg-2">
+                        <label class="text-muted" for="">Telefone</label>
+                        <h6>{{ d.suporte.venda.cliente.tel_principal }}</h6>
+                    </div>
+                    <div class="col-6 col-lg-2">
+                        <label class="text-muted" for="">Pedido da compra</label>
+                        <h6 class="ps-4">{{ d.suporte.venda.data_pedido|date:"d/m/Y" }}</h6>
+                    </div>
+                    <div class="col-6 col-lg-2 text-center m-auto">
+                        <h6 class="align-middle">Venda {{ d.suporte.venda }}</h6>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <label class="text-muted" for="">Rua</label>
+                        <h6>{{ d.suporte.venda.cliente.logradouro }}</h6>
+                    </div>
+                    <div class="col-2 col-lg-1">
+                        <label class="text-muted" for="">Número</label>
+                        <h6>{{ d.suporte.venda.cliente.numero }}</h6>
+                    </div>
+                    <div class="col-3 col-lg-1">
+                        <label class="text-muted" for="">Complemento</label>
+                        <h6>{{ d.suporte.venda.cliente.complemento }}</h6>
+                    </div>
+                    <div class="col-7 col-lg-2">
+                        <label class="text-muted" for="">Bairro</label>
+                        <h6>{{ d.suporte.venda.cliente.bairro }}</h6>
+                    </div>
+                    <div class="col-8 col-lg-3">
+                        <label class="text-muted" for="">Cidade/UF</label>
+                        <h6>{{ d.suporte.venda.cliente.cidade }}/{{ d.suporte.venda.cliente.estado }}</h6>
+                    </div>
+                    <div class="col-4 col-lg-1">
+                        <label class="text-muted" for="">Cep</label>
+                        <h6 style="font-size:14px;">{{ d.suporte.venda.cliente.cep }}</h6>
+                    </div>
+                    <div class="col-6 col-lg-2">
+                        <label class="text-muted" for="">Vendedor</label>
+                        <h6>{{ d.suporte.venda.vendedor }}</h6>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <label class="text-muted" for="">Transportadora</label>
+                        <h6>{{ d.suporte.venda.transportadora }}</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    <form action="." method="post">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-md-12 my-2">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+                {{ form }}
+                {{ form.media }}
+            </div>
+        </div>
+        <div class="d-flex float-end mb-5">
+            <div class="col-3 d-flex gap-2 align-middle">
+                <div class="form-group form-button d-flex gap-2">
+                    <input type="submit" class="btn btn-primary btn-sm" value="Salvar" id="id_salvar" />
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+{% endblock %}
+
+{% block script %}
+<script>
+    var a = document.getElementById("statusSuporte");
+    var b = document.getElementById("status");
+    if (a.innerHTML == 'Concluído') {
+        b.setAttribute('class', "col-12 col-lg-2 text-center bg-success bg-opacity-25 rounded");
+    }
+</script>
+
+{% endblock %}

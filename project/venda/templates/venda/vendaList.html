@@ -12,9 +12,8 @@
         <div class="card-header">
             <label class="fs-5 fw-bold">Vendas</label>
         </div>
-        <div class="p-3">
-            <table class="table table-sm" id="id_table">
-                <!-- <caption>Venda</caption> -->
+        <div class="table-responsive p-3">
+            <table class="table table-sm" id="tableID">
                 <div class="col-12 d-flex justify-content-end">
                     <a class="btnMaster px-2" href="{% url 'venda:vendaCreate' %}">Novo Pedido de Venda
                         <i class="fa fa-plus-square" aria-hidden="true"></i>
@@ -22,61 +21,19 @@
                 </div>
                 <thead>
                     <tr>
-                        <th>Cód.</th>
+                        <th>Cód</th>
                         <th>Cliente</th>
-                        <th>Pedido</th>
-                        <th>Produção</th>
-                        <th>Transp.</th>
+                        <th>Data</th>
+                        <th>Nota Fiscal</th>
                         <th>Vendedor</th>
-                        <th>% Desc</th>
                         <th>Venda</th>
                         <th>Status</th>
                         <th>Condição</th>
-                        <th>parcelas</th>
                         <th class="px-0">Clonar</th>
                         <th class="px-3">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for object in object_list %}
-                    <tr>
-                        <td align="center" class="px-0 pe-3">{{ object.id }}</td>
-                        <td>{{ object.cliente }}</td>
-                        <td>{{ object.data_pedido|date:"d/m/Y" }}</td>
-                        <td>{{ object.data_entrega|date:"d/m/Y" }}</td>
-                        <td>{{ object.transportadora }}</td>
-                        <td>{{ object.vendedor }}</td>
-                        <td align="center">{{ object.porcentagem_desconto }}</td>
-                        <td>R$ {{ object.subtotal }}</td>
-                        <td align="center" class="px-0 pe-3">{{ object.status_venda.title }}</td>
-                        <td>{{ object.condicaopgto }}</td>
-                        <td align="center" class="px-0 pe-3">{{ object.parcelas }}</td>
-                        <td align="center">
-                            <abbr title="Clonar documento de venda">
-                                <a href="{% url 'venda:vendaClone' object.pk %}">
-                                    <i class="fa fa-files-o" aria-hidden="true"></i>
-                                </a>
-                            </abbr>
-                        </td>
-                        <td align="center">
-                            <abbr title="Orçamento em PDF">
-                                <a href="{% url 'venda:orcamento' object.pk %}" target="_blank">
-                                    <i class="fa fa-file-text-o"></i>
-                                </a>
-                            </abbr>
-                            <abbr title="Editar">
-                                <a class="px-1" href="{{ object.venda_gau_edit }}">
-                                    <i class=" fa fa-edit"></i>
-                                </a>
-                            </abbr>
-                            <abbr title="Excluir">
-                                <a href="{{ object.venda_gau_delete }}">
-                                    <i class="fa fa-close no"></i>
-                                </a>
-                            </abbr>
-                        </td>
-                    </tr>
-                    {% endfor %}
                 </tbody>
             </table>
         </div>
@@ -85,9 +42,16 @@
 {% endblock %}
 
 {% block script %}
+
+<script src="/static/js/datatables.min.js"></script>
+<script src="/static/js/jqueryDataTable.js"></script>
+<script src="https://cdn.datatables.net/plug-ins/1.13.7/sorting/date-euro.js"></script>
 <script>
     $(document).ready(function () {
-        $('#id_table').DataTable({
+        $('#tableID').DataTable({
+            "columnDefs": [{ type: 'date-euro', 'targets': [2, 3] }],
+            "order": [[2, "desc"]],
+            "pageLength": 25,
             "language": {
                 "sProcessing": "Proccesando...",
                 "sLengthMenu": "Mostrar _MENU_ registros",
@@ -111,10 +75,22 @@
                     "sSortAscending": ": Ativar para ordenar a coluna de maneira ascendente",
                     "sSortDescending": ": Ativar para ordenar a coluna de maneira descendente"
                 }
-            }
-        }
+            },
+            ajax: 'ajax/',
+            columns: [
+                { "data": "cod" },
+                { "data": "cliente" },
+                { "data": "pedido" },
+                { "data": "notafiscal" },
+                { "data": "vendedor" },
+                { "data": "subtotal" },
+                { "data": "status" },
+                { "data": "condicao" },
+                { "data": "clonar" },
+                { "data": "acoes" },
+            ]
+        });
+    });
 
-        );
-    }); 
 </script>
 {% endblock %}

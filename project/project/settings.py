@@ -1,6 +1,11 @@
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 
+load_dotenv()
+# import pdb
+
+# pdb.set_trace()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -14,7 +19,8 @@ SECRET_KEY = "django-insecure-#_m3ld$+yr7kp_&h*idcmhw)*jhtyong1&e#8*apgplpod4)tu
 DEBUG = True
 
 ALLOWED_HOSTS = []
-# ALLOWED_HOSTS = ["original.crm.com.br"]
+ALLOWED_HOSTS = [os.environ.get("ALLOWED_HOSTS")]
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -37,6 +43,7 @@ INSTALLED_APPS = [
     "widget_tweaks",
     "django.contrib.humanize",
     "import_export",
+    "django_cpf_cnpj",
     # apps
     "cliente",
     "compra",
@@ -54,6 +61,9 @@ INSTALLED_APPS = [
     "produto",
     "venda",
     "transportadora",
+    "empresa",
+    "mercadolivre",
+    "suporte",
 ]
 
 MIDDLEWARE = [
@@ -84,6 +94,7 @@ TEMPLATES = [
     },
 ]
 
+# WSGI_APPLICATION = "project.wsgi.application"
 WSGI_APPLICATION = "project.wsgi.application"
 
 
@@ -93,10 +104,10 @@ WSGI_APPLICATION = "project.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "original",
-        "USER": "postgres",
-        "PASSWORD": "admin",
-        "HOST": "localhost",
+        "NAME": os.environ.get("DJANGO_DB_NAME"),
+        "USER": os.environ.get("DJANGO_DB_USERNAME"),
+        "PASSWORD": os.environ.get("DJANGO_DB_PASSWORD"),
+        "HOST": os.environ.get("DJANGO_DB_HOST"),
         "PORT": "5432",
     }
 }
@@ -156,6 +167,7 @@ USE_L10N = True
 
 USE_TZ = True
 
+THOUSAND_SEPARATOR = (".",)
 DECIMAL_SEPARATOR = ","
 USE_THOUSAND_SEPARATOR = True
 

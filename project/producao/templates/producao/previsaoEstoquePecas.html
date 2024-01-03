@@ -1,0 +1,141 @@
+{% extends 'index.html' %}
+
+{% load static %}
+
+<title> {% block title %} Previsão Estoque de Peças {% endblock title%} </title>
+
+{% block index %}
+
+<head>
+    <script src="{% static 'js/datatables.min.js' %}"></script>
+    <script src="{% static 'js/jqueryDataTable.js' %}"></script>
+</head>
+<div class="container px-2">
+    <div class="d-flex align-items-center gap-5 px-1 mb-2">
+        <h6 class="fw-bold m-0">PREVISÃO ESTOQUE DE PEÇAS</h6>
+        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            Quantidade
+        </button>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Insira a Quantidade para cada Peça</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="POST" enctype="multipart/form-data" class="card-body pt-0">
+                    {% csrf_token %}
+                    {{ formset.management_data }}
+                    <div class="row justify-content-center pb-0 m-1">
+                        {{ formset }}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary btn-sm">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="overflow-auto card py-2 px-3">
+        <div class="d-flex gap-2 p-2 ps-0">
+            <!-- listagem vertical -->
+            <div class="col-6 col-lg-3">
+                <p class="m-0">Peças</p>
+                <h6 class="m-0 py-1 text-end">Dias</h6>
+                <h6 class="m-0 py-1 text-end">Produção Geral</h6>
+                {% for pkey, pvalue in nome_materia_prima.items %}
+                <hr class="m-1">
+                <h6 class="text14 fs-lg-6 m-0 text-end">{{ pkey }}</h6>
+                {{ prod_diaria.pkey }}
+                {% for key, value in pvalue.items %}
+                <h6 class="text-muted m-0 py-1 text12 text-end">
+                    {{ key }}
+                    ({{ value|floatformat:"0"}})
+                </h6>
+                {% endfor %}
+                {% endfor %}
+                <hr class="m-1">
+            </div>
+            <!-- listagem horizontal -->
+            <div class="d-flex flex-column w-100" style="min-width:992px;">
+                <div class="d-flex gap-3 justify-content-around bg-secondary text-white rounded">
+                    {% for m in meses %}
+                    <h6 class="fs-6 m-0">{{ m }}</h6>
+                    <br>
+                    {% endfor %}
+                </div>
+                <div class=" d-flex justify-content-around m-0 py-1">
+                    {% for d in dias %}
+                    <h6 class="row justify-content-center align-items-center text-muted w-100 fs-6 m-0 pt-1">
+                        {{ d }}
+                    </h6>
+                    {% endfor %}
+                </div>
+                <div class="d-flex justify-content-around m-0 pb-1">
+                    {% for p in tot_diaria %}
+                    <h6 class="pro-diaria row justify-content-center align-items-center text-muted w-100 fs-6 m-0">
+                        {{ p }}
+                    </h6>
+                    {% endfor %}
+                </div>
+                <hr class="m-1">
+                {% for pkey, pvalue in nome_materia_prima.items %}
+                {% for pdk, pdv in prod_diaria.items %}
+                <div class="mp d-flex justify-content-around text-muted" id="{{ pkey }}">
+                    {% if pdk == pkey %}
+                    {% for pd in pdv %}
+                    <h6 class="mat-prima row justify-content-center align-items-center text14 fs-lg-6 w-100 m-0"
+                        id="{{ pkey }}/{{ forloop.counter }}/{{ pd }}/">
+                        {{ pd }}
+                    </h6>
+                    {% endfor %}
+                    {% endif %}
+                </div>
+                {% endfor %}
+                {% for key, value in pvalue.items %}
+                <div class="mp d-flex justify-content-around text-muted" id="{{ pkey }}">
+                    {% for mpkey, mpvalue in materia_prima.items %}
+                    {% if key == mpkey %}
+                    {% for m in mpvalue %}
+                    <h6 class="mat-prima row justify-content-center align-items-center text12 w-100 m-0 py-1"
+                        id="{{ pkey }}/{{ mpkey }}/{{ forloop.counter }}/{{ m }}">{{ m }}
+                    </h6>
+                    {% endfor %}
+                    {% endif %}
+                    {% endfor %}
+                </div>
+                {% endfor %}
+                <hr class="m-1">
+                {% endfor %}
+            </div>
+            <br>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+    function range(start, end) {
+        const ans = [];
+        for (let i = start; i <= end; i++) {
+            ans.push(i);
+        }
+        return ans;
+    }
+
+    $('.mp .mat-prima').each(function () {
+        var id = $(this).attr('id');
+        var vlr = document.getElementById(id).innerText;
+        if (vlr < 0) {
+            document.getElementById(id).style.fontWeight = 'bolder';
+            document.getElementById(id).style.color = 'red';
+        }
+    });
+
+</script>
+{% endblock %}

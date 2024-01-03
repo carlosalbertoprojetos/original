@@ -15,6 +15,7 @@ urlpatterns = [
     path("select2/", include("django_select2.urls")),
     path("compra/", include("compra.urls"), name="compra"),
     path("venda/", include("venda.urls"), name="venda"),
+    path("mercadolivre/", include("mercadolivre.urls"), name="mercadolivre"),
     path("cliente/", include("cliente.urls"), name="cliente"),
     path("notafiscal/", include("notafiscal.urls"), name="notafiscal"),
     path("estoque/", include("estoque.urls"), name="estoque"),
@@ -27,6 +28,8 @@ urlpatterns = [
     path("expedicao/", include("expedicao.urls"), name="expedicao"),
     path("fornecedor/", include("fornecedor.urls"), name="fornecedor"),
     path("produto/", include("produto.urls"), name="produto"),
+    path("garantia/", include("garantia.urls"), name="garantia"),
+    path("suporte/", include("suporte.urls"), name="suporte"),
 ]
 
 

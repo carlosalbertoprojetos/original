@@ -11,7 +11,6 @@
 </head>
 
 <script>
-
     function cria_produto(id_produto) {
         $.ajax({
             url: "{% url 'producao:criar_produto_ajax' %}",
@@ -23,7 +22,6 @@
         });
     }
     function change_status(id, status) {
-
         $.ajax({
             url: "{% url 'producao:edit_status_ajax' %}",
             data: { 'id': id, 'status': status },
@@ -32,7 +30,6 @@
                 location.reload();
             }
         });
-
     }
 </script>
 

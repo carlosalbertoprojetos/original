@@ -76,7 +76,7 @@
                         <td>{{venda.data_pedido}}</td>
                         <td>{{venda.data_entrega}}</td>
                         <td>{{venda.status_venda.title}}</td>
-                        {%for produto in venda.get_lista_produtos%}
+                        {%for produto in venda.get_lista_produtos_to_iniciar_producao%}
                         <th>{{produto.qtde}}</th>
                         {%endfor%}                                
                         <td>{{venda.qtde_produtos}}</td>

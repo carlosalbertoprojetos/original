@@ -1,0 +1,274 @@
+{% extends 'index.html' %}
+{% load static %}
+
+<title> {% block title %} Detalhes da Venda {% endblock title%} </title>
+
+
+{% block index %}
+<form method="POST" action="">
+    {% csrf_token %}
+    <style>
+        .external-event {
+            box-shadow: 0 0 1px rgb(0 0 0 / 13%), 0 1px 3px rgb(0 0 0 / 20%);
+            border-radius: .25rem;
+            cursor: pointer;
+            font-weight: 700;
+            margin-bottom: 4px;
+            padding: 5px 10px;
+        }
+    </style>
+    <main class="container my-4">
+
+        {% if erros %}
+        <div id="div_mensagem_boleto" class="alert alert-danger" role="alert">
+            {% for erro in erros %}
+            <label id="mensagem_boleto">{{ erro }}</label><br />
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="invoice bg-white rounded-3">
+            <div class="row d-flex justify-content-between">
+                <div class="col-5 col-md-5 mb-3">
+                    <div class="mt-4 p-0 float-right">
+                        <h6 class="m-0 ps-2 fs-5 text-dark text-uppercase">Pedido: {{venda.id}} - Vendedor:
+                            {{venda.vendedor}}</h6>
+                        {%if venda.codigo_mercadolivre%}{{venda.detalhes}}{%endif%}
+                    </div>
+                    <br />
+                    <a class="logo d-flex text-decoration-none" href="#">
+                        <h6 class="m-0 ps-2 fs-5 text-dark text-uppercase">{{empresa.nome}}</h6>
+                    </a>
+                    <div class="mt-4 p-0">
+                        <p class="m-0">{{empresa.logradouro}} {{empresa.numero}}</p>
+                        <p class="m-0">{{empresa.bairro}} {{empresa.cidade}} {{empresa.cep}}</p>
+                        <p class="m-0">{{empresa.tel_principal}}</p>
+                    </div>
+                </div>
+                <div class="col-7 col-md-5 mb-5" align="right">
+                    <div class="sticky-top mb-5">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">COTAÇÃO TRANSPORTADORA:</h4>
+                            </div>
+                            <div class="card-body">
+                                <div id="external-events">
+                                    <div style="position: relative;">Transportadora: <br /><select
+                                            name="transportadora">{%for transportadora in transportadoras%}<option
+                                                {%ifequal transportadora.id venda.transportadora.id%}
+                                                selected="selected" {%endifequal%} value="{{transportadora.id}}">
+                                                {{transportadora.nome}}</option>{%endfor%}</select></div>
+                                    <div style="position: relative;">Numero Cotação: <br /><input type="text"
+                                            name="numero-cotacao"
+                                            value="{%if venda.cotacao_transportadora%}{{venda.cotacao_transportadora}}{%endif%}">
+                                    </div>
+                                    <div style="position: relative;"> Valor Frete: <br /><input type="text"
+                                            name="valor-frete"
+                                            value="{%if venda.valor_frete%}{{venda.valor_frete}}{%endif%}"></div>
+                                    <div style="position: relative;"><br /><input type="submit"
+                                            name="enviar_cotacao_tranportadora" value="Salvar"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {%if erros_NF%}
+            <div id="div_mensagem" class="alert alert-danger" role="alert">
+                Para emissão de NF falta:<br />
+                {%for erro in erros_NF%}
+                <label id="mensagem">{{erro}}</label><br />
+                {%endfor%}
+            </div>
+            {%endif%}
+            <hr class="my-0">
+            <div class="row d-flex justify-content-between py-4">
+                <div class="col-6 col-md-6 py-2">
+                    <p class="fw-bold mb-3">Destinatário:</p>
+                    <div style="position: relative;">{%if cliente.cpf%}Nome:{%endif%} {%if cliente.cnpj%} Razão Social:
+                        {%endif%} <input type="text" class="form-control" name="nome" value="{{cliente.nome}}" /></div>
+                    <div style="position: relative;">Nome Fantasia: <input type="text" class="form-control"
+                            name="nome_fantasia" value="{{cliente.nome_fantasia}}" /></div>
+                    <div style="position: relative;">{%if cliente.cpf%}CPF: <input type="text" class="form-control"
+                            name="cpf" value="{{cliente.cpf}}" />{%endif%}{%if cliente.cnpj%}CNPJ: <input type="text"
+                            class="form-control" name="cnpj" value="{{cliente.cnpj}}" /> {%endif%}</div>
+                    <div style="position: relative;">Insc Estadual: <input type="text" class="form-control"
+                            name="insc_estadual" value="{{cliente.insc_estadual}}" /></div>
+                    <div style="position: relative;">Rua: <input type="text" class="form-control" name="logradouro"
+                            value="{{cliente.logradouro}}" /></div>
+                    <div style="position: relative;">Numero: <input type="text" class="form-control" name="numero"
+                            value="{{cliente.numero}}" /></div>
+                    <div style="position: relative;">Complemento: <input type="text" maxlength="60" class="form-control"
+                            name="complemento" value="{%if cliente.complemento%}{{cliente.complemento}}{%endif%}" />
+                    </div>
+                    <div style="position: relative;">Bairro: <input type="text" class="form-control" name="bairro"
+                            value="{{cliente.bairro}}" /></div>
+                    <div style="position: relative;">Cidade: <input type="text" class="form-control" name="cidade"
+                            value="{{cliente.cidade}}" /></div>
+                    <div style="position: relative;">Estado: <input type="text" class="form-control" name="estado"
+                            value="{{cliente.estado}}" /></div>
+                    <div style="position: relative;">Cep: <input type="text" class="form-control" name="cep"
+                            value="{{cliente.cep}}" /></div>
+                    <div style="position: relative;">Telefone: <input type="text" class="form-control"
+                            name="tel_principal" value="{{cliente.tel_principal}}" /></div>
+                    <div style="position: relative;">Quem recebe: <input type="text" class="form-control"
+                            name="quemrecebe_mercadolivre"
+                            value="{%if venda.quemrecebe_mercadolivre%}{{venda.quemrecebe_mercadolivre}}{%endif%}" />
+                    </div>
+                    <div style="position: relative;">Telefone quem recebe: <input type="text" class="form-control"
+                            name="telefonequemrecebe_mercadolivre"
+                            value="{%if venda.telefonequemrecebe_mercadolivre%}{{venda.telefonequemrecebe_mercadolivre}}{%endif%}" />
+                    </div>
+                    <div style="position: relative;">Urgente? <select class="form-control" name="urgente">
+                            <option {%if venda.urgente%} selected="selected" {%endif%} value="sim">Sim</option>
+                            <option {%if not venda.urgente%} selected="selected" {%endif%} value="nao">Não</option>
+                        </select></div>
+                    <div style="position: relative;"><br /><input type="submit" class="btn btn-primary" name="salvar"
+                            value="Salvar"></div>
+                </div>
+                <div class="col-6 col-md-6" py-2>
+                    <p class="bill d-flex fw-bold mb-6"></p>
+                    <div class="d-flex justify-content-between">
+                        <!--p class="">{%if cliente.contribuinte_inss%}Contribuinte INSS: {{cliente.get_contribuinte_inss_display }}{%endif%}</p-->
+                    </div>
+                </div>
+            </div>
+
+            <hr class="m-0">
+            <table class="table tableExterno mb-0">
+                <thead>
+                    <tr>
+                        <th>Descrição</th>
+                        <th>Quant</th>
+                        <th>Voltagem</th>
+                        <th>Torneira</th>
+                        <th>Adesivado</th>
+                        <th>Valor unit</th>
+                        <th>Valor total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {%for produto in produtos%}
+                    <tr>
+                        <td>{{produto.nome}}</td>
+                        <td>{{produto.quantidade}}</td>
+                        <td>{{produto.voltagem}}</td>
+                        <td>{{produto.torneira}}</td>
+                        <td>{{produto.adesivado}}</td>
+                        <td>R$ {{produto.preco}}</td>
+                        <td>R$ {{produto.subtotal}}</td>
+
+                    </tr>
+                    {%endfor%}
+                </tbody>
+            </table>
+
+            <div class="row d-flex mx-1 px-3">
+                <div class="col-12 col-md-6 d-none d-md-block">
+                    <!--div class="d-flex">
+                    <p class="fw-bold pe-2">Salesperson:</p>
+                    <p class="">Tommy Shelby</p>
+                </div>
+                <p class="">Thanks for your
+                    business</p-->
+                </div>
+                <div class="col-12 col-md-6 p-0">
+                    <div class="d-flex">
+                        <p class="col-6 m-0">Valor Total da Nota:</p>
+                        <p class="col-6 fw-bold m-0" align="right">{{vendadadostratado.valortotal}}</p>
+                    </div>
+
+                </div>
+                <!--div class="col-12 col-md-6 d-flex flex-column d-block d-sm-none mt-2 p-0">
+                <div class="d-flex">
+                    <p class="fw-bold pe-2">Salesperson:</p>
+                    <p class="">Tommy Shelby</p>
+                </div>
+                <p class="">Thanks for your
+                    business</p>
+            </div-->
+            </div>
+
+            <hr class="my-1">
+            <div class="row d-flex mx-1 px-3">
+                <div class="col-4 col-md-4 p-0">
+                    <div class="sticky-top mb-3">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">MUDAR AÇÃO:</h4>
+                            </div>
+                            <div class="card-body">
+
+                                <div id="external-events">
+                                    <div onclick="javascript:muda_status('Combinar Entrega')"
+                                        class="external-event bg-danger ui-draggable ui-draggable-handle"
+                                        style="position: relative;">Combinar Entrega</div>
+                                    <div onclick="javascript:muda_status('Conferir dados')"
+                                        class="external-event bg-danger ui-draggable ui-draggable-handle"
+                                        style="position: relative;">Conferir Dados</div>
+                                    <div onclick="javascript:muda_status('Parado')"
+                                        class="external-event bg-secondary ui-draggable ui-draggable-handle"
+                                        style="position: relative;">Parado</div>
+                                    <div onclick="javascript:muda_status('Aguardando Concluir Produtos')"
+                                        class="external-event bg-danger ui-draggable ui-draggable-handle"
+                                        style="position: relative;">Aguardando Concluir Produtos</div>
+                                    <div onclick="javascript:muda_status('Fazer Cotação')"
+                                        class="external-event bg-info ui-draggable ui-draggable-handle"
+                                        style="position: relative;">Fazer Cotação</div>
+                                    <div onclick="javascript:muda_status('Agendar Transportadora')"
+                                        class="external-event bg-info ui-draggable ui-draggable-handle"
+                                        style="position: relative;">Agendar Transportadora</div>
+                                    <div onclick="javascript:muda_status('Informar cliente p/ buscar')"
+                                        class="external-event bg-info ui-draggable ui-draggable-handle"
+                                        style="position: relative;">Informar cliente p/ buscar</div>
+                                    <div onclick="javascript:muda_status('Aguardando transportadora')"
+                                        class="external-event bg-warning ui-draggable ui-draggable-handle"
+                                        style="position: relative;">Aguardando transportadora</div>
+                                    <div onclick="javascript:muda_status('Aguardando Cliente')"
+                                        class="external-event bg-warning ui-draggable ui-draggable-handle"
+                                        style="position: relative;">Aguardando Cliente</div>
+                                    <div onclick="javascript:muda_status('Emitir Boleto')"
+                                        class="external-event bg-danger ui-draggable ui-draggable-handle"
+                                        style="position: relative;">Emitir Boleto</div>
+                                    <div onclick="javascript:muda_status('Enviado')"
+                                        class="external-event bg-success ui-draggable ui-draggable-handle"
+                                        style="position: relative;">Enviado</div>
+                                    <div onclick="javascript:muda_status('Aguardando Pagamento')"
+                                        class="external-event bg-danger  ui-draggable ui-draggable-handle"
+                                        style="position: relative;">Aguardando Pagamento</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-2 col-md-2 p-0">
+                </div>
+                <div class="col-4 col-md-4 p-0">
+                    <div class="sticky-top mb-3">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">desde {{venda.data_status_expedicao}}</h4>
+                            </div>
+                            <div class="card-body">
+
+                                <div id="external-events">
+                                    <div class=" {{venda.status_expedicao_backgroundcolor}}"
+                                        style="position: relative;">{{venda.status_expedicao}}</div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                {% include "venda/includes/dadosnf.html" %}
+            </div>
+
+    </main>
+</form>
+<script type="text/javascript">
+    function muda_status(status) {
+        window.location.href = '?status_expedicao=' + status;
+
+    }
+</script>
+{% endblock %}

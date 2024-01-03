@@ -1,0 +1,45 @@
+{% extends 'index.html' %}
+
+{% load static %}
+
+<title> {% block title %} Contas do Mercado Livre {% endblock title%} </title>
+
+
+{% block index %}
+
+<div class="container">
+    <div class="filters card border-1">
+        <div class="card-header">
+            <label class="fs-5 fw-bold">Status da contas - Caso esteja desconectado, Loguei e volte nessa pagina</label>
+        </div>
+        <div class="p-3">
+            <table class="table table-sm">
+                </div>
+                <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th>Status</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for object in contas %}
+                    <tr>
+                        <td align="center" class="px-0 pe-3">{{ object.email }}</td>
+                        <td>
+                            {{object.status}}
+                        </td>
+                        <td>
+                            {% ifequal object.status "Necessário logar nesse email." %}
+                            <a target="_blank" href="{% url 'mercadolivre:mercadolivre' %}"/>Efetuar Login</a>
+                            {%endifequal%}
+                        </td> 
+                        <td></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

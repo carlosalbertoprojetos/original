@@ -7,7 +7,7 @@
 {% block index %}
 
 <div class="container">
-    <form method="post" action="" class="">
+    <form method="post" action="" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.non_field_errors }}
         <div class="card">
@@ -64,12 +64,12 @@
                         {{ parc.datavencimento.errors }}
                         {{ parc.datavencimento }}
                     </div>
-                    <div class="col-12 col-lg-2">
+                    <div class="col-6 col-lg-2">
                         {{ parc.formapgto.label_tag }}
                         {{ parc.formapgto.errors }}
                         {{ parc.formapgto }}
                     </div>
-                    {%if 'financeiro.change_contapagar' in perms %}
+                    {% if 'financeiro.change_contapagar' in perms %}
                     <div class="col-6 col-lg-2">
                         {{ parc.datapagamento.label_tag }}
                         {{ parc.datapagamento.errors }}
@@ -80,11 +80,26 @@
                         {{ parc.detalhes.errors }}
                         {{ parc.detalhes }}
                     </div>
+                    <div class="col-12 col-lg-6">
+                        {{ parc.boleto.label_tag }}
+                        {{ parc.boleto.errors }}
+                        {{ parc.boleto }}
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        {{ parc.comprovante.label_tag }}
+                        {{ parc.comprovante.errors }}
+                        {{ parc.comprovante }}
+                    </div>
                     {% else %}
-                    <div class="col-12 col-lg-5">
+                    <div class="col-12 col-lg-4">
                         {{ parc.detalhes.label_tag }}
                         {{ parc.detalhes.errors }}
                         {{ parc.detalhes }}
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        {{ parc.boleto.label_tag }}
+                        {{ parc.boleto.errors }}
+                        {{ parc.boleto }}
                     </div>
                     {% endif %}
                     <!-- <div class="col-6 col-lg-1 d-flex align-items-center">
@@ -92,8 +107,8 @@
                         {{ parc.DELETE}}
                     </div> -->
                 </div>
-                <hr class="d-block d-lg-none mt-2 mb-0">
                 {% endfor %}
+                <hr class="mt-2 mb-0">
             </div>
             <div id='empty-parcela' class="hidden">
                 {{ parcela.empty_form.id }}
@@ -113,7 +128,7 @@
                     {{ parcela.empty_form.formapgto.errors }}
                     {{ parcela.empty_form.formapgto }}
                 </div>
-                {% if request.user.is_superuser %}
+                {% if 'financeiro.change_contapagar' in perms %}
                 <div class="col-6 col-lg-2">
                     {{ parcela.empty_form.datapagamento.label_tag }}
                     {{ parcela.empty_form.datapagamento.errors }}
@@ -124,11 +139,26 @@
                     {{ parcela.empty_form.detalhes.errors }}
                     {{ parcela.empty_form.detalhes }}
                 </div>
+                <div class="col-12 col-lg-6">
+                    {{ parcela.empty_form.boleto.label_tag }}
+                    {{ parcela.empty_form.boleto.errors }}
+                    {{ parcela.empty_form.boleto }}
+                </div>
+                <div class="col-12 col-lg-6">
+                    {{ parcela.empty_form.comprovante.label_tag }}
+                    {{ parcela.empty_form.comprovante.errors }}
+                    {{ parcela.empty_form.comprovante }}
+                </div>
                 {% else %}
-                <div class="col-12 col-lg-5">
+                <div class="col-12 col-lg-6">
                     {{ parcela.empty_form.detalhes.label_tag }}
                     {{ parcela.empty_form.detalhes.errors }}
                     {{ parcela.empty_form.detalhes }}
+                </div>
+                <div class="col-12 col-lg-6">
+                    {{ parcela.empty_form.boleto.label_tag }}
+                    {{ parcela.empty_form.boleto.errors }}
+                    {{ parcela.empty_form.boleto }}
                 </div>
                 {% endif %}
                 <!-- <div class="col-6 col-lg-1 d-flex align-items-center">
@@ -154,9 +184,12 @@
     </form>
 </div>
 
+{% endblock %}
 
+{% block script %}
+<script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+<script src="{% static 'js/select2.min.js' %}"></script>
 <script>
-
     // select2 fornecedor
     $(document).ready(function () {
         $('#id_fornecedor').select2();
@@ -199,10 +232,4 @@
     }
 
 </script>
-{% endblock %}
-
-
-{% block script %}
-<script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
-<script src="{% static 'js/select2.min.js' %}"></script>
 {% endblock %}

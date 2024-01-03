@@ -17,6 +17,7 @@ class Compra(models.Model):
     status_compra = models.CharField(
         choices=ESCOLHAS_STATUSCOMPRAS, null=False, blank=False, max_length=50
     )
+    pedido = models.FileField(upload_to="compra/pedido/", null=True, blank=True)
 
     class Meta:
         verbose_name = "Compra"

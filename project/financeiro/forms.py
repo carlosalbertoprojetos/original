@@ -1,6 +1,9 @@
+import datetime
 from django import forms
 
 from .models import ContaPagar, ContaReceber, Comissao
+
+today = datetime.date.today()
 
 
 class ContaPagarForm(forms.ModelForm):
@@ -11,6 +14,8 @@ class ContaPagarForm(forms.ModelForm):
             "datadocumento",
             "datavencimento",
             "datapagamento",
+            "boleto",
+            "comprovante",
             "formapgto",
             "detalhes",
         )
@@ -33,6 +38,16 @@ class ContaPagarForm(forms.ModelForm):
                 attrs={"class": "form-control form-control-sm"}
             ),
         }
+
+    def __init__(self, *args, **kwargs):
+        super(ContaPagarForm, self).__init__(*args, **kwargs)
+        self.fields["datavencimento"].label = "Data do Vencimento"
+        self.fields["datapagamento"].label = "Data do Pagamento"
+        self.fields["formapgto"].label = "Forma de Pagamento"
+        self.fields["boleto"].widget.attrs["class"] = "form-control form-control-sm"
+        self.fields["comprovante"].widget.attrs[
+            "class"
+        ] = "form-control form-control-sm"
 
 
 class ContaReceberForm(forms.ModelForm):
@@ -44,7 +59,8 @@ class ContaReceberForm(forms.ModelForm):
             "datadocumento",
             "datavencimento",
             "datapagamento",
-            # "imagem",
+            "boleto",
+            "comprovante",
             "formapgto",
             "detalhes",
         )
@@ -71,7 +87,7 @@ class ContaReceberForm(forms.ModelForm):
                 attrs={
                     "class": "form-control form-control-sm",
                     "type": "date",
-                    "onchange": "dataPagamento(this.id)",
+                    "onchange": "dataPagamento()",
                 }
             ),
             "formapgto": forms.Select(attrs={"class": "form-control form-control-sm"}),
@@ -82,9 +98,13 @@ class ContaReceberForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ContaReceberForm, self).__init__(*args, **kwargs)
+        self.fields["datavencimento"].label = "Data do Vencimento"
         self.fields["datapagamento"].label = "Data do Pagamento"
         self.fields["formapgto"].label = "Forma de Pagamento"
-        # self.fields["imagem"].widget.attrs["class"] = "form-control form-control-sm"
+        self.fields["boleto"].widget.attrs["class"] = "form-control form-control-sm"
+        self.fields["comprovante"].widget.attrs[
+            "class"
+        ] = "form-control form-control-sm"
 
 
 class VendaContaReceberForm(forms.ModelForm):
@@ -96,8 +116,10 @@ class VendaContaReceberForm(forms.ModelForm):
             "datadocumento",
             "datavencimento",
             "datapagamento",
-            "imagem",
+            "boleto",
+            "comprovante",
             "formapgto",
+            "dados_boleto",
             "detalhes",
         )
         widgets = {
@@ -108,24 +130,31 @@ class VendaContaReceberForm(forms.ModelForm):
                 }
             ),
             "valor": forms.NumberInput(
-                attrs={"class": "form-control form-control-sm", "readonly": "readonly"}
+                attrs={
+                    "class": "form-control form-control-sm",
+                    "onchange": "recalcularParcelas()",
+                }
             ),
             "datadocumento": forms.HiddenInput(),
             "datavencimento": forms.NumberInput(
                 attrs={
                     "class": "form-control form-control-sm",
                     "type": "date",
-                    "readonly": "readonly",
+                }
+            ),
+            "formapgto": forms.Select(
+                attrs={
+                    "class": "form-control form-control-sm",
+                    "onchange": "boleto()",
                 }
             ),
             "datapagamento": forms.NumberInput(
                 attrs={
                     "class": "form-control form-control-sm",
                     "type": "date",
-                    "onchange": "dataPagamento(this.id)",
+                    "onchange": "dataPagamento('input', this)",
                 }
             ),
-            "formapgto": forms.Select(attrs={"class": "form-control form-control-sm"}),
             "detalhes": forms.TextInput(
                 attrs={"class": "form-control form-control-sm"}
             ),
@@ -133,9 +162,13 @@ class VendaContaReceberForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(VendaContaReceberForm, self).__init__(*args, **kwargs)
+        self.fields["datavencimento"].label = "Data do Vencimento"
         self.fields["datapagamento"].label = "Data do Pagamento"
         self.fields["formapgto"].label = "Forma de Pagamento"
-        self.fields["imagem"].widget.attrs["class"] = "form-control form-control-sm"
+        self.fields["boleto"].widget.attrs["class"] = "form-control form-control-sm"
+        self.fields["comprovante"].widget.attrs[
+            "class"
+        ] = "form-control form-control-sm"
 
 
 class ComissaoForm(forms.ModelForm):

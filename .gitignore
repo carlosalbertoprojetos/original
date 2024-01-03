@@ -4,6 +4,7 @@
 #     https://www.atlassian.com/git/tutorials/saving-changes/gitignore
 
 # Node artifact files
+media/
 node_modules/
 dist/
 project/settings.py
@@ -48,3 +49,5 @@ Thumbs.db
 *.mov
 *.wmv
 db.sqlite3
+
+*.env

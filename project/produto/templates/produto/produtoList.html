@@ -9,42 +9,54 @@
 
 <div class="container">
     <div class="filters card border-1">
-        <div class="card-header">
-            <label class="fs-5 fw-bold">PRODUTOS</label>
-        </div>
+        <row>
+            <div class="card-header d-flex justify-content-between">
+                <label class="fs-5 fw-bold">PRODUTOS</label>
+                <a type="button" class="btn btn-primary btn-sm" href="{% url 'produto:produtoCustoList' %}">Custos</a>
+            </div>
+        </row>
         <div class="p-3">
             <table class="table table-sm" id="id_table">
+                <div class="col-12 d-flex justify-content-end">
+                    <a class="btnMaster px-2" href="{% url 'produto:produtoCreate' %}">Novo Produto
+                        <i class="fa fa-plus-square" aria-hidden="true"></i>
+                    </a>
+                </div>
                 <thead>
                     <tr>
                         <th>Código</th>
                         <th>Produto</th>
-                        <th>Voltagem</th>
-                        <th>Torneira</th>
-                        <th>Adesivado</th>
+                        <th class="text-center">UniMed</th>
+                        <th class="text-center">Peso</th>
                         <th class="text-center">Preço</th>
-                        <!-- <th class="text-center">Estoque Real</th>
-                        <th class="text-center">Previsão Estoque</th> -->
+                        <th class="text-center">Estoque Inicial</th>
+                        <th class="text-center">Editar</th>
+                        <th class="text-center">Deletar</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for obj in object_list %}
                     <tr>
-                        <td>{{ obj.codigo }}</td>
+                        <td>{{ obj.codigoproduto }}</td>
                         <td>{{ obj.nome }}</td>
-                        <td class="text-center">{{ obj.voltagem }}</td>
-                        <td>{{ obj.torneira }}</td>
-                        <td>{{ obj.adesivado }}</td>
+                        <td class="text-center">{{ obj.unimed|default:"" }}</td>
+                        <td class="text-center">{{ obj.peso|default:"" }}</td>
                         <td class="text-center">{{ obj.preco|floatformat:2 }}</td>
-                        <!-- <td align="center">
-                            <a class="px-2" href="" style="font-size: 12px">
-                                <i class="fa fa-gears"></i>
-                            </a>
-                        </td>
+                        <td class="text-center">{{ obj.estoque_ini }}</td>
                         <td align="center">
-                            <a class="px-2" href="" style="font-size: 12px">
-                                <i class="fa fa-city"></i>
-                            </a>
-                        </td> -->
+                            <abbr title="Editar">
+                                <a href="{{ obj.prod_gau_edit }}">
+                                    <i class=" fa fa-edit"></i>
+                                </a>
+                            </abbr>
+                        </td>
+                        <td class="text-center">
+                            <abbr title="Deletar">
+                                <a href="{{ obj.prod_gau_del }}">
+                                    <i class=" fa fa-close no"></i>
+                                </a>
+                            </abbr>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -56,7 +68,10 @@
 {% endblock %}
 
 {% block script %}
+<script src="{% static 'js/datatables.min.js' %}"></script>
+<script src="{% static 'js/jqueryDataTable.js' %}"></script>
 <script>
+
     $(document).ready(function () {
         $('#id_table').DataTable({
             "language": {

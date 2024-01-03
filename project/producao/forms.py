@@ -8,10 +8,14 @@ class QuantidadeProducaoForm(forms.ModelForm):
         fields = ("produto", "quantidade")
         widgets = {
             "produto": forms.Select(
-                attrs={"class": "form-control form-control-sm text-end w-50"}
+                attrs={
+                    "class": "form-control form-control-sm fw-bold text-end w-50 m-1"
+                }
             ),
             "quantidade": forms.NumberInput(
-                attrs={"class": "form-control form-control-sm text-center w-25"}
+                attrs={
+                    "class": "form-control form-control-sm fw-bold text-center w-25 m-1"
+                }
             ),
         }
         labels = {
@@ -19,7 +23,24 @@ class QuantidadeProducaoForm(forms.ModelForm):
             "quantidade": "",
         }
 
-    def __init__(self, *args, **kwargs):
-        super(QuantidadeProducaoForm, self).__init__(*args, **kwargs)
-        # self.fields["produto"].widget.attrs["readonly"] = True
-        # self.fields["produto"].widget.attrs["disable"] = True
+
+# class QuantidadePecaForm(forms.ModelForm):
+#     class Meta:
+#         model = LimiteProducaoDiariaPeca
+#         fields = ("peca", "quantidade")
+#         widgets = {
+#             "peca": forms.Select(
+#                 attrs={
+#                     "class": "form-control form-control-sm fw-bold text-end w-50 m-1"
+#                 }
+#             ),
+#             "quantidade": forms.NumberInput(
+#                 attrs={
+#                     "class": "form-control form-control-sm fw-bold text-center w-25 m-1"
+#                 }
+#             ),
+#         }
+#         labels = {
+#             "peca": "",
+#             "quantidade": "",
+#         }

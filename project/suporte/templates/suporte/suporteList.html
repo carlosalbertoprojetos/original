@@ -1,0 +1,88 @@
+{% extends 'index.html' %}
+
+{% load static %}
+
+<title> {% block title %} Suporte {% endblock title%} </title>
+
+{% block index %}
+
+<div class="container pt-0">
+    <div class="filters card border-1">
+        <div class="card-header">
+            <label class="fs-5 fw-bold">Suporte</label>
+        </div>
+        <div class="p-3">
+            <div id="id_table_filter" style="text-align:right">
+                <label>Buscar:
+                    <form name="pesquisa" id="pesquisa" action="" method="POST">
+                        {% csrf_token %}
+                        <input id="pesquisa" type="text" name="pesquisa" value="{{pesquisa}}"
+                            class="form-control form-control-sm" placeholder="" aria-controls="id_table">
+                    </form>
+                </label>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-sm" id="id_table">
+                    <div class="col-12 d-flex justify-content-end">
+                    </div>
+                    <thead>
+                        <tr>
+                            <th class="text-center">Venda</th>
+                            <th>Cliente</th>
+                            <th>Vendedor</th>
+                            <th class="text-center">Data</th>
+                            <th>Aberto por</th>
+                            <th>Status</th>
+                            <th>Responsável</th>
+                            <th>Editar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for suporte in suportes %}
+                        <tr>
+                            <td class="text-center">{{ suporte.venda.id }}</td>
+                            <td>{{ suporte.venda.cliente|truncatechars:40 }}</td>
+                            <td>{{ suporte.venda.vendedor }}</td>
+                            <td class="text-center">{{ suporte.data|date:"d/m/y" }}</td>
+                            <td>{{ suporte.responsavel }}</td>
+                            <td id="status" class="bg-danger bg-opacity-50">{{ suporte.statusAtual }}</td>
+                            <td>{{ suporte.responsavelAtual }}</td>
+                            <td class="text-center pe-3">
+                                <abbr title="Editar">
+                                    <a href="{% url 'suporte:suporteCreate' venda=suporte.venda.id %}">
+                                        <i class="fa fa-edit"></i>
+                                    </a>
+                                </abbr>
+                            </td>
+                        </tr>
+                        {%endfor%}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    $('#pesquisa').keypress(function (e) {
+        if (e.which == 13) {
+            $('form#pesquisa').submit();
+        }
+    });
+</script>
+
+{% endblock %}
+
+{% block script %}
+
+<script>
+
+    var a = document.getElementById("status");
+    if (a.innerHTML == 'Concluído') {
+        a.setAttribute('class', "bg-success bg-opacity-50");
+    }
+
+</script>
+
+{% endblock %}

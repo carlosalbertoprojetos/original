@@ -2,7 +2,7 @@
 
 {% load static %}
 
-<title> {% block title %} Contas a Pagar {% endblock title%} </title>
+<title> {% block title %} Expedição {% endblock title%} </title>
 
 {% block index %}
 
@@ -12,67 +12,160 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header justify-content-end">
-              <p><a href="#" onclick='$("#ex1").modal("hide");'>fechar</a></p>
+                <p><a href="#" onclick='$("#ex1").modal("hide");'>fechar</a></p>
             </div>
-            <div class="modal-body">afaeef
+            <div class="modal-body">
             </div>
         </div>
     </div>
 </div>
+<div class="container">
+    <div class="filters card border-1 mt-2">
+        <div class="card-header">
+            <label class="fs-5 fw-bold">Etiquetas a imprimir</label>
+            <button class="btn" type="button" onclick="javascript:abre_collapse()" aria-expanded="false"
+                aria-controls="collapseExample">
+                +
+            </button>
+        </div>
+        <div class="p-3 collapse" id="collapseExample">
+            <form method="POST" action="imprimir">
+                {% csrf_token %}
 
+                <table class="table table-sm">
+                    <div class="col-12 d-flex justify-content-end">
+                    </div>
+                    <thead>
+                        <tr>
+                            <th>Quantidade</th>
+                            <th>Capacidade</th>
+                            <th>Voltagem</th>
+                            <th>Torneiras</th>
+                            <th>Adesivado</th>
+                            <th><input type="checkbox" name="checkAll" id="checkAll" value="Marcar Todos" />marcar
+                                todos</button></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {%for bebedouro in bebedouros_na_expedicao%}
+                        <tr>
+                            <td><b>{{bebedouro.qtde}}</b></td>
+                            <td><b>{{bebedouro.nome}}</b></td>
+                            <td><b>{{bebedouro.voltagem}}</b></td>
+                            <td><b>{{bebedouro.torneira}}</b></td>
+                            <td><b>{{bebedouro.adesivado}}</b></td>
+                            <td></td>
 
+                        </tr>
+                        {%for nome in bebedouro.nomes%}
+                        <tr>
+                            <td colspan="5">{{nome.id}} - {{nome.nome}} - {{nome.vendedor}}</td>
+                            <td><b><input name="imprimir" value="{{nome.id}}" type="checkbox" /></b></td>
+                        </tr>
+                        {%endfor%}
+
+                        {%endfor%}
+
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="5"></th>
+                            <th><input class="btn btn-primary btn-sm" type="submit" name="submit" value="imprimir"></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </form>
+        </div>
+    </div>
+</div>
 <div class="container">
     <div class="filters card border-1 mt-2">
         <div class="card-header">
             <label class="fs-5 fw-bold">Vendas na Expedição</label>
         </div>
         <div class="p-3">
+            <div id="id_table_filter" style="text-align:right">
+                <label>Buscar:
+                    <form name="pesquisa" id="pesquisa" action="" method="POST">
+                        {% csrf_token %}
+                        <input id="pesquisa" type="text" name="pesquisa" value="{{pesquisa}}"
+                            class="form-control form-control-sm" placeholder="" aria-controls="id_table">
+                    </form>
+                </label>
+            </div>
             <table class="table table-sm" id="id_table">
                 <div class="col-12 d-flex justify-content-end">
                 </div>
                 <thead>
                     <tr>
-                        <th></th>
-                        <th>Código</th>
+                        <th>Cód</th>
                         <th>Cliente</th>
+                        <th>Vendedor</th>
                         <th>Data Pedido</th>
-                        <th>Data Produção</th>
+                        <th>Numero NF</th>
+                        <th>Transportadora</th>
+                        <th>Adesivou?</th>
+                        <th>Urgente</th>
                         <th>Status</th>
-                        <th>Imprimir NF</th>
-                        <th>Emitir Boleto</th>
-                        <th>Confirmar envio</th>
-                        <th>Editar</th>
+                        <th>Data Status</th>
+                        <th>Visualizar</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <form method="POST" id="form" name="form" action="">
-                        {% csrf_token %}
                     {%for venda in vendas%}
                     <tr>
-                        <td><input type="checkbox" id="venda" name="venda" data-25l="{{venda.qtde_25l}}"  data-50l="{{venda.qtde_50l}}"  data-100l="{{venda.qtde_100l}}"  data-200l="{{venda.qtde_200l}}" value="{{venda.id}}"/></td>
                         <td>{{venda.id}}</td>
                         <td>{{venda.cliente}}</td>
+                        <td>{{venda.vendedor}}{%if venda.detalhes%} - {{venda.detalhes}} {%endif%}</td>
                         <td>{{venda.data_pedido}}</td>
-                        <td>{{venda.data_entrega}}</td>
-                        <td>{{venda.status_venda.title}}</td>
-                        <td><input type="button" name="Imprimir" onclick="javascript:$('#ex1').modal('show');"  value="Imprimir NF"></td>
-                        <td><input type="button" name="Emitir" value="Emitir Boleto"></td>
-                        <td><input type="button" name="Confirmar" value="Confirmar"></td>
+                        <td>{%if venda.numero_nf%} {{venda.numero_nf}}{%endif%}</td>
+                        <td>{{venda.transportadora.nome}}</td>
+                        <td>{%if venda.etiqueta_impressa%}Sim{%endif%}</td>
+                        <td>{%if venda.urgente%}<img src="{% static '/img/icons/fire.gif' %}" width="30"
+                                height="23">{%endif%}</td>
+                        <td>
+                            <div class="{{venda.status_expedicao_backgroundcolor}}">{{venda.status_expedicao.title}}
+                            </div>
+                        </td>
+                        <td>{{venda.data_status_expedicao}}</td>
                         <td align="center pe-1">
                             <abbr title="Editar">
-                                <a href="{{ venda.venda_gau_edit }}">
-                                    <i class=" fa fa-edit"></i>
+                                <a href="{{ venda.venda_expedicao_edit }}">
+                                    <i class=" fa fa-eye"></i>
                                 </a>
                             </abbr>
+                            <abbr title='Orçamento'><a href='../venda/{{venda.get_hash}}/orcamento' target='_blank'><i
+                                        class='fa fa-file-text-o'></i></a></abbr>
                         </td>
                     </tr>
                     {%endfor%}
-                </form>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+
+
+<script type="text/javascript">
+    $("#checkAll").change(function () {
+        if ($("#checkAll").is(':checked')) {
+            $('input:checkbox').attr('checked', 'checked');
+        } else {
+            $('input:checkbox').removeAttr('checked');
+        }
+    });
+
+    function abre_collapse() {
+        $("#collapseExample").collapse('toggle');
+    }
+
+    $('#pesquisa').keypress(function (e) {
+        if (e.which == 13) {
+            $('form#pesquisa').submit();
+        }
+    });
+
+</script>
 
 {% endblock %}
-

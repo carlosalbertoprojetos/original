@@ -15,7 +15,7 @@ from .models import Despesa, Saldo
 from .forms import DespesaForm
 from financeiro.models import ContaPagar, ContaReceber
 from financeiro.forms import ContaPagarForm
-
+from django.db.models import Q
 
 success_url_despesa = _("despesa:despesaList")
 
@@ -48,6 +48,9 @@ def fluxodecaixa_eventos_ajax(request):
     alem disso calcula se após pagar as contas o dia fica com o
     saldo positivo ou negativo
     """
+    import locale
+
+    locale.setlocale(locale.LC_ALL, "pt_BR.UTF-8")
     hoje = datetime.now()
     contas_a_pagar = ContaPagar.objects.all()
     contas_a_receber = ContaReceber.objects.all()
@@ -61,32 +64,56 @@ def fluxodecaixa_eventos_ajax(request):
         saldo = 0
         limite = 0
     hoje = datetime.now()
+    hoje = hoje.replace(day=1)
     calculo_dias = 60
     for delta in range(0, calculo_dias):
         # calcula o saldo ao longo de x(calculo_dias)
         _dia = hoje + timedelta(delta)
-        for conta in ContaPagar.objects.filter(datavencimento=_dia):
-            saldo -= float(conta.valor)
-        for conta in ContaReceber.objects.filter(datavencimento=_dia):
-            saldo -= float(conta.valor)
-        #print("saldo", saldo)
-        if saldo > 0:
-            color = "#e0fee0"
-        elif saldo < limite:
-            color = "#ffc6bd"
-        elif saldo < 0:
-            color = "#ffff70"
-        else:
-            color = "white"
+        for conta in ContaPagar.objects.filter(
+            Q(datavencimento=_dia) | Q(datapagamento=_dia)
+        ):
+            if conta.datapagamento:
+                if conta.datapagamento == _dia.date():
+                    saldo -= float(conta.valor)
+            else:
+                saldo -= float(conta.valor)
+        for conta in ContaReceber.objects.filter(
+            Q(datavencimento=_dia) | Q(datapagamento=_dia)
+        ):
+            if conta.datapagamento:
+                if conta.datapagamento == _dia.date():
+                    saldo += float(conta.valor)
+            else:
+                saldo += float(conta.valor)
 
-        dia = {
-            "start": _dia.strftime("%Y-%m-%d"),
-            "end": _dia.strftime("%Y-%m-%d"),
-            "overlap": False,
-            "display": "background",
-            "color": color,
-        }
-        data.append(dia)
+        if request.user.has_perm("financeiro.view_contareceber"):
+            valor = locale.currency(saldo, grouping=True, symbol=None)
+            dicionario = {
+                "id": 1,
+                "title": "saldo: R$ " + valor,
+                "start": _dia.strftime("%Y-%m-%dT08:%M:%S"),
+                "constraint": "businessHours",
+                "color": "blue",
+            }
+            data.append(dicionario)
+
+            if saldo > 0:
+                color = "#e0fee0"
+            elif saldo < limite:
+                color = "#ffc6bd"
+            elif saldo < 0:
+                color = "#ffff70"
+            else:
+                color = "white"
+
+            dia = {
+                "start": _dia.strftime("%Y-%m-%d"),
+                "end": _dia.strftime("%Y-%m-%d"),
+                "overlap": False,
+                "display": "background",
+                "color": color,
+            }
+            data.append(dia)
     if request.user.has_perm("financeiro.view_contapagar"):
         for conta in contas_a_pagar:
             if conta.despesa:
@@ -97,17 +124,23 @@ def fluxodecaixa_eventos_ajax(request):
                 titulo = conta.compra.fornecedor.nome
                 tipo = "compra"
                 pai = conta.compra.id
+            valor = locale.currency(conta.valor, grouping=True, symbol=None)
+            if conta.datapagamento:
+                start = conta.datapagamento.strftime("%Y-%m-%dT09:%M:%S")
+            else:
+                start = conta.datavencimento.strftime("%Y-%m-%dT09:%M:%S")
 
             dicionario = {
                 "id": tipo + "_" + str(conta.id) + "_" + str(pai),
-                "title": titulo,
-                "start": conta.datavencimento.strftime("%Y-%m-%dT09:%M:%S"),
+                "title": titulo + " R$ " + valor,
+                "start": start,
                 "constraint": "businessHours",
                 "color": "red",
             }
             if conta.datapagamento:
                 dicionario["className"] = "underline"
             data.append(dicionario)
+
     if request.user.has_perm("financeiro.view_contareceber"):
         for conta in contas_a_receber:
             if conta.receita:
@@ -119,13 +152,20 @@ def fluxodecaixa_eventos_ajax(request):
                 tipo = "venda"
                 pai = conta.venda.id
 
+            valor = locale.currency(conta.valor, grouping=True, symbol=None)
+
+            if conta.datapagamento:
+                start = conta.datapagamento.strftime("%Y-%m-%dT09:%M:%S")
+            else:
+                start = conta.datavencimento.strftime("%Y-%m-%dT09:%M:%S")
+
             dicionario = {
                 "id": tipo + "_" + str(conta.id) + "_" + str(pai),
-                "title": titulo,
-                "start": conta.datavencimento.strftime("%Y-%m-%dT09:%M:%S"),
+                "title": titulo + " R$ " + valor,
+                "start": start,
                 "constraint": "businessHours",
                 "color": "green",
-                "className": "underline",
+                "className": "",
             }
             if conta.datapagamento:
                 dicionario["className"] = "underline"
@@ -186,7 +226,9 @@ def despesaCreate(request):
     Formset_contaPagar_Factory = inlineformset_factory(
         Despesa, ContaPagar, form=ContaPagarForm, extra=1, can_delete=False
     )
-    parcela_form = Formset_contaPagar_Factory(request.POST or None)
+    parcela_form = Formset_contaPagar_Factory(
+        request.POST or None, request.FILES or None
+    )
 
     if request.method == "POST":
         if form.is_valid() and parcela_form.is_valid():
@@ -220,7 +262,9 @@ def despesaUpdate(request, pk):
     Formset_contaPagar_Factory = inlineformset_factory(
         Despesa, ContaPagar, form=ContaPagarForm, extra=0, can_delete=False
     )
-    parcela_form = Formset_contaPagar_Factory(request.POST or None, instance=objeto)
+    parcela_form = Formset_contaPagar_Factory(
+        request.POST or None, request.FILES or None, instance=objeto
+    )
 
     if request.method == "POST":
         if form.is_valid() and parcela_form.is_valid():
@@ -229,14 +273,18 @@ def despesaUpdate(request, pk):
             parcela_form.save()
             return redirect(success_url_despesa)
         else:
+            codigo = True
             context = {
+                "codigo": codigo,
                 "titulo": titulo,
                 "form": form,
                 "parcela": parcela_form,
             }
             return render(request, "despesa/despesaCreateUpdate.html", context)
     else:
+        codigo = True
         context = {
+            "codigo": codigo,
             "titulo": titulo,
             "form": form,
             "parcela": parcela_form,
@@ -247,7 +295,7 @@ def despesaUpdate(request, pk):
 # @login_required
 # @permission_required("despesa.view_despesa")
 class DespesaList(LoginRequiredMixin, ListView):
-    model = Despesa
+    model = ContaPagar
     template_name = "despesa/despesaList.html"
 
 

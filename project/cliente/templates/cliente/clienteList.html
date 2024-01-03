@@ -12,8 +12,8 @@
         <div class="card-header">
             <label class="fs-5 fw-bold">Clientes</label>
         </div>
-        <div class="p-3">
-            <table class="table table-sm" id="id_table">
+        <div class="table-responsive p-3">
+            <table class="table table-sm" id="tableID">
                 <div class="col-12 d-flex justify-content-end">
                     <a class="btnMaster px-2" href="{% url 'cliente:clienteCreate' %}">Novo Cliente
                         <i class="fa fa-plus-square" aria-hidden="true"></i>
@@ -21,44 +21,18 @@
                 </div>
                 <thead>
                     <tr>
-                        <th>Nome</th>
                         <th>Nome Fantasia</th>
+                        <th>Nome</th>
                         <th>Telefone</th>
                         <th>Telefone2</th>
                         <th>Email</th>
                         <th>CPF</th>
                         <th>CNPJ</th>
                         <th>Estado</th>
-                        <th>Status</th>
-                        <th align="center">Ação</th>
+                        <th align="center">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for obj in object_list %}
-                    <tr>
-                        <td>{{ obj.nome }}</td>
-                        <td>{{ obj.nome_fantasia }}</td>
-                        <td>{{ obj.tel_principal }}</td>
-                        <td>{{ obj.tel_contato }}</td>
-                        <td>{{ obj.email }}</td>
-                        <td>{{ obj.cpf }}</td>
-                        <td>{{ obj.cnpj }}</td>
-                        <td>{{ obj.estado }}</td>
-                        <td>{%if obj.status_cliente%}Ativo{%else%}Inativo{%endif%}</td>
-                        <td align="center pe-1">
-                            <abbr title="Editar">
-                                <a href="{{ obj.cliente_gau_edit }}">
-                                    <i class=" fa fa-edit"></i>
-                                </a>
-                            </abbr>
-                            <abbr title="Excluir">
-                                <a href="{{ obj.cliente_gau_delete }}">
-                                    <i class="fa fa-close no"></i>
-                                </a>
-                            </abbr>
-                        </td>
-                    </tr>
-                    {% endfor %}
                 </tbody>
             </table>
         </div>
@@ -68,9 +42,14 @@
 {% endblock %}
 
 {% block script %}
+
+<script src="/static/js/datatables.min.js"></script>
+<script src="/static/js/jqueryDataTable.js"></script>
+<script src="https://cdn.datatables.net/plug-ins/1.13.7/sorting/date-euro.js"></script>
 <script>
     $(document).ready(function () {
-        $('#id_table').DataTable({
+        $('#tableID').DataTable({
+            "pageLength": 25,
             "language": {
                 "sProcessing": "Proccesando...",
                 "sLengthMenu": "Mostrar _MENU_ registros",
@@ -94,8 +73,22 @@
                     "sSortAscending": ": Ativar para ordenar a coluna de maneira ascendente",
                     "sSortDescending": ": Ativar para ordenar a coluna de maneira descendente"
                 }
-            }
+            },
+            ajax: 'ajax/',
+            columns: [
+                { "data": "nome_fantasia" },
+                { "data": "nome" },
+                { "data": "tel_principal" },
+                { "data": "tel_contato" },
+                { "data": "email" },
+                { "data": "cpf" },
+                { "data": "cnpj" },
+                { "data": "estado" },
+                { "data": "acoes" },
+            ]
         });
-    }); 
+    });
+
 </script>
+
 {% endblock %}

@@ -7,11 +7,13 @@
 {% block index %}
 
 <div class="container">
-    <div class="container px-3">
+    <div class="container">
         <div class="row gap-3 justify-content-center">
-            <div class="card col-12 col-md p-4 bg-light">
-                <div class="box d-flex gap-4 justify-content-between">
-                    <div class="imageBlock d-flex justify-content-center align-items-center bg-white">
+            <div class="card col-md p-4 bg-light">
+                <div
+                    class="d-flex justify-content-between align-items-center justify-content-md-center justify-content-xl-between">
+                    <div
+                        class="imageBlock d-flex align-items-center justify-content-center bg-white d-md-none d-xl-flex">
                         <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" font-size="1.5rem"
                             class="iconify iconify--mdi" width="1em" height="1em" viewBox="1 0 22 22">
                             <path fill="currentColor"
@@ -20,17 +22,19 @@
                             </path>
                         </svg>
                     </div>
-                    <div class="">
-                        <span class="">A Pagar(R$)</span>
+                    <div class="text-end">
+                        <span class="text-end">Vencidas(R$)</span>
                         <div class="d-flex align-items-center justify-content-end">
-                            <h6 class="">{{ vlr_mes|floatformat:2 }}</h6>
+                            <h6 class="">{{ vencidos|floatformat:2 }}</h6>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="card col-12 col-md p-4 bg-light">
-                <div class="box d-flex gap-4 justify-content-between">
-                    <div class="imageBlock d-flex justify-content-center align-items-center bg-white">
+                <div
+                    class="d-flex justify-content-between align-items-center justify-content-md-center justify-content-xl-between">
+                    <div
+                        class="imageBlock d-flex align-items-center justify-content-center bg-white d-md-none d-xl-flex">
                         <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" font-size="1.5rem"
                             class="iconify iconify--mdi" width="1em" height="1em" viewBox="1 0 22 22">
                             <path fill="currentColor"
@@ -38,7 +42,7 @@
                                 style="color: rgb(86, 202, 0);"></path>
                         </svg>
                     </div>
-                    <div class="">
+                    <div class="text-end">
                         <span class="">Vencem Hoje(R$)</span>
                         <div class="d-flex align-items-center justify-content-end">
                             <h6 class="">{{ vencem_hoje|floatformat:2 }}</h6>
@@ -47,8 +51,10 @@
                 </div>
             </div>
             <div class="card col-12 col-md p-4 bg-light">
-                <div class="box d-flex gap-4 justify-content-between">
-                    <div class="imageBlock d-flex justify-content-center align-items-center bg-white">
+                <div
+                    class="d-flex justify-content-between align-items-center justify-content-md-center justify-content-xl-between">
+                    <div
+                        class="imageBlock d-flex align-items-center justify-content-center bg-white d-md-none d-xl-flex">
                         <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" font-size="1.5rem"
                             class="iconify iconify--mdi" width="1em" height="1em" viewBox="0 0 24 24">
                             <path fill="currentColor"
@@ -58,9 +64,9 @@
                         </svg>
                     </div>
                     <div class="">
-                        <span class="">Vencidas(R$)</span>
+                        <span class="">A Vencer(R$)</span>
                         <div class="d-flex align-items-center justify-content-end">
-                            <h6 class="">{{ vencidos|floatformat:2 }}</h6>
+                            <h6 class="">{{ avencer|floatformat:2 }}</h6>
                             <div class="d-flex align-items-center">
                             </div>
                         </div>
@@ -68,8 +74,10 @@
                 </div>
             </div>
             <div class="card col-12 col-md p-4 bg-light">
-                <div class="box d-flex gap-4 justify-content-between">
-                    <div class="imageBlock d-flex justify-content-center align-items-center bg-white">
+                <div
+                    class="d-flex justify-content-between align-items-center justify-content-md-center justify-content-xl-between">
+                    <div
+                        class="imageBlock d-flex align-items-center justify-content-center bg-white d-md-none d-xl-flex">
                         <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" font-size="1.5rem"
                             class="iconify iconify--mdi" width="1em" height="1em" viewBox="1 0 22 22">
                             <path fill="currentColor" d="M3 22V8h4v14H3m7 0V2h4v20h-4m7 0v-8h4v8h-4Z"
@@ -77,10 +85,10 @@
                             </path>
                         </svg>
                     </div>
-                    <div class="">
+                    <div class="text-end">
                         <span class="">Pagas(R$)</span>
                         <div class="d-flex align-items-center justify-content-end">
-                            <h6 class="">{{ pagos|floatformat:2 }}</h6>
+                            <h6 class="">{{ pagas|floatformat:2 }}</h6>
                         </div>
                     </div>
                 </div>
@@ -104,7 +112,7 @@
                         <input type="date" id="data_fim" name="data_fim" class="form-control form-control-sm"
                             placeholder="Data fim" value="{{ data_fim }}">
                     </div>
-                    <div class="col-12 col-lg-1 ml-2 ml-lg-0">
+                    <div class="col-12 col-lg-1 mt-2 mt-lg-0 ml-2 ml-lg-0 ">
                         <button type="submit" class="btn btn-primary btn-sm" value="Pesquisar">Pesquisar</button>
                     </div>
                 </div>
@@ -115,7 +123,7 @@
         <div class="card-header">
             <label class="fs-5 fw-bold">Contas a Pagar</label>
         </div>
-        <div class="p-3">
+        <div class="table-responsive p-3">
             <table class="table table-sm" id="id_table">
                 <div class="d-flex justify-content-end">
                     <a class="btnMaster" href="/compra/cadastrar/">Novo Pedido de Compra
@@ -126,12 +134,13 @@
                 </div>
                 <thead>
                     <tr>
-                        <th>Compra</th>
-                        <th>Despesa</th>
-                        <th>Valor</th>
+                        <th class="hidden"></th>
                         <th>Documento</th>
+                        <th>Despesa</th>
+                        <th>Compra</th>
                         <th>Vencimento</th>
                         <th>Pagamento</th>
+                        <th>Valor</th>
                         <th>Forma Pagamento</th>
                         <th>Detalhes</th>
                         <th class="text-center">Editar</th>
@@ -140,13 +149,14 @@
                 <tbody>
                     {% for obj in object_list %}
                     <tr>
-                        <td>{{ obj.compra|default_if_none:"" }}</td>
-                        <td>{{ obj.despesa|default_if_none:"" }}</td>
+                        <td class="hidden">{{ obj.datadocumento|date:"Y/m/d" }}</td>
+                        <td align="center">{{ obj.datadocumento|date:"d/m/y" }}</td>
+                        <td>{{ obj.despesa|default:""|truncatechars:20 }}</td>
+                        <td>{{ obj.compra|default:""|truncatechars:20 }}</td>
+                        <td align="center">{{ obj.datavencimento|date:"d/m/y" }}</td>
+                        <td align="center">{{ obj.datapagamento|date:"d/m/y" }}</td>
                         <td>R$ {{ obj.valor }}</td>
-                        <td>{{ obj.datadocumento|date:"d/m/Y" }}</td>
-                        <td>{{ obj.datavencimento|date:"d/m/Y" }}</td>
-                        <td>{{ obj.datapagamento|date:"d/m/Y" }}</td>
-                        <td>{{ obj.formapgto }}</td>
+                        <td align="center">{{ obj.formapgto }}</td>
                         <td>{{ obj.detalhes|default_if_none:"" }}</td>
                         {% if obj.compra %}
                         <td align="center"><a class="" href="{% url 'compra:compraUpdate' obj.compra.pk %}">
@@ -171,6 +181,8 @@
 
 
 {% block script %}
+<script src="{% static 'js/datatables.min.js' %}"></script>
+<script src="{% static 'js/jqueryDataTable.js' %}"></script>
 <script>
     function filtro() {
         let dataInicio = document.getElementById('data_ini')
@@ -203,9 +215,7 @@
                     "sSortDescending": ": Ativar para ordenar a coluna de maneira descendente"
                 }
             }
-        }
-
-        );
+        });
     }); 
 </script>
 {% endblock %}

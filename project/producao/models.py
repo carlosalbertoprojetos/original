@@ -1,8 +1,9 @@
 from django.db import models
 from datetime import datetime
 from pytz import timezone
+from django.contrib.auth.models import User
 
-from produto.models import Produto
+from produto.models import Produto, Peca
 from materiaprima.models import MateriaPrima
 from funcionario.models import Funcionario
 
@@ -18,11 +19,23 @@ StatusProdutoAcabado = (
 
 
 class LimiteProducaoDiaria(models.Model):
-    produto = models.ForeignKey(Produto, on_delete=models.CASCADE)
+    produto = models.OneToOneField(
+        Produto, blank=False, primary_key=True, on_delete=models.CASCADE
+    )
+    quantidade = models.IntegerField(default=0)
+
+    # def __str__(self):
+    #     return str(self.produto)
+
+
+class LimiteProducaoDiariaPeca(models.Model):
+    peca = models.OneToOneField(
+        Peca, blank=False, primary_key=True, on_delete=models.CASCADE
+    )
     quantidade = models.IntegerField(default=0)
 
     def __str__(self):
-        return str(self.produto.nome)
+        return str(self.peca)
 
 
 # Create your models here.
@@ -96,6 +109,26 @@ class ProdutoAcabado(models.Model):
                 return "red"
 
 
+class PecaAcabada(models.Model):
+    peca = models.ForeignKey(Peca, on_delete=models.RESTRICT, null=True)
+    quantidade = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0.0,
+    )
+    dataproducao = models.DateField()
+    usuario = models.ForeignKey(User, on_delete=models.RESTRICT)
+    criadoem = models.DateTimeField(auto_now_add=True)
+    atualizadoem = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "PEÇA"
+        verbose_name_plural = "PEÇAS"
+
+    def __str__(self):
+        return self.peca
+
+
 class HistoricoMontagem(models.Model):
     produtoacabado = models.ForeignKey(
         ProdutoAcabado, on_delete=models.CASCADE, verbose_name="PRODUTOACABADO"
@@ -133,26 +166,6 @@ class MateriaPrimaProdutoAcabado(models.Model):
 
     def __str__(self):
         return str(self.produtoacabado)
-
-
-# class MateriaPrimaProduto(models.Model):
-#     produto = models.ForeignKey(
-#         Produto, on_delete=models.RESTRICT, related_name="mpproduto"
-#     )
-#     materiaprimausada = models.ForeignKey(
-#         MateriaPrima, on_delete=models.RESTRICT, related_name="mpusado"
-#     )
-#     quant = models.DecimalField(max_digits=5, decimal_places=2)
-#     valor = models.DecimalField(
-#         max_digits=9, decimal_places=2, default=0, null=True, blank=True
-#     )
-
-#     class Meta:
-#         verbose_name = "Matéria prima Produto"
-#         verbose_name_plural = "Matéria prima Produtos"
-
-#     def __str__(self):
-#         return str(self.materiaprimausada)
 
 
 class Montadores(models.Model):

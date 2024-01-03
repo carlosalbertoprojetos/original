@@ -5,15 +5,18 @@ import financeiro.models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('financeiro', '0018_auto_20230811_1041'),
+        ("financeiro", "0018_auto_20230811_1041"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='contareceber',
-            name='imagem',
-            field=models.ImageField(blank=True, null=True, upload_to=financeiro.models.path_and_rename),
+            model_name="contareceber",
+            name="imagem",
+            field=models.ImageField(
+                blank=True,
+                null=True,
+                upload_to=financeiro.models.path_and_receita_boleto,
+            ),
         ),
     ]

@@ -1,0 +1,144 @@
+{% extends 'index.html' %}
+
+{% load static %}
+
+<title> {% block title %} TimeLine Garantia {% endblock title%} </title>
+
+{% block index %}
+
+<div class="container my-2">
+    {% for d in dados %}
+    <div class="card">
+        <div class="card-header d-flex flex-wrap justify-content-center justify-content-lg-between">
+            <h5>PRODUTO EM GARANTIA</h5>
+            <h6 class="align-middle m-0 mt-lg-2">Há {{ dias|default:"0" }} dias em conserto</h6>
+            <h6 class="align-middle m-0 mt-lg-2">Pedido aberto em {{ d.data|date:"d/m/Y H:m" }}</h6>
+        </div>
+        <div class="card-body cabecalho">
+            <div class="d-flex justify-content-between">
+                <h6 class="card-title">{{ d.produto }}</h6>
+                <h6 class="card-title">Venda: {{ d.produto.venda }}</h6>
+            </div>
+            <div class="form-floating">
+                <div class="row">
+                    <div class="col-12 col-lg-6">
+                        <label class="text-muted">Cliente</label>
+                        <h6>{{ d.produto.venda.cliente }}</h6>
+                    </div>
+                    <div class="col-6 col-lg-2">
+                        <label class="text-muted">Telefone</label>
+                        <h6>{{ d.produto.venda.cliente.tel_principal }}</h6>
+                    </div>
+                    <div class="col-6 col-lg-2">
+                        <label class="text-muted">Pedido da compra</label>
+                        <h6>{{ d.produto.venda.data_pedido|date:"d/m/Y" }}</h6>
+                    </div>
+                    <div id="status" class="col-12 col-lg-2 text-center bg-warning bg-opacity-25 rounded">
+                        <label class="text-muted">Status do pedido</label>
+                        <h6 id="garantiaStatus">{{ d.status }}</h6>
+                    </div>
+                    <div class="col-12 col-lg-4">
+                        <label class="text-muted">Rua</label>
+                        <h6>{{ d.produto.venda.cliente.logradouro }}</h6>
+                    </div>
+                    <div class="col-2 col-lg-1">
+                        <label class="text-muted">Número</label>
+                        <h6>{{ d.produto.venda.cliente.numero }}</h6>
+                    </div>
+                    <div class="col-3 col-lg-1">
+                        <label class="text-muted">Complemento</label>
+                        <h6>{{ d.produto.venda.cliente.complemento }}</h6>
+                    </div>
+                    <div class="col-7 col-lg-2">
+                        <label class="text-muted">Bairro</label>
+                        <h6>{{ d.produto.venda.cliente.bairro }}</h6>
+                    </div>
+                    <div class="col-8 col-lg-3">
+                        <label class="text-muted">Cidade/UF</label>
+                        <h6>{{ d.produto.venda.cliente.cidade }}/{{ d.produto.venda.cliente.estado }}</h6>
+                    </div>
+                    <div class="col-4 col-lg-1">
+                        <label class="text-muted">Cep</label>
+                        <h6 style="font-size:14px;">{{ d.produto.venda.cliente.cep }}</h6>
+                    </div>
+                    <div class="col-6 col-lg-3">
+                        <label class="text-muted">Vendedor</label>
+                        <h6>{{ d.produto.venda.vendedor }}</h6>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <label class="text-muted">Transportadora</label>
+                        <h6>{{ d.produto.venda.transportadora }}</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    <div class="row">
+        <div class="col-md-12 mt-2">
+            <div class="d-flex justify-content-between">
+                <h4>TimeLine</h4>
+                <a type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" class="btnMaster px-2 "
+                    href="">Nova
+                    TimeLine
+                    <i class="fa fa-plus-square" aria-hidden="true"></i>
+                </a>
+            </div>
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Nova TimeLine</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form action="." method="post">
+                            <div class="modal-body">
+                                {% csrf_token %}
+                                {{ form.non_field_errors }}
+                                {{ form }}
+                                {{ form.media }}
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary"
+                                    data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-primary">Salvar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <ul class="timeline">
+                {% for tl in timeLine %}
+                <li class="bg-white rounded m-3">
+                    <div class="d-flex justify-content-between p-1">
+                        <a href="{% url 'garantia:garantiaTimeLineUpdate' timeline=tl.id %}"
+                            class="label-color text-decoration-none text-uppercase fw-bold">
+                            {{ tl.titulo }}</a>
+                        <h6 class="label-color fw-bold">Status: {{ tl.status }}</h6>
+                        <h6 class="label-color fw-bold float-end">{{ tl.data|date:"d/m/Y" }}</h6>
+                    </div>
+                    <p id="id_timeline" class="px-2 p-lg-3">{{ tl.descricao }}</p>
+                    <h6 class="label-color float-lg-end">Atualizado {{ tl.atualizadopor }}</h6>
+                </li><br>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+
+{% block script %}
+
+<script>
+    var a = document.getElementById("garantiaStatus");
+    var b = document.getElementById("status");
+    if (a.innerHTML == 'Concluído') {
+        console.log(a.innerHTML)
+        b.setAttribute('class', "col-12 col-lg-2 text-center bg-success bg-opacity-25 rounded")
+    }
+</script>
+
+{% endblock %}

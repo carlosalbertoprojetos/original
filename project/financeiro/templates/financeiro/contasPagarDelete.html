@@ -1,0 +1,26 @@
+{% extends 'index.html' %}
+
+{% load static %}
+
+<title> {% block title %} Delete Parcela {% endblock title%} </title>
+
+
+{% block index %}
+<main class="py-4">
+    <div class="container">
+        <h5>Delete</h5>
+        <div class="cols-6">
+            <form action="." method="POST">
+                <div class="col-sm-6">
+                    {% csrf_token %}
+                    <p>Você tem certeza que deseja deletar o registro: <b>{{ object }}</b>?</p>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-sm">Confirmar</button>
+                        <a class="btn btn-secondary btn-sm" href="{% url 'despesa:despesaList' %}">Cancelar</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+{% endblock %}

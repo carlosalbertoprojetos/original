@@ -19,24 +19,30 @@
         <!-- JS -->
         <link rel="stylesheet" href="{% static 'css/datatables.min.css' %}">
         <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
-        <script src="{% static 'js/datatables.min.js' %}"></script>
-        <script src="{% static 'js/jqueryDataTable.js' %}"></script>
 
         <!-- select2 -->
-        <!-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" /> -->
         <link rel="stylesheet" href="{% static 'css/select2.min.css' %}">
 
         <!-- DatePicker -->
         <link rel="stylesheet" href="{% static 'css/datapicker.min.css' %}">
-        <script src="{% static 'js/datepicker.min.js' %}"></script>
-
-        <!-- DataTable -->
-        <link rel="stylesheet" href="{% static 'css/datatables.min.css' %}">
+        <!-- <script src="{% static 'js/datepicker.min.js' %}"></script> -->
 
         <!-- CSS -->
         <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
         {% block css %}
+
+        <!-- <style>
+            #id_img {
+                background-image: url("{% static 'img/logogrande.png' %}");
+                background-repeat: no-repeat;
+                vertical-align: middle;
+                background-position: center;
+                height: 500px;
+                opacity: 0.2;
+            }
+        </style> -->
+
         {% endblock %}
 
         <title> {% block title %} Original Bebedouros {% endblock title%} </title>

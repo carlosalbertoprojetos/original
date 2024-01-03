@@ -1,0 +1,162 @@
+{% extends 'index.html' %}
+
+{% load static %}
+
+<title> {% block title %} Detalhes da Venda {% endblock title%} </title>
+
+
+{% block index %}
+<form method="POST" action="">
+{% csrf_token %}
+<main class="container my-4">
+
+    {% if erros %}
+    <div id="div_mensagem_boleto" class="alert alert-danger" role="alert">
+        {% for erro in erros %}
+        <label id="mensagem_boleto">{{ erro }}</label><br />
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="invoice bg-white rounded-3">
+        <div class="row d-flex justify-content-between">
+            <div class="col-12 col-md-8 mb-3">
+                <a class="logo d-flex text-decoration-none" href="#">
+                    <h6 class="m-0 ps-2 fs-5 text-dark text-uppercase">{{empresa.nome}}</h6>
+                </a>
+                <div class="mt-4 p-0">
+                    <p class="m-0">{{empresa.logradouro}} {{empresa.numero}}</p>
+                    <p class="m-0">{{empresa.bairro}} {{empresa.cidade}} {{empresa.cep}}</p>
+                    <p class="m-0">{{empresa.tel_principal}}</p>
+                </div>
+            </div>
+        </div>
+
+        <hr class="my-0">
+
+        <div class="row d-flex justify-content-between py-4">
+            <div class="col-12 col-md-6 py-2">
+                <p class="fw-bold mb-3">Destinatário:</p>
+                <p class="">{{cliente.nome}}</p>
+                <p class="">{{cliente.logradouro}} {{cliente.numero}}</p>
+                <p class="">{{cliente.bairro}} {{cliente.cidade}} {{cliente.cep}}</p>
+                <p class="">{{cliente.tel_principal}}</p>
+            </div>
+            <div class="col-12 col-md-4">
+                <p class="bill d-flex fw-bold mb-3"></p>
+                <div class="d-flex justify-content-end">
+                    <p class="">
+                        {%if cliente.cpf%}CPF: {{cliente.cpf}}{%endif%}{%if cliente.cpf%}CNPJ: {{cliente.cnpj}}{%endif%}
+                    </p><br/>
+                    <p class="">
+                        {%if cliente.insc_estadual%}Insc Estadual: {{cliente.insc_estadual}}{%endif%}
+                    </p><br/>
+                    <p class="">
+                        {%if cliente.contribuinte_inss%}Contribuinte INSS: {{cliente.get_contribuinte_inss_display }}{%endif%}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <hr class="m-0">
+        <table class="table tableExterno mb-0">
+            <thead>
+                <tr>
+                    <th>Cód</th>
+                    <th>Descrição</th>
+                    <th>Ncm/sh</th>
+                    <th>Cst</th>
+                    <th>Cfop</th>
+                    <th>Unid</th>
+                    <th>Quant</th>
+                    <th>Valor unit</th>
+                    <th>Valor total</th>
+                    <th>Bc icms</th>
+                    <th>Valor icms</th>
+                    <th>Aliq icms</th>
+                    <th>Valor ipi</th>
+                    <th>Aliq ipi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {%for produto in produtos%}
+                <tr>
+                    <td>{{produto.codigoproduto}}</td>
+                    <td>{{produto.nome}}</td>
+                    <td>{{produto.ncm}}</td>
+                    <td>{{produto.cst}}</td>
+                    <td>{{produto.cfop}}</td>
+                    <td>{{produto.unimed}}</td>
+                    <td>{{produto.quantidade}}</td>
+                    <td>{{produto.preco}}</td>
+                    <td>{{produto.subtotal}}</td>
+                    <td>{{produto.subtotal}}</td>
+                    <td>{{produto.valor_icms}}</td>
+                    <td>{{produto.aliq_icms}}</td>
+                    <td>{{produto.valor_ipi}}</td>
+                    <td>{{produto.aliq_ipi}}</td>
+
+                </tr>
+                {%endfor%}
+            </tbody>
+        </table>
+
+        <div class="row d-flex mx-1 px-3">
+            <div class="col-12 col-md-6 d-none d-md-block">
+                <!--div class="d-flex">
+                    <p class="fw-bold pe-2">Salesperson:</p>
+                    <p class="">Tommy Shelby</p>
+                </div>
+                <p class="">Thanks for your
+                    business</p-->
+            </div>
+            <div class="col-12 col-md-6 p-0">
+                <div class="d-flex">
+                    <p class="col-6 m-0">Base Calculo ICMS:</p>
+                    <p class="col-6 fw-bold m-0" align="right">{{vendadadostratado.basecalculoicms}}</p>
+                </div>
+                <div class="d-flex">
+                    <p class="col-6 m-0">Valor do ICMS:</p>
+                    <p class="col-6 fw-bold m-0" align="right">{{vendadadostratado.valoricms}}</p>
+                </div>
+                <div class="d-flex">
+                    <p class="col-6 m-0">Valor do IPI:</p>
+                    <p class="col-6 fw-bold m-0" align="right">{{vendadadostratado.valoripi}}</p>
+                </div>
+                <div class="d-flex">
+                    <p class="col-6 m-0">Valor do Frete:</p>
+                    <p class="col-6 fw-bold m-0" align="right">{{vendadadostratado.valorfrete}}</p>
+                </div>
+                <div class="d-flex">
+                    <p class="col-6 m-0">Valor Total dos Produtos:</p>
+                    <p class="col-6 fw-bold m-0" align="right">{{vendadadostratado.totalprodutos}}</p>
+                </div>
+                <hr class="my-2">
+                <div class="d-flex">
+                    <p class="col-6 m-0">Valor Total da Nota:</p>
+                    <p class="col-6 fw-bold m-0" align="right">{{vendadadostratado.valortotalcomimposto}}</p>
+                </div>
+
+            </div>
+            <!--div class="col-12 col-md-6 d-flex flex-column d-block d-sm-none mt-2 p-0">
+                <div class="d-flex">
+                    <p class="fw-bold pe-2">Salesperson:</p>
+                    <p class="">Tommy Shelby</p>
+                </div>
+                <p class="">Thanks for your
+                    business</p>
+            </div-->
+        </div>
+
+        <hr class="my-1">
+        <!--div class="row d-flex mx-1 px-3">
+            <p class="text-left p-0"><strong>Note:</strong> It was a
+                pleasure working with you and your team. We hope you will keep us in mind for future
+                freelance projects. Thank You!</p>
+        </div-->
+
+    </div>
+    {% include "venda/includes/dadosnf.html" %}
+</main>
+</form>
+{% endblock %}

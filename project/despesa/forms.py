@@ -15,7 +15,12 @@ class DespesaForm(forms.ModelForm):
             "fornecedor",
         )
         widgets = {
-            "nome": forms.TextInput(attrs={"class": "form-control form-control.sm"}),
+            "nome": forms.TextInput(
+                attrs={
+                    "class": "form-control form-control.sm",
+                    "style": "font-size:12px;",
+                }
+            ),
             "total": forms.NumberInput(
                 attrs={"class": "form-control form-control-sm text-end"}
             ),
@@ -24,7 +29,10 @@ class DespesaForm(forms.ModelForm):
                 attrs={"class": "form-control form-control-sm text-center"}
             ),
             "descricao": forms.TextInput(
-                attrs={"class": "form-control form-control.sm"}
+                attrs={
+                    "class": "form-control form-control.sm",
+                    "style": "font-size:12px;",
+                }
             ),
             "fornecedor": forms.Select(attrs={"class": "form-select form-select-sm"}),
         }

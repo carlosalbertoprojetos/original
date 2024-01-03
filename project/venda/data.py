@@ -9,32 +9,33 @@ def dataAgendaProducao():
     agenda = VendaProduto.objects.all()
 
     # lista as datas com agendamento
-    #limiteproducaodiaria = LimiteProducaoDiaria.objects.first()
-    #if limiteproducaodiaria:
+    # limiteproducaodiaria = LimiteProducaoDiaria.objects.first()
+    # if limiteproducaodiaria:
     #    limiteproducaodiaria = limiteproducaodiaria.qtde
-    #else:
+    # else:
     #    limiteproducaodiaria = 0
 
     data_count = []
     for a in agenda:
-        data_count.append(a.venda.data_entrega.strftime("%Y-%m-%d"))
+        if a.venda.data_entrega:
+            data_count.append(a.venda.data_entrega.strftime("%Y-%m-%d"))
 
     lista_data = set(data_count)
 
     # soma a quantidade de produtos agendados para fabricação diária
     quant_data = []
-    #prox_dia = 0
+    # prox_dia = 0
     for l in lista_data:
         qtde = VendaProduto.objects.filter(venda__data_entrega=l).aggregate(
             Sum("quantidade")
         )["quantidade__sum"]
-        #qtde = qtde# + prox_dia
-        #if qtde > limiteproducaodiaria:
+        # qtde = qtde# + prox_dia
+        # if qtde > limiteproducaodiaria:
         #    prox_dia = qtde - limiteproducaodiaria
         #    num = limiteproducaodiaria
-        #else:
+        # else:
         num = qtde
-        #prox_dia = 0
+        # prox_dia = 0
         quant_data.append({l: num})
 
     today = date.today()
@@ -63,6 +64,10 @@ def dataAgendaProducao():
 
     # ordena os dias da lista de dias em data de Produção
     lista = sorted(lista_dias)
+    try:
+        lista
+    except:
+        lista = []
     return lista
 
 
@@ -71,7 +76,7 @@ def ChoiceMaximoDesconto():
     if not maximodesconto:
         return [(0, "0%")]
     else:
-        maximodesconto =  maximodesconto.qtde
+        maximodesconto = maximodesconto.qtde
         retorno = []
         for o in range(0, maximodesconto):
             retorno.append((o, "%s %%" % o))

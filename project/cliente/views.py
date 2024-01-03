@@ -1,11 +1,11 @@
 from typing import Any, Dict
+from django.http import JsonResponse
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy as _
 
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import ListView, DetailView
-from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from .models import Cliente
 from .forms import ClienteForm
@@ -17,17 +17,43 @@ success_url_cliente = _("cliente:clienteList")
 class ClienteListView(LoginRequiredMixin, ListView):
     model = Cliente
     template_name = "cliente/clienteList.html"
-    context_object_name = "clientes"
 
 
 clienteList = ClienteListView.as_view()
+
+
+def getClientesAjax(request):
+    bd_data = Cliente.objects.all()
+    data = []
+    for d in bd_data:
+        if d.cpf == None:
+            cpf = " "
+        else:
+            cpf = str(d.cpf)
+        if d.cnpj == None:
+            cnpj = " "
+        else:
+            cnpj = str(d.cnpj)
+        data.append(
+            {
+                "nome_fantasia": d.nome_fantasia[:20],
+                "nome": d.nome[:40],
+                "tel_principal": d.tel_principal,
+                "tel_contato": d.tel_contato,
+                "email": d.email[:20],
+                "cpf": cpf,
+                "cnpj": cnpj,
+                "estado": d.estado,
+                "acoes": f'<a class="px-1" href="{d.pk}/editar/"><i class=" fa fa-edit"></i></a></abbr>',
+            }
+        )
+    return JsonResponse({"data": data})
 
 
 class ClienteCreateView(LoginRequiredMixin, CreateView, PermissionRequiredMixin):
     model = Cliente
     form_class = ClienteForm
     template_name = "cliente/clienteCreateUpdate.html"
-    # fields = "__all__"
     success_url = success_url_cliente
     permission_required = "cliente.add_cliente"
 

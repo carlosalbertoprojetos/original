@@ -7,11 +7,13 @@
 {% block index %}
 
 <div class="container">
-    <div class="container px-3">
+    <div class="container">
         <div class="row gap-3 justify-content-center">
-            <div class="card col-12 col-md p-4 bg-light">
-                <div class="box d-flex gap-4 justify-content-between">
-                    <div class="imageBlock d-flex justify-content-center align-items-center bg-white">
+            <div class="card col-md p-4 bg-light">
+                <div
+                    class="d-flex justify-content-between align-items-center justify-content-md-center justify-content-xl-between">
+                    <div
+                        class="imageBlock d-flex align-items-center justify-content-center bg-white d-md-none d-xl-flex">
                         <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" font-size="1.5rem"
                             class="iconify iconify--mdi" width="1em" height="1em" viewBox="1 0 22 22">
                             <path fill="currentColor"
@@ -20,17 +22,19 @@
                             </path>
                         </svg>
                     </div>
-                    <div class="">
+                    <div class="text-end">
                         <span class="">Vencidos(R$)</span>
                         <div class="d-flex align-items-center justify-content-end">
-                            <h6 class="">{{ vlr_mes|floatformat:2 }}</h6>
+                            <h6 class="">{{ vencidos|floatformat:2 }}</h6>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="card col-12 col-md p-4 bg-light">
-                <div class="box d-flex gap-4 justify-content-between">
-                    <div class="imageBlock d-flex justify-content-center align-items-center bg-white">
+            <div class="card col-md p-4 bg-light">
+                <div
+                    class="d-flex justify-content-between align-items-center justify-content-md-center justify-content-xl-between">
+                    <div
+                        class="imageBlock d-flex align-items-center justify-content-center bg-white d-md-none d-xl-flex">
                         <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" font-size="1.5rem"
                             class="iconify iconify--mdi" width="1em" height="1em" viewBox="1 0 22 22">
                             <path fill="currentColor"
@@ -38,7 +42,7 @@
                                 style="color: rgb(86, 202, 0);"></path>
                         </svg>
                     </div>
-                    <div class="">
+                    <div class="text-end">
                         <span class="">Vencem Hoje(R$)</span>
                         <div class="d-flex align-items-center justify-content-end">
                             <h6 class="">{{ vencem_hoje|floatformat:2 }}</h6>
@@ -46,9 +50,11 @@
                     </div>
                 </div>
             </div>
-            <div class="card col-12 col-md p-4 bg-light">
-                <div class="box d-flex gap-4 justify-content-between">
-                    <div class="imageBlock d-flex justify-content-center align-items-center bg-white">
+            <div class="card col-md p-4 bg-light">
+                <div
+                    class="d-flex justify-content-between align-items-center justify-content-md-center justify-content-xl-between">
+                    <div
+                        class="imageBlock d-flex align-items-center justify-content-center bg-white d-md-none d-xl-flex">
                         <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" font-size="1.5rem"
                             class="iconify iconify--mdi" width="1em" height="1em" viewBox="0 0 24 24">
                             <path fill="currentColor"
@@ -57,7 +63,7 @@
                             </path>
                         </svg>
                     </div>
-                    <div class="">
+                    <div class="text-end">
                         <span class="">A vencer(R$)</span>
                         <div class="d-flex align-items-center justify-content-end">
                             <h6 class="">{{ avencer|floatformat:2 }}</h6>
@@ -65,9 +71,11 @@
                     </div>
                 </div>
             </div>
-            <div class="card col-12 col-md p-4 bg-light">
-                <div class="box d-flex gap-4 justify-content-between">
-                    <div class="imageBlock d-flex justify-content-center align-items-center bg-white">
+            <div class="card col-md p-4 bg-light">
+                <div
+                    class="d-flex justify-content-between align-items-center justify-content-md-center justify-content-xl-between">
+                    <div
+                        class="imageBlock d-flex align-items-center justify-content-center bg-white d-md-none d-xl-flex">
                         <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" font-size="1.5rem"
                             class="iconify iconify--mdi" width="1em" height="1em" viewBox="1 0 22 22">
                             <path fill="currentColor" d="M3 22V8h4v14H3m7 0V2h4v20h-4m7 0v-8h4v8h-4Z"
@@ -75,7 +83,7 @@
                             </path>
                         </svg>
                     </div>
-                    <div class="">
+                    <div class="text-end">
                         <span class="">Recebidos(R$)</span>
                         <div class="d-flex align-items-center justify-content-end">
                             <h6 class="">{{ recebidos|floatformat:2 }}</h6>
@@ -102,7 +110,7 @@
                         <input type="date" id="data_fim" name="data_fim" class="form-control form-control-sm"
                             placeholder="Data fim" value="{{ data_fim }}">
                     </div>
-                    <div class="col-12 col-lg-1 ml-2 ml-lg-0">
+                    <div class="col-12 col-lg-1 mt-2 mt-lg-0 ml-2 ml-lg-0 ">
                         <button type="submit" class="btn btn-primary btn-sm" value="Pesquisar">Pesquisar</button>
                     </div>
                 </div>
@@ -113,7 +121,7 @@
         <div class="card-header">
             <label class="fs-5 fw-bold">Contas a Receber</label>
         </div>
-        <div class="p-3">
+        <div class="table-responsive p-3">
             <table class="table table-sm" id="id_table">
                 <div class="col-12 d-flex justify-content-end">
                     <a class="btnMaster px-2" href="/venda/cadastrar/">Novo Pedido de Venda
@@ -124,10 +132,10 @@
                 </div>
                 <thead>
                     <tr>
+                        <th>Documento</th>
                         <th>Venda</th>
                         <th>Receita</th>
                         <th>Valor</th>
-                        <th>Documento</th>
                         <th>Vencimento</th>
                         <th>Pagamento</th>
                         <th>Forma Pagamento</th>
@@ -138,13 +146,13 @@
                 <tbody>
                     {% for obj in object_list %}
                     <tr>
-                        <td>{{ obj.venda|default_if_none:"" }}</td>
-                        <td>{{ obj.receita|default_if_none:"" }}</td>
+                        <td align="center">{{ obj.datadocumento|date:"d/m/y" }}</td>
+                        <td>{{ obj.venda.cliente|default:""|truncatechars:30 }}</td>
+                        <td>{{ obj.receita|default:""|truncatechars:20 }}</td>
                         <td>R$ {{ obj.valor }}</td>
-                        <td>{{ obj.datadocumento|date:"d/m/Y" }}</td>
-                        <td>{{ obj.datavencimento|date:"d/m/Y" }}</td>
-                        <td>{{ obj.datapagamento|date:"d/m/Y" }}</td>
-                        <td>{{ obj.formapgto }}</td>
+                        <td align="center">{{ obj.datavencimento|date:"d/m/y" }}</td>
+                        <td align="center">{{ obj.datapagamento|date:"d/m/y" }}</td>
+                        <td align="center">{{ obj.formapgto }}</td>
                         <td>{{ obj.detalhes|default_if_none:"" }}</td>
                         {% if obj.receita %}
                         <td align="center"><a class="" href="{% url 'receita:receitaUpdate' obj.receita.pk %}">
@@ -168,7 +176,14 @@
 
 
 {% block script %}
+<script src="{% static 'js/datatables.min.js' %}"></script>
+<script src="{% static 'js/jqueryDataTable.js' %}"></script>
 <script>
+    function filtro() {
+        let dataInicio = document.getElementById('data_ini')
+        let datafim = document.getElementById('data_fim')
+    };
+
     $(document).ready(function () {
         $('#id_table').DataTable({
             "language": {
@@ -195,9 +210,7 @@
                     "sSortDescending": ": Ativar para ordenar a coluna de maneira descendente"
                 }
             }
-        }
-
-        );
+        });
     }); 
 </script>
 {% endblock %}

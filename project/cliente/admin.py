@@ -25,6 +25,7 @@ class ClienteAdmin(ImportExportModelAdmin):
                     ("tel_principal", "tel_contato"),
                     ("email", "cpf"),
                     ("cnpj", "insc_estadual"),
+                    ("descricao"),
                 ),
             },
         ),

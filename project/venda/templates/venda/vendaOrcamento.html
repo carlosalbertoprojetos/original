@@ -4,9 +4,7 @@
 <html lang="pt-br">
 
     <head>
-
         <title>Orçamento</title>
-
         <style>
             .row {
                 --bs-gutter-x: 1.5rem;
@@ -19,8 +17,10 @@
                 flex: 0 0 auto;
                 width: 50%
             }
+	    body {
+			 font-size: 15px;
+	    }
         </style>
-
     </head>
 
     <body>
@@ -32,7 +32,7 @@
                         <img src="http://www.intip.com.br/logogrande.png" width="100" height="100">
                     </div>
                     <div align="center">
-                        <div><b>Representações Hs</b></div>
+                        <div><b>ORIGINAL COMERCIO E INDUSTRIA PRODUTOS REFRIGERADOS LTDA</b></div>
                         <div>Orçamento Nº {{pk}}</div>
                     </div>
                 </div>
@@ -44,6 +44,7 @@
                         <div>
                             {% for c in venda %}
                             <div class="row">
+                                <div class="col-6"><b>Vendedor:</b> {{ c.vendedor | title }}</div>
                                 <div class="col-6"><b>Cliente:</b> {{ c.cliente.nome }}</div>
                                 <div class="col-6"><b>Nome Fantasia:</b> {{ c.cliente.nome_fantasia }}</div>
                             </div>
@@ -51,8 +52,8 @@
                                 <div><b>CNPJ:</b> {{ c.cliente.cnpj }}</div>
                                 <div><b>Inscrição Estadual:</b> {{ c.cliente.insc_estadual }}</div>
                             </div>
-                            <div><b>Endereço: </b>{{ c.cliente.logradouro }}, {{ c.cliente.numero }}, {{
-                                c.cliente.complemento }}</div>
+                            <div><b>Endereço: </b>{{ c.cliente.logradouro }}, {{ c.cliente.numero }}
+                                {%if c.cliente.complemento %}, {{ c.cliente.complemento }} {%endif%}</div>
                             <div>
                                 <div><b>Bairro:</b> {{ c.cliente.bairro }}</div>
                                 <div><b>CEP:</b> {{ c.cliente.cep }}</div>
@@ -63,7 +64,7 @@
                             </div>
                             <div>
                                 <div><b>Telefone:</b> {{ c.cliente.tel_principal|default:"" }}</div>
-                                <div><b>E-mail:</b> {{ c.cliente.email }}</div>
+				<div><b>E-mail:</b> {%if c.cliente.email%}{{ c.cliente.email }}{%endif%}</div>
                             </div>
                         </div>
                     </div>
@@ -82,8 +83,9 @@
                         <tbody>
                             {% for prod in produtos %}
                             <tr>
-                                <td>{{ prod.produto }}</td>
-                                <td align="center">{{ prod.quantidade }}</td>
+                                <td width="400px">{{ prod.produto }} {{prod.voltagem}}v {{prod.torneira}} Adesivado
+                                    {{prod.adesivado }}</td>
+                                <td width="30px" align="center">{{ prod.quantidade }}</td>
                                 <td align="right">R$ {{ prod.preco }}</td>
                                 <td align="right">R$ {{ prod.subtotal }}</td>
                             </tr>
@@ -112,11 +114,14 @@
                             <div class="col-6"><b>Nome Fantasia:</b> {{ c.transportadora.nome_fantasia }}</div>
                         </div>
                         <div>
-                            <div><b>CNPJ:</b> {{ c.transportadora.cnpj }}</div>
-                            <div><b>Inscrição Estadual:</b> {{ c.transportadora.insc_estadual }}</div>
+
+                            {%if c.transportadora.cnpj %}}<div><b>CNPJ:</b> {{ c.transportadora.cnpj }}</div>{%endif%}
+                            {%if c.transportadora.ins_estadual %}}<div><b>Inscrição Estadual:</b> {{
+                                c.transportadora.insc_estadual }}</div>{%endif%}
                         </div>
-                        <div><b>Endereço: </b>{{ c.transportadora.logradouro }}, {{ c.transportadora.numero }}, {{
-                            c.transportadora.complemento }}</div>
+                        {%if c.transportadora.logradouro %}
+                        <div><b>Endereço: </b>{{ c.transportadora.logradouro }}, {{ c.transportadora.numero }} 
+                            {%if c.transportadora.complemento %}, {{ c.transportadora.complemento }}{%endif%}</div>
                         <div>
                             <div><b>Bairro:</b> {{ c.transportadora.bairro }}</div>
                             <div><b>CEP:</b> {{ c.transportadora.cep }}</div>
@@ -127,8 +132,9 @@
                         </div>
                         <div>
                             <div><b>Telefone:</b> {{ c.transportadora.tel_principal|default:"" }}</div>
-                            <div><b>E-mail:</b> {{ c.transportadora.email }}</div>
+			    <div><b>E-mail:</b> {%if c.transportaddora.email%}{{ c.transportadora.email }}{%endif%}</div>
                         </div>
+                        {%endif%}
                     </div>
                     {% endfor %}
                 </div>

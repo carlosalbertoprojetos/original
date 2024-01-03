@@ -19,13 +19,14 @@ def confereEstoque(request, pk):
     template_name = "estoque/estoqueUpdate.html"
 
     estoque = get_object_or_404(EstoqueMateriaPrima, pk=pk)
-    confere = ConferenciaEstoque.objects.filter(produto=estoque)
+
+    confere = ConferenciaEstoque.objects.filter(materiaprima=estoque)
 
     if request.method == "POST":
         forms = ConferenciaEstoqueForm(request.POST)
         if forms.is_valid():
             forms = forms.save(commit=False)
-            forms.produto = estoque
+            forms.materiaprima = estoque
             forms.usuario = request.user
             forms.qtde = estoque.qtde
             forms.save()

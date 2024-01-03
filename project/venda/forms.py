@@ -1,10 +1,14 @@
 import datetime
 from django import forms
+
+from cliente.models import Cliente
 from .data import dataAgendaProducao, ChoiceMaximoDesconto
 from project.constantes import ESCOLHAS_STATUSVENDAS
-from .models import Venda, VendaProduto, MaximoDesconto
+from .models import Venda, VendaProduto, MaximoDesconto, Voltagem, Torneira, Adesivado
 from django.core.exceptions import ValidationError
 from produto.models import Produto
+
+today = datetime.date.today()
 
 
 def ChoiceMaximoDesconto():
@@ -27,17 +31,8 @@ class VendaForm(forms.ModelForm):
                 "onchange": "change()",
             }
         ),
-        choices=dataAgendaProducao,
     )
-
-    # status_venda = forms.ChoiceField(
-    #    widget=forms.Select(
-    #        attrs={
-    #            "class": "form-select form-select-sm",
-    #        }
-    #    ),
-    #    choices=[("orcamento", "Orçamento"), ("autorizado", "Autorizado")],
-    # )
+    choice = dataAgendaProducao()
 
     class Meta:
         model = Venda
@@ -47,6 +42,7 @@ class VendaForm(forms.ModelForm):
             "data_entrega",
             "transportadora",
             "valor_frete",
+            "vendedor",
             "valor_venda",
             "porcentagem_desconto",
             "subtotal",
@@ -57,13 +53,23 @@ class VendaForm(forms.ModelForm):
             "parcelas",
             "formapgto",
             "detalhes",
+            "codigo_mercadolivre",
+            "nickname_mercadolivre",
+            "cotacao_transportadora",
+            "telefonequemrecebe_mercadolivre",
+            "quemrecebe_mercadolivre"
         )
+
         widgets = {
-            "cliente": forms.Select(attrs={"class": "form-select form-select-sm"}),
-            "data_pedido": forms.NumberInput(
+            "cliente": forms.Select(
+                attrs={
+                    "class": "form-select form-select-sm",
+                    "style": "width: 100%;",
+                },
+            ),
+            "data_pedido": forms.TextInput(
                 attrs={
                     "class": "form-control form-control-sm",
-                    "type": "date",
                     "readonly": "readonly",
                 }
             ),
@@ -79,7 +85,6 @@ class VendaForm(forms.ModelForm):
                     "onchange": "change()",
                 }
             ),
-            "vendedor": forms.Select(attrs={"class": "form-select form-select-sm"}),
             "valor_venda": forms.NumberInput(
                 attrs={
                     "class": "form-control form-control-sm text-end",
@@ -101,6 +106,7 @@ class VendaForm(forms.ModelForm):
             "condicaopgto": forms.Select(
                 attrs={
                     "class": "form-select form-select-sm",
+                    "onChange": "condicao()",
                 }
             ),
             "dias_prim_par": forms.NumberInput(
@@ -114,20 +120,47 @@ class VendaForm(forms.ModelForm):
                     "class": "form-control form-control-sm text-center",
                 }
             ),
+            "vendedor": forms.TextInput(
+                attrs={
+                    "class": "form-control form-control-sm text-center",
+                }
+            ),
             "formapgto": forms.Select(attrs={"class": "form-control form-control-sm"}),
             "detalhes": forms.TextInput(
                 attrs={"class": "form-control form-control-sm"}
+            ),
+            "codigo_mercadolivre": forms.TextInput(
+                attrs={"class": "form-control form-control-sm text-center"}
+            ),
+            "nickname_mercadolivre": forms.TextInput(
+                attrs={"class": "form-control form-control-sm text-center"}
+            ),
+            "cotacao_transportadora": forms.TextInput(
+                attrs={"class": "form-control form-control-sm text-center"}
             ),
         }
 
     def __init__(self, *args, **kwargs):
         super(VendaForm, self).__init__(*args, **kwargs)
+        # inclui a data da venda na lista de data da produção
+        if self.choice:
+            if self.choice[0][0] != str(today):
+                self.choice.remove(self.choice[0])
+
+        data = self.instance.data_entrega
+        if data and self.choice:
+            for ch in range(len(self.choice)):
+                if data.strftime("%d/%m/%Y") == self.choice[ch][1][:10]:
+                    data_id = (data.strftime("%Y-%m-%d"), self.choice[ch])
+
         self.fields["dias_prim_par"].widget.attrs["readonly"] = True
         self.fields["dias_outras_par"].widget.attrs["readonly"] = True
         self.fields["parcelas"].widget.attrs["readonly"] = True
         self.fields["valor_venda"].widget.attrs["readonly"] = True
-        # import pdb;pdb.set_trace()
-        # self.fields["valor_desconto"].widget.attrs["readonly"] = True
+        self.fields["vendedor"].widget.attrs["readonly"] = True
+        if self.choice:
+            self.fields["data_entrega"].choices = self.choice
+
         if self.instance:
             self.fields["status_venda"].queryset = ESCOLHAS_STATUSVENDAS
 
@@ -148,7 +181,6 @@ class VendaProdutoForm(forms.ModelForm):
             "produto": forms.Select(
                 attrs={
                     "class": "form-select form-select-sm",
-                    "onclick": "reply_click(this.id)",
                     "onchange": "filtroPreco(this.id)",
                 }
             ),
@@ -187,7 +219,6 @@ class VendaProdutoForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(VendaProdutoForm, self).__init__(*args, **kwargs)
-        # self.fields["produto"].widget.attrs["required"] = "required"
         self.fields["subtotal"].widget.attrs["readonly"] = True
 
     def clean(self):
@@ -196,7 +227,7 @@ class VendaProdutoForm(forms.ModelForm):
             < Produto.objects.get(id=self.cleaned_data["produto"].id).preco
         ):
             raise ValidationError(
-                "O Preco do produto não pode ser menor que o preço minimo."
+                "O Preco do produto não pode ser menor que o valor cadastrado."
             )
 
 

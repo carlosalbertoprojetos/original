@@ -12,8 +12,13 @@
         <div class="card-header">
             <label class="fs-5 fw-bold">Notas Fiscais para Download</label>
         </div>
-        <div class="p-3">
+        <div class="table-responsive p-3">
             <table class="table table-sm" id="id_table">
+                {% if message %}
+                <div class="alert alert-warning" role="alert">
+                    {{ message }}
+                </div>
+                {% endif %}
                 <div class="col-12 d-flex justify-content-end">
                 </div>
                 <thead>
@@ -29,11 +34,11 @@
                 <tbody>
                     {% for object in object_list %}
                     <tr>
-                        <td>{{ object.chNFe|truncatechars:15 }}</td>
+                        <td>{{ object.chNFe|truncatechars:20 }}</td>
                         <td>{{ object.CNPJ }}</td>
-                        <td>{{ object.xNome }}</td>
+                        <td>{{ object.xNome|truncatechars:30 }}</td>
                         <td>{{ object.dhEmi|date:"d/m/y" }}</td>
-                        <td>{{ object.vNF|floatformat:2 }}</td>
+                        <td>R$ {{ object.vNF|floatformat:2 }}</td>
                         <td align="center">
                             {% if exists %}
                             sim
@@ -82,6 +87,12 @@
     </div>
 </div>
 
+{% endblock %}
+
+{% block script %}
+<script src="{% static 'js/datatables.min.js' %}"></script>
+<script src="{% static 'js/jqueryDataTable.js' %}"></script>
+
 {% if show_modal %}
 <script type="text/javascript">
     $(document).ready(function () {
@@ -90,11 +101,12 @@
 </script>
 {% endif %}
 
-
-{% endblock %}
-
-{% block script %}
 <script>
+    function filtro() {
+        let dataInicio = document.getElementById('data_ini')
+        let datafim = document.getElementById('data_fim')
+    };
+
     $(document).ready(function () {
         $('#id_table').DataTable({
             "language": {
@@ -121,9 +133,7 @@
                     "sSortDescending": ": Ativar para ordenar a coluna de maneira descendente"
                 }
             }
-        }
-
-        );
+        });
     }); 
 </script>
 {% endblock %}

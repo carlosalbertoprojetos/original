@@ -21,6 +21,12 @@ class FornecedorListView(LoginRequiredMixin, ListView):
 fornecedorList = FornecedorListView.as_view()
 
 
+def cidadesAjax(request):
+    # estado =
+    # cidade =
+    pass
+
+
 class FornecedorCreateView(LoginRequiredMixin, CreateView):
     model = Fornecedor
     form_class = FornecedorForm
@@ -58,9 +64,13 @@ class FornecedorDeleteView(LoginRequiredMixin, DeleteView):
     model = Fornecedor
     template_name = "fornecedor/fornecedorDelete.html"
     success_url = success_url_fornecedor
+
     def get(self, request, *args, **kwargs):
-        if self.get_object().fornecedorNFCompra.all() or self.get_object().compra_set.all():
-            print('tem elemento')
+        if (
+            self.get_object().fornecedorNFCompra.all()
+            or self.get_object().compra_set.all()
+        ):
+            print("tem elemento")
             self.object = self.get_object()
             context = self.get_context_data(object=self.object)
             self.template_name = "fornecedor/fornecedorRestrict.html"
@@ -70,7 +80,6 @@ class FornecedorDeleteView(LoginRequiredMixin, DeleteView):
             self.object = self.get_object()
             context = self.get_context_data(object=self.object)
             return self.render_to_response(context)
-        
-        
+
 
 fornecedorDelete = FornecedorDeleteView.as_view()

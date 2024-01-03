@@ -1,9 +1,6 @@
 from django.contrib import admin
 
-# Register your models here.
-
-
-from .models import EnderecoEstoque, EstoqueMateriaPrima
+from .models import EnderecoEstoque, EstoqueMateriaPrima, EstoquePecaAcabada
 
 
 @admin.register(EnderecoEstoque)
@@ -14,3 +11,8 @@ class EnderecoEstoqueAdmin(admin.ModelAdmin):
 @admin.register(EstoqueMateriaPrima)
 class EstoqueMateriaPrimaAdmin(admin.ModelAdmin):
     list_display = ["materiaprima", "enderecoestoque", "qtde"]
+
+
+@admin.register(EstoquePecaAcabada)
+class EstoquePecaAcabadaAdmin(admin.ModelAdmin):
+    ...

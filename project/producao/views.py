@@ -12,12 +12,15 @@ from .models import (
     ProdutoAcabado,
     HistoricoMontagem,
 )
-from estoque.models import EstoqueMateriaPrima
-from compra.models import Compra, CompraMateriaPrima
-from produto.models import Produto, ProdutosMatPri
+from estoque.models import EstoqueMateriaPrima, EstoquePecaAcabada
+from compra.models import CompraMateriaPrima
+from produto.models import Produto, ProdutoMatPri, Peca
 from materiaprima.models import MateriaPrima
 from venda.models import VendaProduto, Venda
 from producao.forms import QuantidadeProducaoForm
+
+
+today = date.today()
 
 
 def criar_produto_ajax(request):
@@ -97,7 +100,7 @@ def chaodeFabrica(request):
     """
     chaodeFabrica
     """
-    template_name = "producao/chaodeFabrica.html"
+    template_name = "producao/chaodefabrica.html"
     context = {}
     context["faltandomateriaprima"] = ProdutoAcabado.objects.filter(
         status="faltandomateriaprima"
@@ -168,7 +171,7 @@ def iniciarProducao(request):
             venda.save()
             return HttpResponseRedirect(reverse("producao:chaodeFabrica"))
 
-    template_name = "producao/iniciarProducao.html"
+    template_name = "producao/iniciarproducao.html"
     context = {}
     vendas = Venda.objects.filter(status_venda="autorizado")
     context["vendas"] = vendas
@@ -264,13 +267,13 @@ def enviarExpedicao(request):
     return render(request, template_name, context)
 
 
+# apresenta o estoque acrescido do material comprado, em relação aos produtos vendidos
 def estoqueReal(request):
     template_name = "producao/estoqueReal.html"
     bd_produto = Produto.objects.all()
 
     # dias de produção a serem estimados
     previsao_dias = 35
-    today = date.today()
     meses_extenso = (
         "Janeiro",
         "Fevereiro",
@@ -317,14 +320,13 @@ def estoqueReal(request):
         tot_mp_prod_diaria.update({str(v.venda.data_entrega): total_producao_diaria})
         lista_datas.append(str(v.venda.data_entrega))
         tot_prod_vendas.append(v.quantidade)
-
-        pmp = ProdutosMatPri.objects.filter(prod__nome=v.produto)
+        pmp = ProdutoMatPri.objects.filter(produto__nome=v.produto)
         mp_usada = {}
         for p in pmp:
-            if p.prod.nome == v.produto.nome:
-                sum_mp = p.quant * v.quantidade
-                mp_usada.update({p.mp: int(sum_mp)})
-        mp_usadas.update({p.prod: mp_usada})
+            if p.produto.nome == v.produto.nome:
+                sum_mp = p.quantidade * v.quantidade
+                mp_usada.update({p.materiaprima: int(sum_mp)})
+        mp_usadas.update({p.produto: mp_usada})
         sum_mp = {}
         consumo_mp_periodo.update({v.venda.data_entrega: mp_usadas})
 
@@ -337,11 +339,17 @@ def estoqueReal(request):
         lista = {}
         for ven in vendas:
             if str(ven.venda.data_entrega) == ld:
-                produto_mp = ProdutosMatPri.objects.filter(prod__nome=ven.produto)
+                produto_mp = ProdutoMatPri.objects.filter(produto__nome=ven.produto)
                 mps_produto = {}
                 for promp in produto_mp:
-                    quant = promp.quant * ven.quantidade
-                    mps_produto.update({promp.mp.materiaprima.nome: int(quant)})
+                    quant = promp.quantidade * ven.quantidade
+                    mps_produto.update({promp.materiaprima.nome: int(quant)})
+
+                produto_peca = Peca.objects.filter(produto__nome=ven.produto)
+                for pp in produto_peca:
+                    quant = pp.quantidade * ven.quantidade
+                    mps_produto.update({pp.nome: int(quant)})
+
                 lista.update({ven.produto: {ven.quantidade: mps_produto}})
         prods_fabricados_mesmo_dia.update({ld: lista})
 
@@ -358,6 +366,7 @@ def estoqueReal(request):
             soma_mps = dict(
                 functools.reduce(operator.add, map(collections.Counter, mps_somadas))
             )
+
         tmpud2.update({cont: soma_mps})
         cont += 1
         tmpud.update({ld: soma_mps})
@@ -401,10 +410,22 @@ def estoqueReal(request):
     # matérias primas catalogadas
     materias_primas_catalogadas = MateriaPrima.objects.all()
 
+    # peças catalogadas
+    pecas_catalogadas = Peca.objects.all()
+
+    # lista material geral (matérias primas e pecas) cadastradas
+    lista_geral = []
+
+    # lista as matérias prmas e peças que compõem os produto
+    for mz in materias_primas_catalogadas:
+        lista_geral.append(mz.nome)
+    for pc in pecas_catalogadas:
+        lista_geral.append(pc.nome)
+
     # dict contento todas as matérias primas e suas quantidades zeradas
     materias_primas_geral = {}
-    for mpc in materias_primas_catalogadas:
-        materias_primas_geral.update({mpc.nome: 0})
+    for mpc in lista_geral:
+        materias_primas_geral.update({mpc: 0})
 
     # estoque atual de matérias primas
     estoque_atual = EstoqueMateriaPrima.objects.all()
@@ -415,13 +436,17 @@ def estoqueReal(request):
             if ea.materiaprima.nome == egkey:
                 materias_primas_geral.update({ea.materiaprima.nome: int(ea.qtde)})
 
+    # estoque atual de pecas
+    estoque_pecas_atual = EstoquePecaAcabada.objects.all()
+    for pg in estoque_pecas_atual:
+        materias_primas_geral.update({pg.peca.nome: int(pg.quantidade)})
+
     # posição, produto, quantidade comprada, na posição da data correspondente
     mpCompras = CompraMateriaPrima.objects.filter(compra__previsaoentrega__gte=today)
 
-    # lista matéria prima e quantidade na posição correspondente a previsão de entrega
+    # lista matéria prima e quantidade na posição correspondente à previsão de entrega
     posicoes = []
     posicoes2 = {}
-
     quantMpCompras = {}
     for d in range((len(dias_) - 1)):
         dia = today + timedelta(d)
@@ -438,17 +463,11 @@ def estoqueReal(request):
                 poprodquant.update({mpc.produto.nome: mpc.quantidade})
                 posicoes2.update({d: poprodquant})
 
-    # estoque por dia
+    # estoque de matérias primas e peças por dia
     estoque = materias_primas_geral
     lista_mps = []
     for d in range(len(dias_)):  # 1-35
         vls = {}
-        for p1k, p1v in posicoes2.items():
-            for p1vk, p1vv in p1v.items():
-                if d == p1k:
-                    saldoCompras = estoque[p1vk] + p1vv
-                    estoque.update({p1vk: saldoCompras})
-
         for p2 in range(len(posicoes)):
             if d == posicoes[p2]:
                 for k, v in custo_mp_posicao[p2].items():
@@ -457,7 +476,7 @@ def estoqueReal(request):
                         estoque.update({ka: saldoPosicao})
             vls.update(estoque)
         lista_mps.append(vls)
-
+    # print(lista_mps)
     # relacionar saldo mp aos produtos
     produtos_mps_totais = {}
     for e in estoque:
@@ -468,6 +487,7 @@ def estoqueReal(request):
                     quantidades.append(vv)
         produtos_mps_totais.update({e: quantidades})
 
+    # print(produtos_mps_totais)
     # cria um dicionário (dict_produtos_mp) com todos os produtos cadastrados
     tot_prods = Produto.objects.all()
     tot_produtos = []
@@ -476,23 +496,41 @@ def estoqueReal(request):
         tot_produtos.append(i.nome)
         dict_produtos_mp.update({i.nome: materias_primas_geral})
 
-    # lista o que cada produto utiliza de matérias primas e a quantidade necessária para produção
-    listaprodutos = ProdutosMatPri.objects.all()
+    # lista o que cada produto utiliza de matérias primas e a quantidade necessária para sua produção
+    listaprodutos = ProdutoMatPri.objects.all()
 
     # cria um dicionário por produto, matéria prima e sua quantidade
     list_prod = {}
     for bdp in tot_produtos:
         mp_produtos = {}
         for l in listaprodutos:
-            if bdp == l.prod.nome:
-                mp_produtos.update({l.mp.materiaprima.nome: l.quant})
+            if l.produto and bdp == l.produto.nome:
+                mp_produtos.update({l.materiaprima.nome: l.quantidade})
         list_prod.update({bdp: mp_produtos})
+
+    # lista o que cada produto utiliza de pecas e a quantidade necessária para sua produção
+    listapecas = Peca.objects.all()
+
+    # cria um dicionário de peças por produto e sua quantidade
+    list_pecas = {}
+    for bdp in tot_produtos:
+        pecas_quant = {}
+        for l in listapecas:
+            if bdp == l.produto.nome:
+                pecas_quant.update({l.nome: int(l.quantidade)})
+        list_pecas.update({bdp: pecas_quant})
 
     lista_mp_final_por_produto = {}
     for k, v in list_prod.items():
         mps_por_prod = {}
+        pecas_por_prod = {}
         for ka, va in v.items():
             mps_por_prod.update({ka: int(va)})
+        for ke, val in list_pecas.items():
+            if k == ke:
+                for key, valu in val.items():
+                    pecas_por_prod.update({key: int(valu)})
+        mps_por_prod.update(pecas_por_prod)
         lista_mp_final_por_produto.update({k: mps_por_prod})
 
     tot_dict_prod_diaria = {}
@@ -522,7 +560,7 @@ def estoqueReal(request):
                 datas_fabricacao.append(lkey)
                 tot_prod_diaria_geral[index] = tot_dict_prod_diaria[lkey]
 
-    # período base de cálculo para a programação da previsão de estoque vs produção
+    # período base de cálculo para estoque vs produção
     meses_ = []
     for i in mp:
         for d, e in i.items():
@@ -537,7 +575,6 @@ def estoqueReal(request):
     for bdp in bd_produto:
         for pok, pov in posicoes2.items():
             for povk, povv in pov.items():
-                # print(bdp, pok, povk, povv)
                 vlrs_amarelos.append(
                     f"{bdp}/{povk}/{pok+1}/{produtos_mps_totais[povk][pok]}"
                 )
@@ -555,13 +592,13 @@ def estoqueReal(request):
     return render(request, template_name, context)
 
 
+# apresenta uma previsão de estoque conforme quantidade de produtos informados
 def previsaoEstoque(request):
     template_name = "producao/previsaoEstoque.html"
     bd_produto = Produto.objects.all()
 
     # dias de produção a serem estimados
     previsao_dias = 35
-    today = date.today()
     meses_extenso = (
         "Janeiro",
         "Fevereiro",
@@ -590,38 +627,73 @@ def previsaoEstoque(request):
         if not var in mp:
             mp.append({dia.year: dia.month})
 
-    # lista dos produtos e suas matérias primas e quantidades para sua fabricação
+    # lista bd limite de produção
     producao_diaria = LimiteProducaoDiaria.objects.all()
-    # lista da quantidade de cada produto a se produzido
+
+    # matérias primas catalogadas
+    materias_primas_catalogadas = MateriaPrima.objects.all()
+
+    # lista bd peças
+    pecas_catalogadas = Peca.objects.all()
+
+    # lista da quantidade de matérias primas e peças a serem consumidos por produto
     lista_prod_diaria = {}
-    # mp_usadas = {}
     mp_usadas = []
     for pd in producao_diaria:
-        pmp = ProdutosMatPri.objects.filter(prod__nome=pd.produto)
         mp_usada = {}
-
+        pmp = ProdutoMatPri.objects.filter(produto=pd.produto)
         for p in pmp:
-            if p.prod.nome == pd.produto.nome:
-                sum_mp = p.quant * pd.quantidade
-                mp_usada.update({p.mp.materiaprima.nome: int(sum_mp)})
+            if p.produto.nome == pd.produto:
+                sum_mp = p.quantidade * pd.quantidade
+                mp_usada.update({p.materiaprima.nome: int(sum_mp)})
                 quantidade = []
                 for l in range(previsao_dias):
                     quantidade.append(pd.quantidade)
-                lista_prod_diaria.update({p.prod.nome: quantidade})
+                lista_prod_diaria.update({p.produto.nome: quantidade})
+
+        for pe in pecas_catalogadas:
+            if pe.produto.nome == pd.produto.nome:
+                sum_pe = pe.quantidade * pd.quantidade
+                mp_usada.update({pe.nome: int(sum_pe)})
+                quantidade = []
+                for l in range(previsao_dias):
+                    quantidade.append(pd.quantidade)
+                lista_prod_diaria.update({pe.produto.nome: quantidade})
+
         mp_usadas.append(mp_usada)
 
     # lista com a soma das matérias primas utilizadas para a produção da quantidade de produtos informados
-    consumo_mp = dict(
-        functools.reduce(operator.add, map(collections.Counter, mp_usadas))
-    )
+    consumo_mp = {}
+    if mp_usadas:
+        consumo_mp = dict(
+            functools.reduce(operator.add, map(collections.Counter, mp_usadas))
+        )
 
     # estoque atual de matérias primas
     estoque_atual = EstoqueMateriaPrima.objects.all()
 
-    materias_primas_geral = {}
+    # lista material geral (matérias primas e pecas) cadastradas
+    lista_geral = []
+
+    # lista as matérias prmas e peças que compõem os produto
+    for mz in materias_primas_catalogadas:
+        lista_geral.append(mz.nome)
+    for pc in pecas_catalogadas:
+        lista_geral.append(pc.nome)
+
     # insere a quantidade de cada matéria prima no materias_primas_geral
+    materias_primas_geral = {}
     for ea in estoque_atual:
         materias_primas_geral.update({ea.materiaprima.nome: int(ea.qtde)})
+
+    # insere a quantidade de cada peça em estoque aterias_primas_geral
+    estoque_pecas_atual = EstoquePecaAcabada.objects.all()
+    for pg in estoque_pecas_atual:
+        materias_primas_geral.update({pg.peca.nome: int(pg.quantidade)})
+
+    for lg in lista_geral:
+        if not lg in materias_primas_geral:
+            materias_primas_geral.update({lg: 0})
 
     # cria lista dos dias no período por produto id
     tot_diaria_prods = LimiteProducaoDiaria.objects.all().aggregate(Sum("quantidade"))[
@@ -636,11 +708,12 @@ def previsaoEstoque(request):
             {mpc.compra.previsaoentrega: {mpc.produto.nome: mpc.quantidade}}
         )
 
+    # estoque de matérias primas e peças por dia
     estoque = materias_primas_geral
     produtos_mps_totais = {}
 
-    posicoes = {}
     # organiza as posições das quantidades de matérias primas correspondente as datas
+    posicoes = {}
     for key, value in estoque.items():
         vls = []
         tot_prod_diaria_geral = []
@@ -680,22 +753,37 @@ def previsaoEstoque(request):
         dict_produtos_mp.update({i.nome: materias_primas_geral})
 
     # lista o que cada produto utiliza de matérias primas e a quantidade necessária para produção
-    listaprodutos = ProdutosMatPri.objects.all()
+    listaprodutos = ProdutoMatPri.objects.all()
 
     # cria um dicionário por produto, matéria prima e sua quantidade
     list_prod = {}
     for bdp in tot_produtos:
         mp_produtos = {}
         for l in listaprodutos:
-            if bdp == l.prod.nome:
-                mp_produtos.update({l.mp.materiaprima.nome: l.quant})
+            if l.produto and bdp == l.produto.nome:
+                mp_produtos.update({l.materiaprima.nome: l.quantidade})
         list_prod.update({bdp: mp_produtos})
+
+    # cria um dicionário de peças por produto e sua quantidade
+    list_pecas = {}
+    for bdp in tot_produtos:
+        pecas_quant = {}
+        for l in pecas_catalogadas:
+            if bdp == l.produto.nome:
+                pecas_quant.update({l.nome: int(l.quantidade)})
+        list_pecas.update({bdp: pecas_quant})
 
     lista_mp_final_por_produto = {}
     for k, v in list_prod.items():
         mps_por_prod = {}
+        pecas_por_prod = {}
         for ka, va in v.items():
             mps_por_prod.update({ka: int(va)})
+        for ke, val in list_pecas.items():
+            if k == ke:
+                for key, valu in val.items():
+                    pecas_por_prod.update({key: int(valu)})
+        mps_por_prod.update(pecas_por_prod)
         lista_mp_final_por_produto.update({k: mps_por_prod})
 
     # período base de cálculo para a programação da previsão de estoque vs produção
@@ -754,7 +842,7 @@ def previsaoEstoque(request):
         return render(request, template_name, context)
 
 
-# lista dos produtos a serem fabricados agrupados por produto
+# lista dos produtos a serem fabricados, agrupados por produto
 def relatorioProducao(request):
     producao_base = ProdutoAcabado.objects.all()
     produto = []
@@ -769,7 +857,7 @@ def relatorioProducao(request):
     return render(request, template_name, context)
 
 
-# lista dos produtos a serem fabricados agrupados por venda
+# lista dos produtos a serem fabricados, agrupados por venda
 def relatorioVenda(request):
     producao_base = ProdutoAcabado.objects.all()
     venda = []
@@ -781,4 +869,468 @@ def relatorioVenda(request):
     context = {"producao": producao_base, "venda": venda}
     template_name = "producao/imprimirVenda.html"
 
+    return render(request, template_name, context)
+
+
+# apresenta uma previsão de estoque conforme quantidade de produtos informados
+def previsaoEstoquePecas(request):
+    template_name = "producao/previsaoEstoquePecas.html"
+    bd_produto = Produto.objects.all()
+
+    # dias de produção a serem estimados
+    previsao_dias = 35
+    meses_extenso = (
+        "Janeiro",
+        "Fevereiro",
+        "Março",
+        "Abril",
+        "Maio",
+        "Junho",
+        "Julho",
+        "Agosto",
+        "Setembro",
+        "Outubro",
+        "Novembro",
+        "Dezembro",
+    )
+
+    # lista os meses referentes ao período 'previsao_dias'
+    datas = []
+    dias_ = []
+    dia = []
+    mp = []
+    for i in range(previsao_dias):
+        dia = today + timedelta(i)
+        datas.append(dia.strftime("%Y-%m-%d"))
+        dias_.append(dia.day)
+        var = {dia.year: dia.month}
+        if not var in mp:
+            mp.append({dia.year: dia.month})
+
+    # lista bd limite de produção
+    producao_diaria = LimiteProducaoDiaria.objects.all()
+
+    # lista bd peças
+    pecas_catalogadas = Peca.objects.all()
+
+    # lista da quantidade de matérias primas e peças a serem consumidos por produto
+    lista_prod_diaria = {}
+    pecas_usadas = []
+    for pd in producao_diaria:
+        peca_usada = {}
+
+        for pe in pecas_catalogadas:
+            if pe.produto.nome == pd.produto.nome:
+                sum_pe = pe.quantidade * pd.quantidade
+                peca_usada.update({pe.nome: int(sum_pe)})
+                quantidade = []
+                for l in range(previsao_dias):
+                    quantidade.append(pd.quantidade)
+                lista_prod_diaria.update({pe.produto.nome: quantidade})
+        pecas_usadas.append(peca_usada)
+
+    # lista com a soma das matérias primas utilizadas para a produção da quantidade de produtos informados
+    consumo = {}
+    if pecas_usadas:
+        consumo = dict(
+            functools.reduce(operator.add, map(collections.Counter, pecas_usadas))
+        )
+
+    # lista material geral (matérias primas e pecas) cadastradas
+    lista_geral = []
+
+    # lista as matérias prmas e peças que compõem os produto
+    for pc in pecas_catalogadas:
+        lista_geral.append(pc.nome)
+
+    # insere a quantidade de cada matéria prima no pecas_geral
+    pecas_geral = {}
+
+    # insere a quantidade de cada peça em estoque aterias_primas_geral
+    estoque_pecas_atual = EstoquePecaAcabada.objects.all()
+    for pg in estoque_pecas_atual:
+        pecas_geral.update({pg.peca.nome: int(pg.quantidade)})
+
+    for lg in lista_geral:
+        if not lg in pecas_geral:
+            pecas_geral.update({lg: 0})
+
+    # cria lista dos dias no período por produto id
+    tot_diaria_prods = LimiteProducaoDiaria.objects.all().aggregate(Sum("quantidade"))[
+        "quantidade__sum"
+    ]
+
+    # estoque de matérias primas e peças por dia
+    estoque = pecas_geral
+    produtos_totais = {}
+
+    # # organiza as posições das quantidades de matérias primas correspondente as datas
+    posicoes = {}
+    for key, value in estoque.items():
+        vls = []
+        tot_prod_diaria_geral = []
+        for d in range(len(dias_)):  # 1-35
+            tot_prod_diaria_geral.append(tot_diaria_prods)
+            dia = today + timedelta(d)
+
+            if key in consumo:
+                calc = estoque[key] - consumo[key]
+            else:
+                calc = estoque[key]
+            vls.append(calc)
+            estoque.update({key: calc})
+        produtos_totais.update({key: vls})
+
+    # cria um dicionário (dict_produtos_mp) com todos os produtos cadastrados
+    tot_prods = Produto.objects.all()
+    tot_produtos = []
+    dict_produtos = {}
+    for i in tot_prods:
+        tot_produtos.append(i.nome)
+        dict_produtos.update({i.nome: pecas_geral})
+
+    # lista o que cada produto utiliza de matérias primas e a quantidade necessária para produção
+    listaprodutos = ProdutoMatPri.objects.all()
+
+    # cria um dicionário por produto, matéria prima e sua quantidade
+    list_prod = {}
+    for bdp in tot_produtos:
+        produtos = {}
+        for l in listaprodutos:
+            if l.produto and bdp == l.produto.nome:
+                produtos.update({l.materiaprima.nome: l.quantidade})
+        list_prod.update({bdp: produtos})
+
+    # cria um dicionário de peças por produto e sua quantidade
+    list_pecas = {}
+    for bdp in tot_produtos:
+        pecas_quant = {}
+        for l in pecas_catalogadas:
+            if bdp == l.produto.nome:
+                pecas_quant.update({l.nome: int(l.quantidade)})
+        list_pecas.update({bdp: pecas_quant})
+
+    lista_pecas_final_por_produto = {}
+    for k, v in list_prod.items():
+        pecas_por_prod = {}
+        for ke, val in list_pecas.items():
+            if k == ke:
+                for key, valu in val.items():
+                    pecas_por_prod.update({key: int(valu)})
+        lista_pecas_final_por_produto.update({k: pecas_por_prod})
+
+    # período base de cálculo para a programação da previsão de estoque vs produção
+    meses_ = []
+    for i in mp:
+        for d, e in i.items():
+            meses_.append(e)
+
+    meses_periodo_extenso = []
+    for i in meses_:
+        meses_periodo_extenso.append(meses_extenso[i - 1])
+
+    formsetFactory = modelformset_factory(
+        LimiteProducaoDiaria, form=QuantidadeProducaoForm, extra=0
+    )
+    if request.method == "POST":
+        formset = formsetFactory(request.POST)
+        if formset.is_valid():
+            formset.save()
+            return redirect("producao:previsaoEstoquePecas")
+        else:
+            context = {
+                "formset": formset,
+                "dias": dias_,
+                "meses": meses_periodo_extenso,
+                "prod_diaria": lista_prod_diaria,
+                "tot_diaria": tot_prod_diaria_geral,
+                "produto": bd_produto,
+                "nome_materia_prima": lista_pecas_final_por_produto,
+                "materia_prima": produtos_totais,
+            }
+            return render(request, template_name, context)
+    else:
+        formset = formsetFactory()
+        context = {
+            "formset": formset,
+            "dias": dias_,
+            "meses": meses_periodo_extenso,
+            "prod_diaria": lista_prod_diaria,
+            "tot_diaria": tot_prod_diaria_geral,
+            "produto": bd_produto,
+            "nome_materia_prima": lista_pecas_final_por_produto,
+            "materia_prima": produtos_totais,
+        }
+        return render(request, template_name, context)
+
+
+# apresenta o estoque acrescido do material comprado, em relação aos produtos vendidos
+def estoqueRealPecas(request):
+    template_name = "producao/estoqueRealPecas.html"
+    bd_produto = Produto.objects.all()
+
+    # dias de produção a serem estimados
+    previsao_dias = 35
+    meses_extenso = (
+        "Janeiro",
+        "Fevereiro",
+        "Março",
+        "Abril",
+        "Maio",
+        "Junho",
+        "Julho",
+        "Agosto",
+        "Setembro",
+        "Outubro",
+        "Novembro",
+        "Dezembro",
+    )
+
+    # lista os meses referentes ao período 'previsao_dias'
+    datas = []
+    dias_ = []
+    dia = []
+    mp = []
+    for i in range(previsao_dias):
+        dia = today + timedelta(i)
+        datas.append(dia.strftime("%Y-%m-%d"))
+        dias_.append(dia.day)
+        var = {dia.year: dia.month}
+        if not var in mp:
+            mp.append({dia.year: dia.month})
+
+    # lista data, produtos e quantidade a serem fabricados
+    vendas = VendaProduto.objects.filter(venda__data_entrega__range=(today, dia))
+    dict_prod_diaria = {}
+    tot_mp_prod_diaria = {}
+    lista_datas = []
+    tot_prod_vendas = []
+
+    # dict matérias primas e quantidade a ser consumida no dia
+    for v in vendas:
+        dict_prod_diaria.update({str(v.venda.data_entrega): v.quantidade})
+        total_producao_diaria = VendaProduto.objects.filter(
+            venda__data_entrega=v.venda.data_entrega
+        ).aggregate(Sum("quantidade"))["quantidade__sum"]
+        tot_mp_prod_diaria.update({str(v.venda.data_entrega): total_producao_diaria})
+        lista_datas.append(str(v.venda.data_entrega))
+        tot_prod_vendas.append(v.quantidade)
+
+    # lista datas individualizadas e ordenadas
+    lista_datas = set(lista_datas)
+    lista_datas = sorted(lista_datas)
+
+    prods_fabricados_mesmo_dia = {}
+    for ld in lista_datas:
+        lista = {}
+        for ven in vendas:
+            if str(ven.venda.data_entrega) == ld:
+                # produto_mp = ProdutoMatPri.objects.filter(produto__nome=ven.produto)
+                lista_produto = {}
+                produto_peca = Peca.objects.filter(produto__nome=ven.produto)
+                for pp in produto_peca:
+                    quant = pp.quantidade * ven.quantidade
+                    lista_produto.update({pp.nome: int(quant)})
+
+                lista.update({ven.produto: {ven.quantidade: lista_produto}})
+        prods_fabricados_mesmo_dia.update({ld: lista})
+
+    # total matérias primas utilizadas por data
+    tmpud = {}
+    custo_mp_posicao = []
+    cont = 0
+    for ld in lista_datas:
+        tmpud2 = {}
+        mps_somadas = []
+        for k, v in prods_fabricados_mesmo_dia[ld].items():
+            for ka, va in v.items():
+                mps_somadas.append(va)
+            soma_mps = dict(
+                functools.reduce(operator.add, map(collections.Counter, mps_somadas))
+            )
+
+        tmpud2.update({cont: soma_mps})
+        cont += 1
+        tmpud.update({ld: soma_mps})
+        custo_mp_posicao.append(tmpud2)
+
+    # total diário a ser s  ubtraído por mp
+    tdsmp = []
+    for ld in lista_datas:
+        quants = []
+        for k, v in tmpud[ld].items():
+            quants.append(int(v))
+        tdsmp.append(quants)
+
+    dict_prod_diaria2 = []
+    for k in bd_produto:
+        dpd = {}
+        for v in vendas:
+            if k == v.produto:
+                date_ = v.venda.data_entrega
+                dpd.update({date_.strftime("%Y-%m-%d"): v.quantidade})
+        dict_prod_diaria2.append(dpd)
+
+    # cria lista dos dias no período por produto id
+    prod_diaria = 0
+
+    # for le in range(len(dict_prod_diaria2)):
+    lista_prod_diaria = {}
+    cont = 0
+    for dpd2 in dict_prod_diaria2:
+        lpd21 = []
+        for l in range(previsao_dias):
+            lpd21.append(prod_diaria)
+        for d in datas:
+            for dpkey, dpvalue in dpd2.items():
+                index = datas.index(d)
+                if str(d) == dpkey:
+                    lpd21[index] = dpd2[dpkey]
+        lista_prod_diaria.update({str(bd_produto[cont]): lpd21})
+        cont += 1
+
+    # peças catalogadas
+    pecas_catalogadas = Peca.objects.all()
+
+    # lista material geral (matérias primas e pecas) cadastradas
+    lista_geral = []
+
+    for pc in pecas_catalogadas:
+        lista_geral.append(pc.nome)
+
+    # dict contento todas as matérias primas e suas quantidades zeradas
+    pecas_geral = {}
+    for mpc in lista_geral:
+        pecas_geral.update({mpc: 0})
+
+    # estoque atual de pecas
+    estoque_pecas_atual = EstoquePecaAcabada.objects.all()
+    for pg in estoque_pecas_atual:
+        pecas_geral.update({pg.peca.nome: int(pg.quantidade)})
+
+    # lista matéria prima e quantidade na posição correspondente à previsão de entrega
+    posicoes = []
+    posicoes2 = {}
+    quantMpCompras = {}
+    for d in range((len(dias_) - 1)):
+        dia = today + timedelta(d)
+        for da in lista_datas:
+            if str(dia) == da:
+                posicoes.append(d)
+
+    # estoque de matérias primas e peças por dia
+    estoque = pecas_geral
+    lista_pecas = []
+    for d in range(len(dias_)):  # 1-35
+        vls = {}
+        for p2 in range(len(posicoes)):
+            if d == posicoes[p2]:
+                for k, v in custo_mp_posicao[p2].items():
+                    for ka, va in v.items():
+                        saldoPosicao = estoque[ka] - va
+                        estoque.update({ka: saldoPosicao})
+            vls.update(estoque)
+        lista_pecas.append(vls)
+
+    # relacionar saldo mp aos produtos
+    produtos_total = {}
+    for e in estoque:
+        quantidades = []
+        for lm in lista_pecas:
+            for vk, vv in lm.items():
+                if e == vk:
+                    quantidades.append(vv)
+        produtos_total.update({e: quantidades})
+
+    # cria um dicionário (dict_produtos) com todos os produtos cadastrados
+    tot_prods = Produto.objects.all()
+    tot_produtos = []
+    dict_produtos = {}
+    for i in tot_prods:
+        tot_produtos.append(i.nome)
+        dict_produtos.update({i.nome: pecas_geral})
+
+    # lista o que cada produto utiliza de matérias primas e a quantidade necessária para sua produção
+    listaprodutos = ProdutoMatPri.objects.all()
+
+    # cria um dicionário por produto, matéria prima e sua quantidade
+    list_prod = {}
+    for bdp in tot_produtos:
+        produtos = {}
+        for l in listaprodutos:
+            if l.produto and bdp == l.produto.nome:
+                produtos.update({l.materiaprima.nome: l.quantidade})
+        list_prod.update({bdp: produtos})
+
+    # lista o que cada produto utiliza de pecas e a quantidade necessária para sua produção
+    listapecas = Peca.objects.all()
+
+    # cria um dicionário de peças por produto e sua quantidade
+    list_pecas = {}
+    for bdp in tot_produtos:
+        pecas_quant = {}
+        for l in listapecas:
+            if bdp == l.produto.nome:
+                pecas_quant.update({l.nome: int(l.quantidade)})
+        list_pecas.update({bdp: pecas_quant})
+
+    pecas_por_prod = {}
+    lista_final_por_produto = {}
+    for k, v in list_prod.items():
+        peca_por_prod = {}
+        for ka, va in v.items():
+            peca_por_prod.update({ka: int(va)})
+    for ke, val in list_pecas.items():
+        if k == ke:
+            for key, valu in val.items():
+                pecas_por_prod.update({key: int(valu)})
+    peca_por_prod.update(pecas_por_prod)
+    lista_final_por_produto.update({k: pecas_por_prod})
+
+    tot_dict_prod_diaria = {}
+    tot_datas_vendas = []
+    tot_prod_vendas = []
+    for v in vendas:
+        date_ = v.venda.data_entrega
+        total_producao_diaria = VendaProduto.objects.filter(
+            venda__data_entrega=date_
+        ).aggregate(Sum("quantidade"))["quantidade__sum"]
+        tot_dict_prod_diaria.update({date_.strftime("%Y-%m-%d"): total_producao_diaria})
+        tot_datas_vendas.append(date_.strftime("%Y-%m-%d"))
+        tot_prod_vendas.append(v.quantidade)
+
+    # cria lista dos dias no período por produto id
+    tot_geral_prod_diaria = 0
+    tot_prod_diaria_geral = []
+    for l in range(previsao_dias):
+        tot_prod_diaria_geral.append(tot_geral_prod_diaria)
+
+    # lista o total de todos os produtos a serem fabricado por dia
+    datas_fabricacao = []
+    for d in datas:
+        for lkey, lvalue in tot_dict_prod_diaria.items():
+            index = datas.index(d)
+            if str(d) == lkey:
+                datas_fabricacao.append(lkey)
+                tot_prod_diaria_geral[index] = tot_dict_prod_diaria[lkey]
+
+    # período base de cálculo para estoque vs produção
+    meses_ = []
+    for i in mp:
+        for d, e in i.items():
+            meses_.append(e)
+
+    meses_periodo_extenso = []
+    for i in meses_:
+        meses_periodo_extenso.append(meses_extenso[i - 1])
+
+    context = {
+        "dias": dias_,
+        "meses": meses_periodo_extenso,
+        "prod_diaria": lista_prod_diaria,
+        "tot_diaria": tot_prod_diaria_geral,
+        "produto": bd_produto,
+        "nome_materia_prima": list_pecas,
+        "materia_prima": produtos_total,
+    }
     return render(request, template_name, context)

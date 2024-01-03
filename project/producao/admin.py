@@ -1,12 +1,17 @@
 from django.contrib import admin
 
-from .models import ProdutoAcabado, LimiteProducaoDiaria, TempoDesejadoProducao
+from .models import (
+    ProdutoAcabado,
+    LimiteProducaoDiaria,
+    LimiteProducaoDiariaPeca,
+    TempoDesejadoProducao,
+)
 
 
-# @admin.register(ProdutoAcabado)
-# class ProdutoAcabadoAdmin(admin.ModelAdmin):
-#     # list_display = ('nome', 'descricao')
-#     ...
+@admin.register(ProdutoAcabado)
+class ProdutoAcabadoAdmin(admin.ModelAdmin):
+    # list_display = ('nome', 'descricao')
+    ...
 
 
 # @admin.register(MateriaPrimaProduto)
@@ -22,9 +27,15 @@ class LimiteProducaoDiariaAdmin(admin.ModelAdmin):
         "quantidade",
     )
 
-    def has_add_permission(self, *args, **kwargs):
-        return not LimiteProducaoDiaria.objects.exists()
+    ...
 
+
+@admin.register(LimiteProducaoDiariaPeca)
+class LimiteProducaoDiariaPecaAdmin(admin.ModelAdmin):
+    list_display = (
+        "peca",
+        "quantidade",
+    )
     ...
 
 

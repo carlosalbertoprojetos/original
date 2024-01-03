@@ -20,7 +20,7 @@ class Categoria(models.Model):
 class Receita(models.Model):
     usuario = models.CharField(max_length=255, null=True, blank=True)
     nome = models.CharField(max_length=200, null=True, blank=True)
-    total = models.DecimalField(max_digits=11, decimal_places=2, default=0.0)
+    total = models.DecimalField(max_digits=11, decimal_places=2, default=0.00)
     criadoem = models.DateTimeField(auto_now_add=True)
     atualizadoem = models.DateTimeField(auto_now=True)
     categoria1 = models.ForeignKey(Categoria, on_delete=models.RESTRICT)

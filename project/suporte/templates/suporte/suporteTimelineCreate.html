@@ -1,0 +1,257 @@
+{% extends 'index.html' %}
+
+{% load static %}
+
+<title> {% block title %} TimeLine Suporte {% endblock title%} </title>
+
+{% block index %}
+
+<head>
+    <style>
+        .external-event {
+            box-shadow: 0 0 1px rgb(0 0 0 / 13%), 0 1px 3px rgb(0 0 0 / 20%);
+            border-radius: .25rem;
+            cursor: pointer;
+            font-weight: 700;
+            margin-bottom: 4px;
+            padding: 5px 10px;
+        }
+    </style>
+</head>
+<form method="POST" action="">
+    {% csrf_token %}
+    <div class="container">
+        {% for d in dados %}
+        <div class="card">
+            <div class="card-header d-lg-flex justify-content-between justify-content-lg-between align-items-center">
+                <h6 class="col-lg-4 text-center text-lg-start 
+                    fs-5 fw-bold mb-0">Dados do Cliente</h6>
+                {% if concluido %}
+                <div class="col-lg-6">
+                    <h6 class="text-end text13 mb-0 px-1">
+                        concluído em {{ dias|default:"0" }} dias,
+                        de {{ d.data|date:"d/m/Y"}} a {{ concluido|date:"d/m/Y"}}
+                    </h6>
+                </div>
+                {% else %}
+                <div class="col-lg-6">
+                    <h6 class="text-end text13 mb-0 px-1">
+                        Aberto há {{ dias|default:"0" }} dias,
+                        desde {{ d.data|date:"d/m/Y H:m" }}
+                    </h6>
+                </div>
+                {% endif %}
+                <div id="status" class="col-12 col-lg-2 text-center bg-warning bg-opacity-25 rounded pb-1">
+                    <label for="">Status do suporte</label>
+                    <h6 class="mb-0" id="statusSuporte">{{ d.status }}</h6>
+                </div>
+            </div>
+            <div class="card-body p-0 px-3">
+                <div class="form-floating">
+                    <div class="cabecalho row">
+                        <div class="col-12 col-lg-6">
+                            <label class="text-muted" for="">Cliente</label>
+                            <h6>{{ d.venda.cliente }}</h6>
+                        </div>
+                        <div class="col-6 col-lg-2">
+                            <label class="text-muted" for="">Telefone</label>
+                            <h6>{{ d.venda.cliente.tel_principal }}</h6>
+                        </div>
+                        <div class="col-6 col-lg-2">
+                            <label class="text-muted" for="">Pedido da compra</label>
+                            <h6 class="ps-4">{{ d.venda.data_pedido|date:"d/m/Y" }}</h6>
+                        </div>
+                        <div class="col-6 col-lg-2 text-center m-auto">
+                            <h6 class="align-middle">Venda {{ d.venda }}</h6>
+                        </div>
+                        <div class="col-12 col-lg-6">
+                            <label class="text-muted" for="">Rua</label>
+                            <h6>{{ d.venda.cliente.logradouro }}</h6>
+                        </div>
+                        <div class="col-2 col-lg-1">
+                            <label class="text-muted" for="">Número</label>
+                            <h6>{{ d.venda.cliente.numero }}</h6>
+                        </div>
+                        <div class="col-3 col-lg-1">
+                            <label class="text-muted" for="">Complemento</label>
+                            <h6>{{ d.venda.cliente.complemento }}</h6>
+                        </div>
+                        <div class="col-7 col-lg-2">
+                            <label class="text-muted" for="">Bairro</label>
+                            <h6>{{ d.venda.cliente.bairro }}</h6>
+                        </div>
+                        <div class="col-8 col-lg-3">
+                            <label class="text-muted" for="">Cidade/UF</label>
+                            <h6>{{ d.venda.cliente.cidade }}/{{ d.venda.cliente.estado }}</h6>
+                        </div>
+                        <div class="col-4 col-lg-1">
+                            <label class="text-muted" for="">Cep</label>
+                            <h6 style="font-size:14px;">{{ d.venda.cliente.cep }}</h6>
+                        </div>
+                        <div class="col-6 col-lg-2">
+                            <label class="text-muted" for="">Vendedor</label>
+                            <h6>{{ d.venda.vendedor }}</h6>
+                        </div>
+                        <div class="col-12 col-lg-6">
+                            <label class="text-muted" for="">Transportadora</label>
+                            <h6>{{ d.venda.transportadora }}</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        <div class="card table-responsive my-2 px-2">
+            <table class="table table-sm px-2" id="id_table">
+                <thead>
+                    <tr>
+                        <th>Produto</th>
+                        <th class="text-center">Quant</th>
+                        <th class="text-center">Voltagem</th>
+                        <th class="text-center">Torneira</th>
+                        <th class="text-center">Adesivado</th>
+                        <th>Valor unit</th>
+                        <th>Valor total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for produto in produtos %}
+                    <tr>
+                        <td>{{ produto.produto.nome }}</td>
+                        <td class="text-center">{{ produto.quantidade }}</td>
+                        <td class="text-center">{{ produto.voltagem }}</td>
+                        <td class="text-center">{{ produto.torneira }}</td>
+                        <td class="text-center">{{ produto.adesivado }}</td>
+                        <td>R$ {{ produto.preco }}</td>
+                        <td>R$ {{ produto.subtotal }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="d-flex-column me-lg-5 pe-3">
+            <div class="me-lg-3 pe-lg-5 pb-2">
+                <h6 class="text-end fw-bold m-0 ">
+                    {% for da in dados %}
+                    Valor do Frete: R$ {{ da.venda.valor_frete|default:"0,00" }}
+                    {% endfor %}
+                </h6>
+            </div>
+            <div class="me-lg-3 pe-lg-5 pb-2">
+                <h6 class="text-end fw-bold m-0 ">
+                    Valor Total da Nota: R$ {{ total }}
+                </h6>
+            </div>
+        </div>
+        <div id="status2" class="border rounded-3 bg-warning bg-opacity-25 mb-2">
+            <div class="d-flex justify-content-between gap-lg-5 justify-content-lg-center align-items-center my-2 px-5">
+                <div class="text-center">
+                    <label class="text-muted">Status Atual</label>
+                    <h5 class="m-0">{{ suporte.statusAtual }}</h5>
+                </div>
+                <div class="text-center">
+                    <label class="text-muted">Responsável Atual</label>
+                    <h5 class="m-0">{{ suporte.responsavelAtual }}</h5>
+                </div>
+            </div>
+        </div>
+        <div class="card py-2 px-1">
+            <div class="d-flex-column d-lg-flex justify-content-between">
+                <div class="card col-lg-3 mx-2 mb-2 mb-lg-0 mx-lg-1">
+                    <div class="card-header">
+                        <h5 class="text-center card-title">Alterar Status</h5>
+                    </div>
+                    <div id="statusTM" class="card-body">
+                        {% for st in status %}
+                        <div id="{{ st.id }}" value="{{ st }}" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                            class="external-event text-light bg-primary ui-draggable ui-draggable-handle">
+                            {{ st }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="card col-lg mx-2 mx-lg-1">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between">
+                            <h5>TimeLine</h5>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 mt-2">
+                            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                                aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">Nova TimeLine</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            {{ form.non_field_errors }}
+                                            {{ form }}
+                                            {{ form.media }}
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary btn-sm"
+                                                data-bs-dismiss="modal">Cancelar</button>
+                                            <button type="submit" class="btn btn-primary  btn-sm">Salvar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <ul class="timeline">
+                                {% for tl in timeLine %}
+                                <li class="bg-white rounded m-3">
+                                    <div class="cabecalho d-flex justify-content-between label-color">
+                                        <a href="{% url 'suporte:suporteTimeLineUpdate' timeline=tl.id %}"
+                                            class="text-decoration-none text-uppercase label-color fw-bold">
+                                            {{ tl.status }}</a>
+                                        <h6 class="fw-bold text-center">Responsável: {{ tl.responsavel }}</h6>
+                                        <h6 class="fw-bold float-end">{{ tl.data|date:"d/m/Y" }}</h6>
+                                    </div>
+                                    <p id="id_timeline" class="px-2">{{ tl.descricao }}</p>
+                                </li><br>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+{% endblock %}
+
+{% block script %}
+<script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+
+{% if show_modal %}
+<script>
+    $(document).ready(function () {
+        $("#exampleModal").modal('show');
+        var status = 1;
+        document.getElementById('id_status').value = status
+    });    
+</script>
+{% endif %}
+
+<script>
+    $('.external-event').click(function () {
+        var id = (this.id);
+        document.getElementById('id_status').value = id
+    });
+</script>
+
+<script>
+    var a = document.getElementById("statusSuporte");
+    var b = document.getElementById("status");
+    var c = document.getElementById("status2");
+    if (a.innerHTML == 'Concluído') {
+        b.setAttribute('class', "col-12 col-lg-2 text-center bg-success bg-opacity-25 rounded");
+        c.setAttribute('class', "border rounded-3 bg-success bg-opacity-25 mb-2");
+    }
+</script>
+
+{% endblock %}

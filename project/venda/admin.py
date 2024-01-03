@@ -1,6 +1,15 @@
 from django.contrib import admin
 
-from .models import FormaPagamento, CondicaoVenda, Venda, MaximoDesconto, Voltagem, Torneira, Adesivado
+from .models import (
+    FormaPagamento,
+    CondicaoVenda,
+    Venda,
+    VendaProduto,
+    MaximoDesconto,
+    Voltagem,
+    Torneira,
+    Adesivado,
+)
 
 
 @admin.register(Voltagem)
@@ -29,6 +38,12 @@ class CondicaoVendaAdmin(admin.ModelAdmin):
     ...
 
 
+class VendaProdutoInline(admin.TabularInline):
+    model = VendaProduto
+    extra = 0
+    ...
+
+
 @admin.register(Venda)
 class VendaAdmin(admin.ModelAdmin):
     list_display = (
@@ -44,6 +59,9 @@ class VendaAdmin(admin.ModelAdmin):
         "status_venda",
         "condicaopgto",
     )
+    inlines = [
+        VendaProdutoInline,
+    ]
     ...
 
 

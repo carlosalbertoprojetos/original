@@ -12,7 +12,7 @@
         <div class="card-header">
             <label class="fs-5 fw-bold">Transportadoras</label>
         </div>
-        <div class="p-3">
+        <div class="table-responsive p-3">
             <table class="table table-sm" id="id_table">
                 <div class="col-12 d-flex justify-content-end">
                     <a class="btnMaster px-2" href="{% url 'transportadora:transporteCreate' %}">Nova Transportadora
@@ -35,14 +35,14 @@
                 <tbody>
                     {% for obj in object_list %}
                     <tr>
-                        <td>{{ obj.nome }}</td>
-                        <td>{{ obj.nome_fantasia }}</td>
-                        <td>{{ obj.tel_principal }}</td>
-                        <td>{{ obj.tel_contato }}</td>
-                        <td>{{ obj.email }}</td>
-                        <td>{{ obj.cpf }}</td>
-                        <td>{{ obj.cnpj }}</td>
-                        <td>{{ obj.estado }}</td>
+                        <td>{{ obj.nome|truncatechars:20 }}</td>
+                        <td>{{ obj.nome_fantasia|truncatechars:20 }}</td>
+                        <td>{{ obj.tel_principal|default:"" }}</td>
+                        <td>{{ obj.tel_contato|default:"" }}</td>
+                        <td>{{ obj.email|default:"" }}</td>
+                        <td>{{ obj.cpf|default:"" }}</td>
+                        <td>{{ obj.cnpj|default:"" }}</td>
+                        <td>{{ obj.estado|default:"" }}</td>
                         <td align="center pe-1">
                             <abbr title="Editar">
                                 <a href="{{ obj.transp_gau_edit }}">
@@ -66,7 +66,14 @@
 {% endblock %}
 
 {% block script %}
+<script src="{% static 'js/datatables.min.js' %}"></script>
+<script src="{% static 'js/jqueryDataTable.js' %}"></script>
 <script>
+    function filtro() {
+        let dataInicio = document.getElementById('data_ini')
+        let datafim = document.getElementById('data_fim')
+    };
+
     $(document).ready(function () {
         $('#id_table').DataTable({
             "language": {

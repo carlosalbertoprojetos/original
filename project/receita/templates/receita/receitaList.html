@@ -12,7 +12,7 @@
         <div class="card-header">
             <label class="fs-5 fw-bold">Receitas</label>
         </div>
-        <div class="p-3">
+        <div class="table-responsive p-3">
             <table class="table table-sm" id="id_table">
                 <!-- <caption>Compra</caption> -->
                 <div class="col-12 d-flex justify-content-end">
@@ -37,18 +37,18 @@
                     {% for obj in object_list %}
                     <tr>
                         <td>{{ obj.nome }}</td>
-                        <td>{{ obj.total|floatformat:2 }}</td>
+                        <td>R$ {{ obj.total|floatformat:2 }}</td>
                         <td>{{ obj.categoria1 }}</td>
                         <td>{{ obj.categoria2 }}</td>
-                        <td>{{ obj.num_parcelas }}</td>
+                        <td align="center">{{ obj.num_parcelas }}</td>
                         <td>{{ obj.descricao }}</td>
-                        <td>{{ obj.cliente }}</td>
-                        <td>{{ obj.criadoem|date:"d/m/Y" }}</td>
+                        <td>{{ obj.cliente|default:""|truncatechars:30 }}</td>
+                        <td>{{ obj.criadoem|date:"d/m/y" }}</td>
                         <td>
-                            <a class="px-2" href="{{ obj.receita_gau_edit }}">
+                            <a class="px-1" href="{{ obj.receita_gau_edit }}">
                                 <i class="fa fa-edit"></i>
                             </a>
-                            <a class="px-2" href="{{ obj.receita_gau_delete }}" style="padding-left: 7px">
+                            <a class="px-1" href="{{ obj.receita_gau_delete }}" style="padding-left: 7px">
                                 <i class="fa fa-close no"></i>
                             </a>
                         </td>
@@ -63,7 +63,14 @@
 {% endblock %}
 
 {% block script %}
+<script src="{% static 'js/datatables.min.js' %}"></script>
+<script src="{% static 'js/jqueryDataTable.js' %}"></script>
 <script>
+    function filtro() {
+        let dataInicio = document.getElementById('data_ini')
+        let datafim = document.getElementById('data_fim')
+    };
+
     $(document).ready(function () {
         $('#id_table').DataTable({
             "language": {
@@ -93,4 +100,4 @@
         });
     }); 
 </script>
-{% endblock %}s
+{% endblock %}

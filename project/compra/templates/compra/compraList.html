@@ -12,9 +12,8 @@
         <div class="card-header">
             <label class="fs-5 fw-bold">Compras</label>
         </div>
-        <div class="p-3">
-            <table class="table table-sm" id="id_table">
-                <!-- <caption>Compra</caption> -->
+        <div class="table-responsive p-3">
+            <table class="table" id="id_table">
                 <div class="col-12 d-flex justify-content-end">
                     <a class="btnMaster px-2" href="{% url 'compra:compraCreate' %}">Novo Pedido de Compra
                         <i class="fa fa-plus-square" aria-hidden="true"></i>
@@ -22,31 +21,33 @@
                 </div>
                 <thead>
                     <tr>
-                        <th scope="col">Pedido</th>
-                        <th scope="col">Fornecedor</th>
-                        <th scope="col">Data</th>
-                        <th scope="col">Total</th>
-                        <th scope="col">Previsão de Entrega</th>
-                        <th scope="col">Situação</th>
-                        <th scope="col">Ações</th>
+                        <th>Pedido</th>
+                        <th>Fornecedor</th>
+                        <th>Nome Fantasia</th>
+                        <th>Data</th>
+                        <th>Total</th>
+                        <th>Entrega</th>
+                        <th>Situação</th>
+                        <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for object in object_list %}
                     <tr>
-                        <td>{{ object.id }}</td>
-                        <td>{{ object.fornecedor }}</td>
-                        <td>{{ object.data|date:"d/m/Y" }}</td>
-                        <td>{{ object.total }}</td>
-                        <td>{{ object.previsaoentrega|date:"d/m/Y" }}</td>
+                        <td align="center">{{ object.id }}</td>
+                        <td>{{ object.fornecedor.nome|truncatechars:100 }}</td>
+                        <td>{{ object.fornecedor.nome_fantasia|truncatechars:40 }}</td>
+                        <td>{{ object.data|date:"d/m/y" }}</td>
+                        <td>R$ {{ object.total }}</td>
+                        <td>{{ object.previsaoentrega|date:"d/m/y" }}</td>
                         <td>{{ object.status_compra.title }}</td>
                         <td>
                             <a class="px-2" href="{{ object.compra_gau_edit }}">
                                 <i class="fa fa-edit"></i>
                             </a>
-                             <a class="px-2" href="{{ object.compra_gau_delete }}" style="padding-left: 7px">
+                            <a class="px-2" href="{{ object.compra_gau_delete }}" style="padding-left: 7px">
                                 <i class="fa fa-close no"></i>
-                            </a> 
+                            </a>
                         </td>
                     </tr>
                     {% endfor %}
@@ -59,10 +60,13 @@
 {% endblock %}
 
 {% block script %}
+<script src="{% static 'js/datatables.min.js' %}"></script>
+<script src="{% static 'js/jqueryDataTable.js' %}"></script>
 <script>
     $(document).ready(function () {
         $('#id_table').DataTable({
             "order": [[0, 'desc']],
+            "pageLength": 100,
             "language": {
                 "sProcessing": "Proccesando...",
                 "sLengthMenu": "Mostrar _MENU_ registros",

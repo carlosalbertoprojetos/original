@@ -1,6 +1,6 @@
 {% extends 'index.html' %}
 
-{% load static crispy_forms_tags %}
+{% load static %}
 
 <title> {% block title %} Compra {% endblock title%} </title>
 
@@ -10,13 +10,13 @@
     <link rel="stylesheet" href="{% static 'css/select2.min.css' %}">
 </head>
 <div class="container">
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {% if status == 'autorizado' %}
-        <p class="hidden">{{form}}</p>
+        <p class="hidden">{{ form }}</p>
         <div class="card">
             <div class="card-header">
-                <label class="fs-5 fw-bold">Editar Pedido de Compra</label>
+                <label class="fs-5 fw-bold">{{ texto }} Pedido de Compra</label>
             </div>
             <div class="card-body label pt-0">
                 <div class="row mb-2">
@@ -83,45 +83,41 @@
             </div>
         </div>
         {% else %}
-
-        {{ form.non_field_errors }}
         <div class="card">
             <div class="card-header">
-                {% if dados_compra %}
-                <label class="fs-5 fw-bold">Editar Pedido de Compra</label>
-                {% else %}
-                <label class="fs-5 fw-bold">Novo Pedido de Compra</label>
-                {% endif %}
+                <label class="fs-5 fw-bold">{{ texto }} Pedido de Compra</label>
             </div>
             <div class="card-body label pt-0">
                 <div class="row mb-2">
                     <div class="col-12 col-md-4">
-                        <label for="id_fornecedor" class="">Fornecedor</label>
+                        <label for="id_fornecedor">Fornecedor</label>
                         {{ form.fornecedor }}
                     </div>
                     <div class="col-6 col-md-2">
-                        <label for="id_data" class="">Data</label>
+                        <label for="id_data">Data</label>
                         {{ form.data }}
                     </div>
                     <div class="col-6 col-md-2">
-                        <label for="id_previsaoentrega" class="">Previsão de Entrega</label>
+                        <label for="id_previsaoentrega">Previsão de Entrega</label>
                         {{ form.previsaoentrega }}
                     </div>
                     <div class="col-6 col-md-2">
-                        <label for="id_total" class="">Total</label>
+                        <label for="id_total">Total</label>
                         {{ form.total }}
                     </div>
                     <div class="col-6 col-md-2">
-                        <label for="id_status_compra" class="">Situação</label>
+                        <label for="id_status_compra">Situação</label>
                         {{ form.status_compra }}
+                    </div>
+                    <div class="col-6 col-md-4">
+                        <label for="id_status_compra">Upload Pedido de Compra</label>
+                        {{ form.pedido }}
                     </div>
                 </div>
             </div>
         </div>
-
         {% if produto %}
         {{ produto.management_form }}
-        {{ produto.non_form_errors }}
         <div class="card my-2">
             <div class="card-header"><label class="fs-5 fw-bold">Produtos</label></div>
             <div class="card-body label py-0" id="produto-form-list">
@@ -130,17 +126,14 @@
                     {{ prod.id }}
                     <div class="col-9 col-lg-4">
                         {{ prod.produto.label_tag }}
-                        {{ prod.produto.errors }}
                         {{ prod.produto }}
                     </div>
                     <div class="col-3 col-lg-1">
                         {{ prod.quantidade.label_tag }}
-                        {{ prod.quantidade.errors }}
                         {{ prod.quantidade }}
                     </div>
                     <div class="col-12 col-lg-6">
                         {{ prod.detalhes.label_tag }}
-                        {{ prod.detalhes.errors }}
                         {{ prod.detalhes }}
                     </div>
                     <hr class="d-block d-lg-none mt-2 mb-0">
@@ -151,17 +144,14 @@
                 {{ produto.empty_form.id }}
                 <div class="col-6 col-lg-4">
                     {{ produto.empty_form.produto.label_tag }}
-                    {{ produto.empty_form.produto.errors }}
                     {{ produto.empty_form.produto }}
                 </div>
                 <div class="col-6 col-lg-1">
                     {{ produto.empty_form.quantidade.label_tag }}
-                    {{ produto.empty_form.quantidade.errors }}
                     {{ produto.empty_form.quantidade }}
                 </div>
                 <div class="col-12 col-lg-6">
                     {{ produto.empty_form.detalhes.label_tag }}
-                    {{ produto.empty_form.detalhes.errors }}
                     {{ produto.empty_form.detalhes }}
                 </div>
                 <hr class="d-block d-lg-none mt-2 mb-0">
@@ -173,10 +163,8 @@
         {% endif %}
         {% endif %}
 
-
         {% if parcela %}
         {{ parcela.management_form }}
-        {{ parcela.non_form_errors }}
         <div class="card">
             <div class="card-header"><label class="fs-5 fw-bold">Parcelas</label></div>
             <div class="card-body label py-0" id="parcela-form-list">
@@ -186,31 +174,43 @@
                     {{ parc.datadocumento }}
                     <div class="col-6 col-lg-2">
                         {{ parc.valor.label_tag }}
-                        {{ parc.valor.errors }}
                         {{ parc.valor }}
                     </div>
                     <div class="col-6 col-lg-2">
                         {{ parc.datavencimento.label_tag }}
-                        {{ parc.datavencimento.errors }}
                         {{ parc.datavencimento }}
                     </div>
                     <div class="col-6 col-lg-2">
                         {{ parc.formapgto.label_tag }}
-                        {{ parc.formapgto.errors }}
                         {{ parc.formapgto }}
                     </div>
-                    {%if 'financeiro.change_contapagar' in perms %}
+                    {% if 'financeiro.change_contapagar' in perms %}
                     <div class="col-6 col-lg-2">
                         {{ parc.datapagamento.label_tag }}
-                        {{ parc.datapagamento.errors }}
                         {{ parc.datapagamento }}
                     </div>
-                    {%endif%}
                     <div class="col-12 col-lg-4">
                         {{ parc.detalhes.label_tag }}
-                        {{ parc.detalhes.errors }}
                         {{ parc.detalhes }}
                     </div>
+                    <div class="col-12 col-lg-6">
+                        {{ parc.boleto.label_tag }}
+                        {{ parc.boleto }}
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        {{ parc.comprovante.label_tag }}
+                        {{ parc.comprovante }}
+                    </div>
+                    {% else %}
+                    <div class="col-12 col-lg-6">
+                        {{ parc.detalhes.label_tag }}
+                        {{ parc.detalhes }}
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        {{ parc.boleto.label_tag }}
+                        {{ parc.boleto }}
+                    </div>
+                    {% endif %}
                 </div>
                 <hr class="d-block d-lg-none mt-2 mb-0">
                 {% endfor %}
@@ -220,31 +220,43 @@
                 {{ parcela.empty_form.datadocumento }}
                 <div class="col-6 col-lg-2">
                     {{ parcela.empty_form.valor.label_tag }}
-                    {{ parcela.empty_form.valor.errors }}
                     {{ parcela.empty_form.valor }}
                 </div>
                 <div class="col-6 col-lg-2">
                     {{ parcela.empty_form.datavencimento.label_tag }}
-                    {{ parcela.empty_form.datavencimento.errors }}
                     {{ parcela.empty_form.datavencimento }}
                 </div>
-                <div class="col-12 col-lg-2">
+                <div class="col-6 col-lg-2">
                     {{ parcela.empty_form.formapgto.label_tag }}
-                    {{ parcela.empty_form.formapgto.errors }}
                     {{ parcela.empty_form.formapgto }}
                 </div>
-                {%if 'financeiro.change_contapagar' in perms %}
+                {% if 'financeiro.change_contapagar' in perms %}
                 <div class="col-6 col-lg-2">
-                    {{ parc.datapagamento.label_tag }}
-                    {{ parc.datapagamento.errors }}
-                    {{ parc.datapagamento }}
+                    {{ parcela.empty_form.datapagamento.label_tag }}
+                    {{ parcela.empty_form.datapagamento }}
                 </div>
-                {%endif%}
-                <div class="col-12 col-lg-6">
+                <div class="col-12 col-lg-4">
                     {{ parcela.empty_form.detalhes.label_tag }}
-                    {{ parcela.empty_form.detalhes.errors }}
                     {{ parcela.empty_form.detalhes }}
                 </div>
+                <div class="col-12 col-lg-6">
+                    {{ parcela.empty_form.boleto.label_tag }}
+                    {{ parcela.empty_form.boleto }}
+                </div>
+                <div class="col-12 col-lg-6">
+                    {{ parcela.empty_form.comprovante.label_tag }}
+                    {{ parcela.empty_form.comprovante }}
+                </div>
+                {% else %}
+                <div class="col-12 col-lg-6">
+                    {{ parcela.empty_form.detalhes.label_tag }}
+                    {{ parcela.empty_form.detalhes }}
+                </div>
+                <div class="col-12 col-lg-6">
+                    {{ parcela.empty_form.boleto.label_tag }}
+                    {{ parcela.empty_form.boleto }}
+                </div>
+                {% endif %}
                 <hr class="d-block d-lg-none mt-2 mb-0">
             </div>
             {% if not status == 'autorizado' %}
@@ -268,45 +280,31 @@
 
 
 <script>
-    // select2 inicial produto
-    window.onload = function () {
-        document.getElementById(`id_compramateriaprima_set-0-produto`).click()
-    }
-
-    // select2 produto
-    function reply_click(clicked_id) {
-        $(`#${clicked_id}`).select2();
-    }
-
-    // select2 fornecedor
-    $(document).ready(function () {
-        $('#id_fornecedor').select2();
-    });
 
     // -------------------------PRODUTO--------------------------------
-    const addProdutoBtn = document.getElementById('add-produto')
-    const totalProdutosForms = document.getElementById('id_compramateriaprima_set-TOTAL_FORMS')
+    const addProdutoBtn = document.getElementById('add-produto');
+    const totalProdutosForms = document.getElementById('id_compramateriaprima_set-TOTAL_FORMS');
+    var zero = document.getElementById(`id_compramateriaprima_set-0-produto`);
+    zero.setAttribute('required', 'required');
 
-    addProdutoBtn.addEventListener('click', add_new_produto_form)
+    addProdutoBtn.addEventListener('click', add_new_produto_form);
     function add_new_produto_form(event) {
         if (event) {
-            event.preventDefault()
+            event.preventDefault();
         }
-        const currentProdutoForms = document.getElementsByClassName("produto-form")
+        const currentProdutoForms = document.getElementsByClassName("produto-form");
         const currentProdutoFormCount = currentProdutoForms.length // + 1
 
-        const formProdutoCopyTarget = document.getElementById("produto-form-list")
-        const copyProdutoEmptyFormEl = document.getElementById('empty-produto').cloneNode(true)
-        console.log(copyProdutoEmptyFormEl)
-        copyProdutoEmptyFormEl.setAttribute('class', 'row produto-form')
-        copyProdutoEmptyFormEl.setAttribute('id', `compramateriaprima_set-${currentProdutoFormCount}`)
-        const regexProduto = new RegExp('__prefix__', 'g')
-        copyProdutoEmptyFormEl.innerHTML = copyProdutoEmptyFormEl.innerHTML.replace(regexProduto, currentProdutoFormCount)
-        totalProdutosForms.setAttribute('value', currentProdutoFormCount + 1)
+        const formProdutoCopyTarget = document.getElementById("produto-form-list");
+        const copyProdutoEmptyFormEl = document.getElementById('empty-produto').cloneNode(true);
+        copyProdutoEmptyFormEl.setAttribute('required', 'required');
+        copyProdutoEmptyFormEl.setAttribute('class', 'row produto-form');
+        copyProdutoEmptyFormEl.setAttribute('id', `compramateriaprima_set-${currentProdutoFormCount}`);
+        const regexProduto = new RegExp('__prefix__', 'g');
+        copyProdutoEmptyFormEl.innerHTML = copyProdutoEmptyFormEl.innerHTML.replace(regexProduto, currentProdutoFormCount);
+        totalProdutosForms.setAttribute('value', currentProdutoFormCount + 1);
 
-        formProdutoCopyTarget.append(copyProdutoEmptyFormEl)
-
-        document.getElementById(`id_compramateriaprima_set-${currentProdutoFormCount}-produto`).click()
+        formProdutoCopyTarget.append(copyProdutoEmptyFormEl);
     }
 
 
@@ -340,4 +338,23 @@
 {% block script %}
 <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
 <script src="{% static 'js/select2.min.js' %}"></script>
+<script>
+    $(document).ready(function () {
+        $('#id_fornecedor').select2({
+            ajax: {
+                url: "{% url 'compra:fornecedorAjax' %}",
+                dataType: 'json',
+                processResults: function (data) {
+                    return {
+                        results: $.map(data, function (item) {
+                            return { id: item.id, text: item.nome };
+                        })
+                    };
+                }
+            },
+            minimumInputLength: 1
+        });
+    });
+
+</script>
 {% endblock %}

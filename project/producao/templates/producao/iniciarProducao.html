@@ -6,6 +6,7 @@
 
 {% block index %}
 
+
 <div class="container">
     <label class="fs-5 fw-bold">Qtde bebedouros no estoque</label>
     <div class="container px-3">
@@ -24,7 +25,7 @@
                         <div class="">
                             <span class="">{{produto.nome}}</span>
                             <div class="d-flex align-items-center justify-content-end">
-                                <h6 class="" style="color: rgb(86, 202, 0);">{{produto.qtde}}</h6>
+                                <h6 class="" style="color: rgb(86, 202, 0);">{{produto.quantidade}}</h6>
                             </div>
                         </div>
                     </div>
@@ -71,8 +72,8 @@
                             <td>{{venda.cliente}}</td>
                             <td>{{venda.data_pedido}}</td>
                             <td>{{venda.data_entrega}}</td>
-                            {%for produto in venda.get_lista_produtos%}
-                            <th>{{produto.qtde}}</th>
+                            {%for produto in venda.get_lista_produtos_to_iniciar_producao%}
+                            <th>{{produto.quantidade}}</th>
                             {%endfor%}
                             <td>{{venda.qtde_produtos}}</td>
                         </tr>
@@ -84,6 +85,10 @@
     </div>
 </div>
 
+<script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+{% endblock %}
+
+{% block script %}
 <script type="text/javascript">
     //$('input').on('input',function(e){
     //});
@@ -95,6 +100,7 @@
                 continua = true;
 
             }
+            console.log(index)
         });
         if (continua == false) {
             alert('Selecione uma venda para iniciar producao')
@@ -107,5 +113,4 @@
 
 
 </script>
-
-{% endblock %}
+{% endblock script %}

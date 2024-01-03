@@ -20,6 +20,8 @@ class MateriaPrima(models.Model):
     nome = models.CharField(max_length=255)
     uni_med = models.ForeignKey(UnidadeMedida, on_delete=models.RESTRICT)
     descricao = models.CharField(max_length=255, null=True, blank=True)
+    # criadoem = models.DateTimeField(auto_now_add=True)
+    # atualizadoem = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = "Materia Prima"

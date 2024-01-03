@@ -1,0 +1,43 @@
+{% if venda.danfe_simples %}
+<div class="container">
+    <div class="card border-2 p-3" style="--bs-card-border-color:green ">
+        <div class="row">
+            <div class="col-2">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{% if venda.numero_nf %}N&#176; {{ venda.numero_nf }}{% endif %}</h5>
+                        <h6>Status</h6>
+                        <p>{{ venda.status }}</p>
+                        <p>{{ venda.motivo }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-2">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Chave</h5>
+                        <p>{{ venda.chave }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-2">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Visualizar N.F</h5>
+                        <div><a href="{{ venda.danfe }}" target="_blank" class="card-link">Danfe</a></div>
+                        <div><a href="{{ venda.danfe_simples }}" target="_blank" class="card-link">Simples</a></div>
+                        <div><a href="{{ venda.danfe_etiqueta }}" target="_blank" class="card-link">Etiqueta</a></div>
+                        <div><a href="{{ venda.xml }}" target="_blank" class="card-link">XML</a></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    {% else %}
+    <!-- <div class="text-end mt-2">
+        <button type="submit" class="btn btn-primary btn-sm" name="EmitirNF" id="id_emitirnf">Emitir Nota
+            Fiscal</button>
+    </div> -->
+</div>
+{% endif %}

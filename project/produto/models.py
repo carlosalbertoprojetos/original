@@ -1,10 +1,10 @@
 from django.db import models
 from django.urls import reverse_lazy as _
 from django.core.exceptions import ValidationError
-from django.db.models.signals import post_save, post_delete
-from django.dispatch import receiver
+
 
 from materiaprima.models import MateriaPrima
+from empresa.models import Empresa
 
 
 def validate_campos(value):
@@ -13,7 +13,7 @@ def validate_campos(value):
 
 
 class UnidadeMedida(models.Model):
-    unidade = models.CharField("UN", max_length=10)
+    unidade = models.CharField("UNIDADE", max_length=10)
     descricao = models.TextField("DESCRIÇÃO", blank=True)
 
     class Meta:
@@ -25,13 +25,25 @@ class UnidadeMedida(models.Model):
 
 
 class Produto(models.Model):
-    codigoproduto = models.CharField(max_length=255)
-    nome = models.CharField(max_length=255)
+    empresa = models.ForeignKey(
+        Empresa,
+        on_delete=models.DO_NOTHING,
+        null=False,
+        blank=False,
+        max_length=255,
+    )
+    xped = models.CharField(max_length=15)
+    ordem = models.CharField(max_length=6)
+    codigoproduto = models.CharField(max_length=60)
+    nome = models.CharField(max_length=120)
     ncm = models.CharField(
-        max_length=10, validators=[validate_campos], null=True, blank=True
+        max_length=8, validators=[validate_campos], null=True, blank=True
     )
     cst = models.CharField(
         max_length=3, validators=[validate_campos], null=True, blank=True, default=0
+    )
+    cest = models.CharField(
+        max_length=7, validators=[validate_campos], null=True, blank=True
     )
     cfop = models.CharField(
         max_length=4, validators=[validate_campos], null=True, blank=True
@@ -39,12 +51,17 @@ class Produto(models.Model):
     unimed = models.ForeignKey(
         UnidadeMedida,
         on_delete=models.DO_NOTHING,
-        verbose_name="UNIDADE",
         null=True,
         blank=True,
+        max_length=6,
     )
     preco = models.DecimalField(max_digits=11, decimal_places=2, default=0.00)
+    peso = models.IntegerField(null=True, blank=True)
     estoque_ini = models.FloatField(default=0, null=True, blank=True)
+
+    aliq_icms_interno = models.FloatField(default=0, null=True, blank=True)
+    aliq_ipi = models.FloatField(default=0, null=True, blank=True)
+
     status_produto = models.BooleanField(default=True)
     descricao = models.CharField(max_length=255, null=True, blank=True)
     criadoem = models.DateTimeField(auto_now_add=True)
@@ -57,6 +74,12 @@ class Produto(models.Model):
 
     def __str__(self):
         return str(self.nome)
+
+    def prod_gau_edit(self):
+        return _("produto:produtoUpdate", args=[self.pk])
+
+    def prod_gau_del(self):
+        return _("produto:produtoDelete", args=[self.pk])
 
     def get_nome_abreviado(self):
         return (
@@ -75,37 +98,71 @@ class Produto(models.Model):
         )
 
 
-# para cada matéria prima um ou mais produtos
-class MateriaPrimaProduto(models.Model):
-    materiaprima = models.ForeignKey(
-        MateriaPrima, on_delete=models.PROTECT, verbose_name="MATERIA PRIMA"
+# peças produzidos/fabricados com objetivo de utilizar na fabricação do produto final
+class Peca(models.Model):
+    codigoproduto = models.CharField(max_length=60)
+    nome = models.CharField(max_length=120)
+    unimed = models.ForeignKey(
+        UnidadeMedida,
+        on_delete=models.DO_NOTHING,
+        null=True,
+        blank=True,
+        max_length=6,
     )
-    produto = models.ManyToManyField(Produto, through="ProdutosMatPri", blank=True)
-    valor = models.DecimalField(
-        "VALOR CUSTO", max_digits=9, decimal_places=2, default=0, null=True, blank=True
+    peso = models.DecimalField(decimal_places=2, max_digits=6, null=True, blank=True)
+    produto = models.ForeignKey(
+        Produto,
+        on_delete=models.DO_NOTHING,
+        null=True,
+        blank=True,
     )
+    quantidade = models.DecimalField(
+        decimal_places=2,
+        max_digits=10,
+        default=1,
+    )
+    estoque_ini = models.FloatField(default=0, null=True, blank=True)
+    status_produto = models.BooleanField(default=True)
+    descricao = models.CharField(max_length=255, null=True, blank=True)
     criadoem = models.DateTimeField(auto_now_add=True)
     atualizadoem = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = "MATÉRIA PRIMA PRODUTO"
-        verbose_name_plural = "MATÉRIA PRIMA PRODUTOS"
+        verbose_name = "PEÇA"
+        verbose_name_plural = "PECAS"
 
     def __str__(self):
-        return str(self.materiaprima.nome)
+        return str(self.nome)
 
-    # def mp_prod_edit(self):
-    #     return _("producao:previsaoEstoque", {"id_produto": self.id})
+    def peca_gau_edit(self):
+        return _("produto:pecaUpdate", args=[self.pk])
+
+    def peca_gau_del(self):
+        return _("produto:pecaDelete", args=[self.pk])
 
 
-class ProdutosMatPri(models.Model):
-    mp = models.ForeignKey(MateriaPrimaProduto, on_delete=models.RESTRICT)
-    prod = models.ForeignKey(Produto, on_delete=models.RESTRICT)
-    quant = models.DecimalField(
-        "QUANTIDADE",
-        max_digits=10,
-        decimal_places=2,
-        default=0.0,
+# registra a quantidade de matéria prima consumida para cada peça/produto
+class ProdutoMatPri(models.Model):
+    materiaprima = models.ForeignKey(MateriaPrima, on_delete=models.RESTRICT)
+    peca = models.ForeignKey(Peca, on_delete=models.RESTRICT, null=True, blank=True)
+    produto = models.ForeignKey(
+        Produto,
+        on_delete=models.RESTRICT,
         null=True,
         blank=True,
     )
+    quantidade = models.DecimalField(
+        decimal_places=2,
+        max_digits=10,
+    )
+
+    class Meta:
+        verbose_name = "QUANTIDADE DE MATÉRIA PRIMA POR PRODUTO"
+        verbose_name = "QUANTIDADE DE MATÉRIAS PRIMAS POR PRODUTO"
+        unique_together = ["materiaprima", "peca"], ["materiaprima", "produto"]
+
+    def __str__(self):
+        if self.peca:
+            return f"{self.peca.nome}"
+        else:
+            return f"{self.produto.nome}"
