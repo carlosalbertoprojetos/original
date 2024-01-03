@@ -123,7 +123,7 @@ def vendaCreate(request):
 
     limiteproducaodiaria = LimiteProducaoDiaria.objects.first()
     if limiteproducaodiaria:
-        limiteproducaodiaria = limiteproducaodiaria.qtde
+        limiteproducaodiaria = limiteproducaodiaria.quantidade
     else:
         limiteproducaodiaria = 0
 
@@ -192,7 +192,7 @@ def vendaUpdate(request, pk):
     if request.method == "POST":
         if form.is_valid() and produto_form.is_valid() and parcela_form.is_valid():
             venda = form.save(commit=False)
-            venda.vendedor = str(request.user)
+            venda.vendedor = str(request.user).capitalize()
             venda.save()
             produto_form.instance = venda
             produto_form.save()

@@ -242,7 +242,7 @@
                 },
 
                 success: function (data) {
-                    total = data.total_mes
+                    var total = data.total_mes
                     document.getElementById("id_totalMes").innerHTML = `R$ ${Number(total).toFixed(2)}`
 
                     const ctx = document.getElementById('total_vendido_mes').getContext('2d');
@@ -325,8 +325,3 @@
 </main>
 
 {% endblock %}
-
-<!-- 
-https://stackoverflow.com/questions/72193719/chart-js-error-in-angular-canvas-is-already-in-use-chart-with-id-0-must-be-d 
-https://laracasts.com/discuss/channels/javascript/canvas-is-already-in-use-chart-with-id-1-must-be-destroyed-before-the-canvas-can-be-reused
--->
