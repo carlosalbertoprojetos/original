@@ -9,6 +9,9 @@ node_modules/
 dist/
 project/settings.py
 eder.pfx
+mercado.json
+mercadolivre.json
+@
 # Compiled Java class files
 *.class
 
