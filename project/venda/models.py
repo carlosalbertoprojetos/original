@@ -1,12 +1,17 @@
-from decimal import Decimal
 import os
-from django.db import models
-from django.urls import reverse_lazy as _
 import datetime
+import base64
+from decimal import Decimal
+from django.db import models
 from django.db.models import Sum
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
-import base64
+from django.urls import reverse_lazy as _
+
+from django.db.models.signals import post_save
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 
 from cliente.models import Cliente
 from produto.models import Produto
@@ -64,33 +69,53 @@ class Venda(models.Model):
     cliente = models.ForeignKey(
         Cliente,
         on_delete=models.RESTRICT,
-        # related_name="clientevenda",
-        # verbose_name="CLIENTE",
     )
-    data_pedido = models.DateTimeField(default=datetime.date.today)
+    data_pedido = models.DateTimeField(
+        default=datetime.datetime.now().strftime("%d/%m/%Y")
+    )
     data_entrega = models.DateField(null=True, blank=True)
+
+    # transportadora
     transportadora = models.ForeignKey(
-        Transportadora, on_delete=models.CASCADE, verbose_name="TRANSPORTADORA"
+        Transportadora, on_delete=models.CASCADE, related_name="TRANSPORTADORA"
     )
+    cotacao_transportadora = models.CharField(max_length=100, null=True, blank=True)
+    prazo = models.CharField(max_length=30, null=True, blank=True)
     valor_frete = models.DecimalField(max_digits=11, decimal_places=2, default=0.00)
+
+    redesp_cotacao_transportadora = models.ForeignKey(
+        Transportadora,
+        on_delete=models.RESTRICT,
+        related_name="REDESPACHO",
+        null=True,
+        blank=True,
+    )
+    redesp_prazo = models.CharField(max_length=30, null=True, blank=True)
+    redesp_valor_frete = models.DecimalField(max_digits=11, decimal_places=2, default=0)
+
+    # vendedor
     vendedor = models.ForeignKey(User, on_delete=models.RESTRICT, null=True, blank=True)
     valor_venda = models.DecimalField(max_digits=11, decimal_places=2, default=0.00)
     taxa_mercadolivre = models.IntegerField(null=True, blank=True)
     porcentagem_desconto = models.IntegerField(default=0.00)
     subtotal = models.DecimalField(max_digits=11, decimal_places=2, default=0.00)
     status_venda = models.CharField(
-        choices=ESCOLHAS_STATUSVENDAS, null=False, blank=False, max_length=50
+        choices=ESCOLHAS_STATUSVENDAS, max_length=50, null=False, blank=False
     )
     status_expedicao = models.CharField(
-        null=True, blank=True, max_length=60, default="Conferir dados"
+        null=True, blank=True, max_length=60, default="Fazer Cotação"
+    )
+    status_posvenda = models.CharField(
+        null=True, blank=True, max_length=60, default="Conferencia Final"
     )
     data_status_expedicao = models.DateTimeField(auto_now=True)
     condicaopgto = models.ForeignKey(CondicaoVenda, on_delete=models.RESTRICT)
-    dias_prim_par = models.IntegerField()
-    dias_outras_par = models.IntegerField()
-    parcelas = models.IntegerField()
+    dias_prim_par = models.IntegerField(default=0.00)
+    dias_outras_par = models.IntegerField(default=0.00)
+    parcelas = models.IntegerField(default=0.00)
     formapgto = models.ForeignKey(FormaPagamento, on_delete=models.RESTRICT)
     detalhes = models.CharField(max_length=255, null=True, blank=True)
+    comentario = models.CharField(max_length=255, null=True, blank=True)
     atualizadoem = models.DateTimeField(auto_now=True)
     atualizadopor = models.CharField(max_length=255)
     valortotalcomimposto = models.DecimalField(
@@ -102,20 +127,26 @@ class Venda(models.Model):
     uuid = models.CharField(max_length=55, null=True, blank=True)
     numero_nf = models.IntegerField(null=True, blank=True)
     xml = models.CharField(max_length=255, null=True, blank=True)
+    nfjaimpressa = models.BooleanField(null=True, blank=True, default=False)
     danfe = models.CharField(max_length=255, null=True, blank=True)
     danfe_simples = models.CharField(max_length=255, null=True, blank=True)
     danfe_etiqueta = models.CharField(max_length=255, null=True, blank=True)
     codigo_mercadolivre = models.CharField(max_length=255, null=True, blank=True)
     nickname_mercadolivre = models.CharField(max_length=255, null=True, blank=True)
-    cotacao_transportadora = models.CharField(max_length=100, null=True, blank=True)
     quemrecebe_mercadolivre = models.CharField(max_length=255, null=True, blank=True)
     telefonequemrecebe_mercadolivre = models.CharField(
         max_length=25, null=True, blank=True
     )
     etiqueta_impressa = models.BooleanField(blank=True, null=True, default=False)
+    data_impressao = models.DateTimeField(null=True, blank=True)
     urgente = models.BooleanField(blank=True, null=True, default=False)
+
     comprovante = models.FileField(
         upload_to=path_and_receita_comprovante, null=True, blank=True
+    )
+
+    informacao_adicional_notafiscal = models.CharField(
+        max_length=100, null=True, blank=True
     )
 
     class Meta:
@@ -161,39 +192,106 @@ class Venda(models.Model):
             )
         return lista_produtos
 
+    def get_id(self):
+        """
+        retorna id
+        """
+        return str(self.id)
+
+    def status_posvenda_backgroundcolor(self):
+        "retorna cor para colocar coluna"
+        retorno = "bg_success"
+        if self.status_expedicao != "Concluido":
+            retorno = "bg-warning"
+        return retorno
+
     def status_expedicao_backgroundcolor(self):
         "retorna cor para colocar coluna"
         retorno = ""
         if self.status_expedicao == "Parado":
-            retorno = "bg-secondary"
+            retorno = "rounded-2 fw-bold text-white bg-secondary px-1"
         if self.status_expedicao == "Fazer Cotação":
-            retorno = "bg-info"
+            retorno = "rounded-2 fw-bold text-white bg-info text-center"
+        if self.status_expedicao == "Imprimir Etiqueta":
+            retorno = "rounded-2 fw-bold text-muted bg-yellow text-center"
         if self.status_expedicao == "Agendar Transportadora":
-            retorno = "bg-info"
+            retorno = "rounded-2 fw-bold text-white bg-info text-center"
         if self.status_expedicao == "Informar cliente p/ buscar":
-            retorno = "bg-info"
+            retorno = "rounded-2 fw-bold text-white bg-info text-center"
         if self.status_expedicao == "Aguardando transportadora":
-            retorno = "bg-warning"
+            retorno = "rounded-2 fw-bold text-white bg-warning text-center"
         if self.status_expedicao == "Aguardando Cliente":
-            retorno = "bg-warning"
+            retorno = "rounded-2 fw-bold text-white bg-warning text-center"
+        if self.status_expedicao == "Pagar e Retirar":
+            retorn = "bg-warning text-center text-center"
         if self.status_expedicao == "Aguardando Concluir Produtos":
-            retorno = "bg-danger"
+            retorno = "rounded-2 fw-bold text-white bg-roxo bg-indig text-center"
         if self.status_expedicao == "Enviado":
-            retorno = "bg-success"
+            retorno = "rounded-2 fw-bold text-white bg-success text-center px-1"
+        if self.status_expedicao == "Concluido":
+            retorno = "rounded-2 fw-bold text-white bg-success text-center px-1"
         if self.status_expedicao == "Conferir dados":
-            retorno = "bg-danger"
+            retorno = (
+                "rounded-2 fw-bold text-white fw-bold text-white bg-danger text-center"
+            )
         if self.status_expedicao == "Combinar Entrega":
-            retorno = "bg-danger"
+            retorno = "rounded-2 fw-bold text-white bg-danger text-center"
         if self.status_expedicao == "Emitir Boleto":
-            retorno = "bg-danger"
+            retorno = "rounded-2 fw-bold text-white bg-danger text-center"
         if self.status_expedicao == "Aguardando Pagamento":
-            retorno = "bg-danger"
+            retorno = "rounded-2 fw-bold text-white bg-danger text-center"
+        if self.status_expedicao == "Pedido Pronto":
+            retorno = "rounded-2 fw-bold text-white bg-pronto text-center"
+        if self.status_expedicao == "Muito Caro":
+            retorno = "rounded-2 fw-bold text-white bg-secondary text-center"
+        if self.status_expedicao == "Imprimir Nota Fiscal":
+            retorno = "bg-yellow"
+        if self.status_expedicao == "Cancelado":
+            retorno = "bg-secondary"
 
         # status venda diferente status expedicao
         if self.status_venda == "enviado":
-            retorno = "bg-success"
+            retorno = "rounded-2 fw-bold text-white bg-success text-center px-1"
 
         return retorno
+
+
+@receiver(post_save, sender=Venda)
+def enviar_email_venda(sender, instance, created, **kwargs):
+    cliente = Cliente.objects.filter(email=instance.vendedor.email)
+    if created and cliente:
+        # Configuração do e-mail
+        comprador = instance.cliente
+        remetente = instance.cliente.email
+        contato = instance.cliente.tel_principal
+        if not contato:
+            contato = "Não há número de telefone cadastrado!"
+        destinatario = instance.vendedor.email
+        # Renderize o corpo do e-mail com base em um template
+        context = {
+            "vendedor": instance.vendedor,
+            "comprador": comprador,
+            "remetente": remetente,
+            "contato": contato,
+        }
+        corpo_email = render_to_string("venda/email/vendaEmailVendedor.html", context)
+        # Envie o e-mail
+        send_mail("Orcamento", strip_tags(corpo_email), remetente, [destinatario])
+
+
+def arquivo_venda_path(instance, filename):
+    # Este método define o caminho para salvar o arquivo, neste caso, na pasta 'uploads' dentro de 'media'
+    return os.path.join(f"venda{instance.venda.id}/{filename}")
+
+
+class ArquivosVenda(models.Model):
+    arquivo = models.FileField(upload_to=arquivo_venda_path, null=True, blank=True)
+    venda = models.ForeignKey(
+        Venda, related_name="arquivos", on_delete=models.CASCADE, null=True, blank=True
+    )
+
+    def __str__(self):
+        return str(self.venda)
 
 
 class Voltagem(models.Model):
@@ -232,7 +330,7 @@ class Adesivado(models.Model):
 class VendaProduto(models.Model):
     venda = models.ForeignKey(Venda, on_delete=models.CASCADE)
     produto = models.ForeignKey(Produto, on_delete=models.RESTRICT)
-    quantidade = models.IntegerField(default=1)
+    quantidade = models.IntegerField(default=0)
     preco = models.DecimalField(max_digits=11, decimal_places=2, default=0.00)
     subtotal = models.DecimalField(max_digits=11, decimal_places=2, default=0.00)
     voltagem = models.ForeignKey(Voltagem, on_delete=models.RESTRICT)
@@ -263,3 +361,14 @@ def totalVendaProdutoDel(sender, instance, **kwargs):
     instance.venda.valor_venda = soma
     instance.venda.subtotal = soma - calc
     instance.venda.save()
+
+
+class VendaCotacao(models.Model):
+    venda = models.ForeignKey(Venda, on_delete=models.CASCADE, verbose_name="Venda")
+    prazo = models.CharField(max_length=30)
+    valor = models.CharField(max_length=30)
+    # valor = models.DecimalField(max_digits=11, decimal_places=2, default=0.00)
+    cotacao = models.CharField(max_length=30)
+    transportadora = models.ForeignKey(
+        Transportadora, on_delete=models.CASCADE, verbose_name="TRANSPORTADORA"
+    )

@@ -7,96 +7,7 @@
 {% block index %}
 
 <div class="container">
-    <div class="container">
-        <div class="row gap-3 justify-content-center">
-            <div class="card col-md p-4 bg-light">
-                <div
-                    class="d-flex justify-content-between align-items-center justify-content-md-center justify-content-xl-between">
-                    <div
-                        class="imageBlock d-flex align-items-center justify-content-center bg-white d-md-none d-xl-flex">
-                        <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" font-size="1.5rem"
-                            class="iconify iconify--mdi" width="1em" height="1em" viewBox="1 0 22 22">
-                            <path fill="currentColor"
-                                d="M12 4a4 4 0 0 1 4 4a4 4 0 0 1-4 4a4 4 0 0 1-4-4a4 4 0 0 1 4-4m0 2a2 2 0 0 0-2 2a2 2 0 0 0 2 2a2 2 0 0 0 2-2a2 2 0 0 0-2-2m0 7c2.67 0 8 1.33 8 4v3H4v-3c0-2.67 5.33-4 8-4m0 1.9c-2.97 0-6.1 1.46-6.1 2.1v1.1h12.2V17c0-.64-3.13-2.1-6.1-2.1Z"
-                                style="color: rgb(145, 85, 253);">
-                            </path>
-                        </svg>
-                    </div>
-                    <div class="text-end">
-                        <span class="text-end">Vencidas(R$)</span>
-                        <div class="d-flex align-items-center justify-content-end">
-                            <h6 class="">{{ vencidos|floatformat:2 }}</h6>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="card col-12 col-md p-4 bg-light">
-                <div
-                    class="d-flex justify-content-between align-items-center justify-content-md-center justify-content-xl-between">
-                    <div
-                        class="imageBlock d-flex align-items-center justify-content-center bg-white d-md-none d-xl-flex">
-                        <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" font-size="1.5rem"
-                            class="iconify iconify--mdi" width="1em" height="1em" viewBox="1 0 22 22">
-                            <path fill="currentColor"
-                                d="M7 15h2c0 1.08 1.37 2 3 2s3-.92 3-2c0-1.1-1.04-1.5-3.24-2.03C9.64 12.44 7 11.78 7 9c0-1.79 1.47-3.31 3.5-3.82V3h3v2.18C15.53 5.69 17 7.21 17 9h-2c0-1.08-1.37-2-3-2s-3 .92-3 2c0 1.1 1.04 1.5 3.24 2.03C14.36 11.56 17 12.22 17 15c0 1.79-1.47 3.31-3.5 3.82V21h-3v-2.18C8.47 18.31 7 16.79 7 15Z"
-                                style="color: rgb(86, 202, 0);"></path>
-                        </svg>
-                    </div>
-                    <div class="text-end">
-                        <span class="">Vencem Hoje(R$)</span>
-                        <div class="d-flex align-items-center justify-content-end">
-                            <h6 class="">{{ vencem_hoje|floatformat:2 }}</h6>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="card col-12 col-md p-4 bg-light">
-                <div
-                    class="d-flex justify-content-between align-items-center justify-content-md-center justify-content-xl-between">
-                    <div
-                        class="imageBlock d-flex align-items-center justify-content-center bg-white d-md-none d-xl-flex">
-                        <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" font-size="1.5rem"
-                            class="iconify iconify--mdi" width="1em" height="1em" viewBox="0 0 24 24">
-                            <path fill="currentColor"
-                                d="m16 6l2.29 2.29l-4.88 4.88l-4-4L2 16.59L3.41 18l6-6l4 4l6.3-6.29L22 12V6h-6Z"
-                                style="color: rgb(22, 177, 255);">
-                            </path>
-                        </svg>
-                    </div>
-                    <div class="">
-                        <span class="">A Vencer(R$)</span>
-                        <div class="d-flex align-items-center justify-content-end">
-                            <h6 class="">{{ avencer|floatformat:2 }}</h6>
-                            <div class="d-flex align-items-center">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="card col-12 col-md p-4 bg-light">
-                <div
-                    class="d-flex justify-content-between align-items-center justify-content-md-center justify-content-xl-between">
-                    <div
-                        class="imageBlock d-flex align-items-center justify-content-center bg-white d-md-none d-xl-flex">
-                        <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" font-size="1.5rem"
-                            class="iconify iconify--mdi" width="1em" height="1em" viewBox="1 0 22 22">
-                            <path fill="currentColor" d="M3 22V8h4v14H3m7 0V2h4v20h-4m7 0v-8h4v8h-4Z"
-                                style="color: rgb(255, 180, 0);">
-                            </path>
-                        </svg>
-                    </div>
-                    <div class="text-end">
-                        <span class="">Pagas(R$)</span>
-                        <div class="d-flex align-items-center justify-content-end">
-                            <h6 class="">{{ pagas|floatformat:2 }}</h6>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <br />
-    <div class="filters card border-1">
+    <div class="filters card border-1 mb-2">
         <div class="card-header">
             <label class="fs-5 fw-bold">Filtro</label>
         </div>
@@ -112,29 +23,115 @@
                         <input type="date" id="data_fim" name="data_fim" class="form-control form-control-sm"
                             placeholder="Data fim" value="{{ data_fim }}">
                     </div>
-                    <div class="col-12 col-lg-1 mt-2 mt-lg-0 ml-2 ml-lg-0 ">
+                    <div class="col-12 col-lg-1 mt-2 mt-lg-0 ml-2 ml-lg-0 text-end ps-0">
                         <button type="submit" class="btn btn-primary btn-sm" value="Pesquisar">Pesquisar</button>
                     </div>
                 </div>
             </form>
         </div>
     </div>
-    <div class="filters card border-1 mt-2">
+    <div class="d-flex flex-column flex-lg-row gap-2 justify-content-center mb-2">
+        <div class="card col-md p-4">
+            <div
+                class="d-flex justify-content-between align-items-center justify-content-md-center justify-content-xl-between">
+                <div class="imageBlock d-flex align-items-center justify-content-center bg-white d-md-none d-xl-flex">
+                    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" font-size="1.5rem"
+                        class="iconify iconify--mdi" width="1em" height="1em" viewBox="1 0 22 22">
+                        <path fill="currentColor"
+                            d="M12 4a4 4 0 0 1 4 4a4 4 0 0 1-4 4a4 4 0 0 1-4-4a4 4 0 0 1 4-4m0 2a2 2 0 0 0-2 2a2 2 0 0 0 2 2a2 2 0 0 0 2-2a2 2 0 0 0-2-2m0 7c2.67 0 8 1.33 8 4v3H4v-3c0-2.67 5.33-4 8-4m0 1.9c-2.97 0-6.1 1.46-6.1 2.1v1.1h12.2V17c0-.64-3.13-2.1-6.1-2.1Z"
+                            style="color: rgb(145, 85, 253);">
+                        </path>
+                    </svg>
+                </div>
+                <div class="text-end">
+                    <span class="text-end">Vencidas</span>
+                    <div class="d-flex align-items-center justify-content-end">
+                        <h6>R$ {{ vencidos|floatformat:2 }}</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card col-md p-4">
+            <div
+                class="d-flex justify-content-between align-items-center justify-content-md-center justify-content-xl-between">
+                <div class="imageBlock d-flex align-items-center justify-content-center bg-white d-md-none d-xl-flex">
+                    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" font-size="1.5rem"
+                        class="iconify iconify--mdi" width="1em" height="1em" viewBox="1 0 22 22">
+                        <path fill="currentColor"
+                            d="M7 15h2c0 1.08 1.37 2 3 2s3-.92 3-2c0-1.1-1.04-1.5-3.24-2.03C9.64 12.44 7 11.78 7 9c0-1.79 1.47-3.31 3.5-3.82V3h3v2.18C15.53 5.69 17 7.21 17 9h-2c0-1.08-1.37-2-3-2s-3 .92-3 2c0 1.1 1.04 1.5 3.24 2.03C14.36 11.56 17 12.22 17 15c0 1.79-1.47 3.31-3.5 3.82V21h-3v-2.18C8.47 18.31 7 16.79 7 15Z"
+                            style="color: rgb(86, 202, 0);"></path>
+                    </svg>
+                </div>
+                <div class="text-end">
+                    <span>Vencem Hoje</span>
+                    <div class="d-flex align-items-center justify-content-end">
+                        <h6>R$ {{ vencem_hoje|floatformat:2 }}</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card col-md p-4">
+            <div
+                class="d-flex justify-content-between align-items-center justify-content-md-center justify-content-xl-between">
+                <div class="imageBlock d-flex align-items-center justify-content-center bg-white d-md-none d-xl-flex">
+                    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" font-size="1.5rem"
+                        class="iconify iconify--mdi" width="1em" height="1em" viewBox="0 0 24 24">
+                        <path fill="currentColor"
+                            d="m16 6l2.29 2.29l-4.88 4.88l-4-4L2 16.59L3.41 18l6-6l4 4l6.3-6.29L22 12V6h-6Z"
+                            style="color: rgb(22, 177, 255);">
+                        </path>
+                    </svg>
+                </div>
+                <div>
+                    <span>A Vencer(R$)</span>
+                    <div class="d-flex align-items-center justify-content-end">
+                        <h6>R$ {{ avencer|floatformat:2 }}</h6>
+                        <div class="d-flex align-items-center">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card col-md p-4">
+            <div
+                class="d-flex justify-content-between align-items-center justify-content-md-center justify-content-xl-between">
+                <div class="imageBlock d-flex align-items-center justify-content-center bg-white d-md-none d-xl-flex">
+                    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" font-size="1.5rem"
+                        class="iconify iconify--mdi" width="1em" height="1em" viewBox="1 0 22 22">
+                        <path fill="currentColor" d="M3 22V8h4v14H3m7 0V2h4v20h-4m7 0v-8h4v8h-4Z"
+                            style="color: rgb(255, 180, 0);">
+                        </path>
+                    </svg>
+                </div>
+                <div class="text-end">
+                    <span>Pagas</span>
+                    <div class="d-flex align-items-center justify-content-end">
+                        <h6>R$ {{ pagas|floatformat:2 }}</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="filters card border-1">
         <div class="card-header">
             <label class="fs-5 fw-bold">Contas a Pagar</label>
         </div>
         <div class="table-responsive p-3">
             <table class="table table-sm" id="id_table">
                 <div class="d-flex justify-content-end">
-                    <a class="btnMaster" href="/compra/cadastrar/">Novo Pedido de Compra
-                        <i class="fa fa-plus-square" aria-hidden="true"></i>
-                    </a>
+                    <div class="d-flex flex-column">
+                        <a class="btnMaster text-end" href="{% url 'despesa:despesaCreate' %}">Nova Despesa
+                            <i class="fa fa-plus-square" aria-hidden="true"></i>
+                        </a>
+                        <a class="btnMaster text-end" href="/compra/cadastrar/">Novo Pedido de Compra
+                            <i class="fa fa-plus-square" aria-hidden="true"></i>
+                        </a>
+                    </div>
                 </div>
                 <div class="col-12 d-flex justify-content-end">
                 </div>
                 <thead>
                     <tr>
-                        <th class="hidden"></th>
                         <th>Documento</th>
                         <th>Despesa</th>
                         <th>Compra</th>
@@ -143,32 +140,48 @@
                         <th>Valor</th>
                         <th>Forma Pagamento</th>
                         <th>Detalhes</th>
-                        <th class="text-center">Editar</th>
+                        <th class="text-center">Ações</th>
+                        <th class="text-center">Conciliar</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for obj in object_list %}
-                    <tr>
-                        <td class="hidden">{{ obj.datadocumento|date:"Y/m/d" }}</td>
-                        <td align="center">{{ obj.datadocumento|date:"d/m/y" }}</td>
+                    {% if obj.conciliado %}
+                    <tr class="bg-conciliado">
+                        {% else %}
+                    <tr class="bg-conciliar">
+                        {% endif %}
+                        <td class="ps-3">{{ obj.datadocumento|date:"Y-m-d" }}</td>
                         <td>{{ obj.despesa|default:""|truncatechars:20 }}</td>
                         <td>{{ obj.compra|default:""|truncatechars:20 }}</td>
-                        <td align="center">{{ obj.datavencimento|date:"d/m/y" }}</td>
-                        <td align="center">{{ obj.datapagamento|date:"d/m/y" }}</td>
+                        <td class="ps-3">{{ obj.datavencimento|date:"Y-m-d" }}</td>
+                        <td class="ps-3">{{ obj.datapagamento|date:"d/m/y" }}</td>
                         <td>R$ {{ obj.valor }}</td>
-                        <td align="center">{{ obj.formapgto }}</td>
+                        <td class="ps-3">{{ obj.formapgto }}</td>
                         <td>{{ obj.detalhes|default_if_none:"" }}</td>
-                        {% if obj.compra %}
-                        <td align="center"><a class="" href="{% url 'compra:compraUpdate' obj.compra.pk %}">
+                        <td>
+                            {% if obj.compra %}
+                            <a href="{% url 'compra:compraUpdate' obj.compra.pk %}">
                                 <i class="fa fa-edit"></i>
                             </a>
-                        </td>
-                        {% endif %}
-                        {% if obj.despesa %}
-                        <td align="center"><a class="" href="{% url 'despesa:despesaUpdate' obj.despesa.pk %}">
+                            {% else %}
+                            <a href="{% url 'despesa:despesaUpdate' obj.despesa.pk %}">
                                 <i class="fa fa-edit"></i>
-                            </a></td>
-                        {% endif %}
+                            </a>
+                            {% endif %}
+                            <a class="px-2" href="{{ obj.parcela_gau_delete }}" style="padding-left: 7px">
+                                <i class="fa fa-close no"></i>
+                            </a>
+                        </td>
+                        <td class="text-center pe-3">
+                            {% if obj.conciliado %}
+                            <i class="fa fa-check-square-o pt-1" aria-hidden="true"
+                                style="font-size:15px; color:green;"></i>
+                            {% else %}
+                            <a href="{% url 'financeiro:conciliarContaPagar' obj.id %}"><i class="fa fa-square-o"
+                                    aria-hidden="true" style="color:#A38832;"></i></a>
+                            {% endif %}
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -178,7 +191,6 @@
 </div>
 
 {% endblock %}
-
 
 {% block script %}
 <script src="{% static 'js/datatables.min.js' %}"></script>
@@ -191,6 +203,20 @@
 
     $(document).ready(function () {
         $('#id_table').DataTable({
+            "columnDefs": [
+                {
+                    "targets": [0, 3],
+                    "render": function (data, type, row, meta) {
+                        if (type === 'display') {
+                            var dateSplit = data.split('-');
+                            return dateSplit[2] + '/' + dateSplit[1] + '/' + dateSplit[0]; // Formato DD/MM/YYYY
+                        }
+                        return data; // Para sort e outros tipos, retornar data sem modificação
+                    }
+                }
+            ],
+            "order": [0, 'desc'],
+            "pageLength": 100,
             "language": {
                 "sProcessing": "Proccesando...",
                 "sLengthMenu": "Mostrar _MENU_ registros",

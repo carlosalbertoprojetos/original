@@ -18,6 +18,7 @@ from financeiro.forms import ContaPagarForm
 from django.db.models import Q
 
 success_url_despesa = _("despesa:despesaList")
+template_name_createdespesa = "despesa/despesaCreateUpdate.html"
 
 
 # @login_required
@@ -220,11 +221,10 @@ def fluxodecaixa_eventos_ajax(request):
 @login_required
 @permission_required("despesa.add_despesa")
 def despesaCreate(request):
-    form = DespesaForm(request.POST or None)
     titulo = "Nova Despesa"
-
+    form = DespesaForm(request.POST or None, request.FILES or None)
     Formset_contaPagar_Factory = inlineformset_factory(
-        Despesa, ContaPagar, form=ContaPagarForm, extra=1, can_delete=False
+        Despesa, ContaPagar, form=ContaPagarForm, min_num=1, extra=0, can_delete=False
     )
     parcela_form = Formset_contaPagar_Factory(
         request.POST or None, request.FILES or None
@@ -242,23 +242,22 @@ def despesaCreate(request):
                 "form": form,
                 "parcela": parcela_form,
             }
-            return render(request, "despesa/despesaCreateUpdate.html", context)
+            return render(request, template_name_createdespesa, context)
     else:
         context = {
             "titulo": titulo,
             "form": form,
             "parcela": parcela_form,
         }
-        return render(request, "despesa/despesaCreateUpdate.html", context)
+        return render(request, template_name_createdespesa, context)
 
 
 @login_required
 @permission_required("despesa.change_despesa")
 def despesaUpdate(request, pk):
-    objeto = get_object_or_404(Despesa, pk=pk)
-    form = DespesaForm(request.POST or None, instance=objeto)
     titulo = "Editar Despesa"
-
+    objeto = get_object_or_404(Despesa, pk=pk)
+    form = DespesaForm(request.POST or None, request.FILES or None, instance=objeto)
     Formset_contaPagar_Factory = inlineformset_factory(
         Despesa, ContaPagar, form=ContaPagarForm, extra=0, can_delete=False
     )
@@ -280,7 +279,7 @@ def despesaUpdate(request, pk):
                 "form": form,
                 "parcela": parcela_form,
             }
-            return render(request, "despesa/despesaCreateUpdate.html", context)
+            return render(request, template_name_createdespesa, context)
     else:
         codigo = True
         context = {
@@ -289,13 +288,12 @@ def despesaUpdate(request, pk):
             "form": form,
             "parcela": parcela_form,
         }
-        return render(request, "despesa/despesaCreateUpdate.html", context)
+        return render(request, template_name_createdespesa, context)
 
 
-# @login_required
 # @permission_required("despesa.view_despesa")
 class DespesaList(LoginRequiredMixin, ListView):
-    model = ContaPagar
+    model = Despesa
     template_name = "despesa/despesaList.html"
 
 

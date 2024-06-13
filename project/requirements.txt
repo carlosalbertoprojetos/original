@@ -1,7 +1,6 @@
 django==3.2.20
 django_select2
 django-allauth
-django-crispy-forms
 django-widget-tweaks
 pandas==0.24.2
 reportlab==3.6.6

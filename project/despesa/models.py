@@ -46,6 +46,9 @@ class Despesa(models.Model):
     num_parcelas = models.IntegerField(default=0)
     descricao = models.TextField(blank=True, null=True)
     fornecedor = models.ForeignKey(Fornecedor, on_delete=models.RESTRICT)
+    comprovante = models.FileField(
+        upload_to="comprovante/despesa/", null=True, blank=True
+    )
 
     class Meta:
         verbose_name = "DESPESA"

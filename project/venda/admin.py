@@ -9,22 +9,21 @@ from .models import (
     Voltagem,
     Torneira,
     Adesivado,
+    VendaCotacao,
+    ArquivosVenda,
 )
 
 
 @admin.register(Voltagem)
-class VoltagemAdmin(admin.ModelAdmin):
-    ...
+class VoltagemAdmin(admin.ModelAdmin): ...
 
 
 @admin.register(Torneira)
-class TorneiraAdmin(admin.ModelAdmin):
-    ...
+class TorneiraAdmin(admin.ModelAdmin): ...
 
 
 @admin.register(Adesivado)
-class AdesivadoAdmin(admin.ModelAdmin):
-    ...
+class AdesivadoAdmin(admin.ModelAdmin): ...
 
 
 @admin.register(FormaPagamento)
@@ -47,6 +46,7 @@ class VendaProdutoInline(admin.TabularInline):
 @admin.register(Venda)
 class VendaAdmin(admin.ModelAdmin):
     list_display = (
+        "id",
         "cliente",
         "data_pedido",
         "data_entrega",
@@ -65,6 +65,9 @@ class VendaAdmin(admin.ModelAdmin):
     ...
 
 
+admin.site.register(ArquivosVenda)
+
+
 @admin.register(MaximoDesconto)
 class MaximoDescontoAdmin(admin.ModelAdmin):
     list_display = ("qtde",)
@@ -73,3 +76,7 @@ class MaximoDescontoAdmin(admin.ModelAdmin):
         return not MaximoDesconto.objects.exists()
 
     ...
+
+
+@admin.register(VendaCotacao)
+class VendaCotacaoAdmin(admin.ModelAdmin): ...

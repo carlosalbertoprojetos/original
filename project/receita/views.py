@@ -15,15 +15,20 @@ from financeiro.forms import ContaReceberForm
 
 
 success_url_receita = _("receita:receitaList")
+template_name_createreceita = "receita/receitaCreateUpdate.html"
 
 
 @login_required
 def receitaCreate(request):
-    form = ReceitaForm(request.POST or None)
     titulo = "Nova Receita"
-
+    form = ReceitaForm(request.POST or None)
     Formset_contaReceber_Factory = inlineformset_factory(
-        Receita, ContaReceber, form=ContaReceberForm, extra=1, can_delete=False
+        Receita,
+        ContaReceber,
+        form=ContaReceberForm,
+        min_num=1,
+        extra=0,
+        can_delete=False,
     )
     parcela_form = Formset_contaReceber_Factory(
         request.POST or None, request.FILES or None
@@ -31,12 +36,12 @@ def receitaCreate(request):
 
     if request.method == "POST":
         if form.is_valid() and parcela_form.is_valid():
-            form.save()
+            # form.save()
             usuario = form.save(commit=False)
             usuario.usuario = str(request.user)
             usuario.save()
-            receita = form.save()
-            parcela_form.instance = receita
+            # receita = form.save()
+            parcela_form.instance = usuario
             parcela_form.save()
             return redirect(success_url_receita)
         else:
@@ -45,22 +50,21 @@ def receitaCreate(request):
                 "form": form,
                 "parcela": parcela_form,
             }
-            return render(request, "receita/receitaCreateUpdate.html", context)
+            return render(request, template_name_createreceita, context)
     else:
         context = {
             "titulo": titulo,
             "form": form,
             "parcela": parcela_form,
         }
-        return render(request, "receita/receitaCreateUpdate.html", context)
+        return render(request, template_name_createreceita, context)
 
 
 @login_required
 def receitaUpdate(request, pk):
+    titulo = "Editar Receita"
     objeto = get_object_or_404(Receita, pk=pk)
     form = ReceitaForm(request.POST or None, instance=objeto)
-    titulo = "Editar Receita"
-
     Formset_contaReceber_Factory = inlineformset_factory(
         Receita, ContaReceber, form=ContaReceberForm, extra=0, can_delete=False
     )
@@ -84,7 +88,7 @@ def receitaUpdate(request, pk):
                 "form": form,
                 "parcela": parcela_form,
             }
-            return render(request, "receita/receitaCreateUpdate.html", context)
+            return render(request, template_name_createreceita, context)
     else:
         codigo = True
         context = {
@@ -93,7 +97,7 @@ def receitaUpdate(request, pk):
             "form": form,
             "parcela": parcela_form,
         }
-        return render(request, "receita/receitaCreateUpdate.html", context)
+        return render(request, template_name_createreceita, context)
 
 
 class ReceitaList(LoginRequiredMixin, ListView):

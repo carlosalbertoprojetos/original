@@ -29,7 +29,7 @@
                         <th>CPF</th>
                         <th>CNPJ</th>
                         <th>Estado</th>
-                        <th align="center">Ação</th>
+                        <th class="text-center">Ação</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -43,7 +43,7 @@
                         <td>{{ obj.cpf|default:"" }}</td>
                         <td>{{ obj.cnpj|default:"" }}</td>
                         <td>{{ obj.estado|default:"" }}</td>
-                        <td align="center pe-1">
+                        <td class="text-center pe-1">
                             <abbr title="Editar">
                                 <a href="{{ obj.forn_gau_edit }}">
                                     <i class=" fa fa-edit"></i>
@@ -69,13 +69,9 @@
 <script src="{% static 'js/datatables.min.js' %}"></script>
 <script src="{% static 'js/jqueryDataTable.js' %}"></script>
 <script>
-    function filtro() {
-        let dataInicio = document.getElementById('data_ini')
-        let datafim = document.getElementById('data_fim')
-    };
-
     $(document).ready(function () {
         $('#id_table').DataTable({
+            "pageLength": 100,
             "language": {
                 "sProcessing": "Proccesando...",
                 "sLengthMenu": "Mostrar _MENU_ registros",

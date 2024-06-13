@@ -1,16 +1,18 @@
 import os
+import datetime
 from decimal import Decimal
 from django.db import models
 from django.urls import reverse_lazy as _
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
-import datetime
-
+from django.contrib.auth.models import User
 
 from compra.models import Compra
 from despesa.models import Despesa
 from receita.models import Receita
 from venda.models import FormaPagamento, Venda
+from empresa.models import DadosBancarios
+
 
 today = datetime.date.today
 time = datetime.datetime.now()
@@ -19,6 +21,35 @@ hour = time.strftime("%H")
 minute = time.strftime("%M")
 seconds = time.strftime("%S")
 printar = f"{hour}H{minute}m{seconds}s"
+
+
+class ControleExtratosBancarios(models.Model):
+    responsavel = models.ForeignKey(User, on_delete=models.RESTRICT)
+    arquivo = models.FileField(upload_to="extrato/")
+    datahora = models.DateTimeField()  # data/hora registrada no extrato
+    conta = models.ForeignKey(DadosBancarios, on_delete=models.RESTRICT)
+    upload = models.DateTimeField(default=time)  # data/hora do upload
+    saldo = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    conciliado = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = [["datahora", "conta"]]
+
+    def __str__(self):
+        return str(self.conta)
+
+
+class ExtratoBancario(models.Model):
+    controle = models.ForeignKey(ControleExtratosBancarios, on_delete=models.CASCADE)
+    data = models.DateField()
+    lancamento = models.CharField(max_length=255)
+    origem = models.CharField(max_length=255, null=True, blank=True)
+    valor = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    saldo = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
+    conciliado = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        unique_together = [["data", "lancamento", "origem", "valor"]]
 
 
 def path_and_receita_boleto(instance, filename):
@@ -68,6 +99,7 @@ class ContaReceber(models.Model):
     )  # número da parcela
     receita = models.ForeignKey(Receita, on_delete=models.CASCADE, null=True)
     valor = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    valor_pago = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     datadocumento = models.DateField(default=today)
     datavencimento = models.DateField("Data do vencimento")
     datapagamento = models.DateField(blank=True, null=True)
@@ -77,8 +109,11 @@ class ContaReceber(models.Model):
     )
     responsavel = models.CharField(max_length=255, null=True, blank=True)
     formapgto = models.ForeignKey(FormaPagamento, on_delete=models.RESTRICT)
-    dados_boleto = models.JSONField(default=dict, null=True, blank=True)
+    # dados_boleto = models.JSONField(default=dict, null=True, blank=True)
     detalhes = models.CharField(max_length=300, null=True, blank=True)
+    conciliado = models.ForeignKey(
+        ExtratoBancario, on_delete=models.RESTRICT, null=True, blank=True
+    )
 
     class Meta:
         verbose_name = "Contas a receber"
@@ -131,6 +166,9 @@ class ContaPagar(models.Model):
         Despesa, on_delete=models.CASCADE, null=True, default=""
     )
     valor = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    valor_pago = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0.0, null=True, blank=True
+    )
     datadocumento = models.DateField(default=today)
     datavencimento = models.DateField()
     datapagamento = models.DateField(null=True, blank=True)
@@ -140,6 +178,13 @@ class ContaPagar(models.Model):
     )
     formapgto = models.ForeignKey(FormaPagamento, on_delete=models.RESTRICT)
     detalhes = models.CharField(max_length=300, null=True, blank=True)
+    conciliado = models.ForeignKey(
+        ExtratoBancario, on_delete=models.RESTRICT, null=True, blank=True
+    )
+
+    class Meta:
+        verbose_name = "Contas a pagar"
+        verbose_name_plural = "Contas a pagar"
 
     def __str__(self):
         if self.despesa:

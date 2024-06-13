@@ -35,6 +35,7 @@ class TransporteForm(forms.ModelForm):
             "bairro": forms.TextInput(attrs={"class": "form-control form-control-sm"}),
             "estado": forms.Select(attrs={"class": "form-control form-control-sm"}),
             "cidade": forms.TextInput(attrs={"class": "form-control form-control-sm"}),
+            "atuacao": forms.TextInput(attrs={"class": "form-control form-control-sm"}),
             "status_transportadora": forms.CheckboxInput(
                 attrs={"class": "form-check-input mt-2", "type": "checkbox"}
             ),

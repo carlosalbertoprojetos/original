@@ -1,0 +1,136 @@
+{% extends 'index.html' %}
+
+{% load static %}
+
+<title> {% block title %} Pós Venda {% endblock title%} </title>
+
+{% block index %}
+
+<style>
+    .bg-pronto {
+        background-color: #00FF00;
+    }
+
+    .bg-indigo {
+        background-color: #A020F0
+    }
+
+    .bg-yellow{
+    	background-color:#FFFF00;
+    }
+
+    ;
+</style>
+
+<!-- Modal -->
+<div class="modal fade" id="ex1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="upload_xmlLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header justify-content-end">
+                <p><a href="#" onclick='$("#ex1").modal("hide");'>fechar</a></p>
+            </div>
+            <div class="modal-body">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="filters card border-1 mt-2">
+        <div class="card-header">
+            <label class="fs-5 fw-bold">Vendas Pos Venda</label>
+        </div>
+        <div class="p-3 overflow-auto">
+            <div id="id_table_filter" style="text-align:right">
+                <label>Buscar:
+                    <form name="pesquisa" id="pesquisa" action="" method="POST">
+                        {% csrf_token %}
+                        <input id="pesquisa" type="text" name="pesquisa" value="{{pesquisa}}"
+                            class="form-control form-control-sm" placeholder="" aria-controls="id_table">
+                    </form>
+                </label>
+            </div>
+            <table class="table table-sm " id="id_table">
+                <div class="col-12 d-flex justify-content-end">
+                </div>
+                <thead>
+                    <tr>
+                        <th>Cód</th>
+                        <th>Cliente</th>
+                        <th>Vendedor</th>
+                        <th>Data Pedido</th>
+                        <th>Numero NF</th>
+                        <th>Transportadora</th>
+                        <th>Adesivou?</th>
+                        <th>Urgente</th>
+                        <th>Status Pós Venda</th>
+                        <th>Data Status</th>
+                        <th>Visualizar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {%for venda in vendas%}
+                    <tr>
+                        <td>{{venda.id}}</td>
+                        <td>{{venda.cliente}}</td>
+                        <td>{{venda.vendedor}}{%if venda.detalhes%} - {{venda.detalhes}} {%endif%}</td>
+                        <td>{{venda.data_pedido}}</td>
+                        <td>{%if venda.numero_nf%} {{venda.numero_nf}}{%endif%}</td>
+                        <td>{{venda.transportadora.nome}}</td>
+                        <td>{%if venda.etiqueta_impressa%}Sim{%endif%}</td>
+                        <td>{%if venda.urgente%}<img src="{% static '/img/icons/fire.gif' %}" width="30"
+                                height="23">{%endif%}</td>
+                        <td>
+                            <div class="{{venda.status_posvenda_backgroundcolor}}">{{venda.status_posvenda.title}}
+                            </div>
+                        </td>
+                        <td>{{venda.data_status_expedicao}}</td>
+                        <td align="center pe-1">
+                            <abbr title="Editar">
+                                <a href="{{ venda.venda_expedicao_edit }}">
+                                    <i class=" fa fa-eye"></i>
+                                </a>
+                            </abbr>
+                            <abbr title='Orçamento'><a href='../venda/{{venda.get_hash}}/orcamento/{{venda.get_id}}'
+                                    target='_blank'><i class='fa fa-file-text-o'></i></a></abbr>
+                        </td>
+                    </tr>
+                    {%if venda.comentario%}
+                    <tr>
+                        <td colspan="11"><b>{{venda.comentario}}</b></td>
+                    </tr>
+                    {%endif%}
+                    {%endfor%}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+
+
+<script type="text/javascript">
+    $("#checkAll").change(function () {
+        if ($("#checkAll").is(':checked')) {
+            $('input:checkbox').attr('checked', 'checked');
+        } else {
+            $('input:checkbox').removeAttr('checked');
+        }
+    });
+
+    function abre_collapse() {
+        $("#collapseExample").collapse('toggle');
+    }
+
+    function abre_estoquefiscal() {
+        $("#EstoqueFiscal").collapse('toggle');
+    }
+
+    $('#pesquisa').keypress(function (e) {
+        if (e.which == 13) {
+            $('form#pesquisa').submit();
+        }
+    });
+</script>
+
+{% endblock %}

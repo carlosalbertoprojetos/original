@@ -25,7 +25,9 @@ class Empresa(models.Model):
         choices=ESCOLHAS_ESTADO, max_length=2, null=True, blank=True
     )
     cidade = models.CharField(max_length=100, null=True, blank=True)
-    regimetributario = models.CharField(choices=REGIMES_TRIBUTARIOS, max_length=100, null=True, blank=True)
+    regimetributario = models.CharField(
+        choices=REGIMES_TRIBUTARIOS, max_length=100, null=True, blank=True
+    )
     presenca = models.IntegerField(default=3, null=True, blank=True)
     modalidade_frete = models.IntegerField(default=0, null=True, blank=True)
     natureza_operacao = models.CharField(max_length=100, null=True, blank=True)
@@ -36,7 +38,6 @@ class Empresa(models.Model):
     webmania_accesstokensecret = models.CharField(max_length=255, null=True, blank=True)
     webmania_bearer = models.CharField(max_length=255, null=True, blank=True)
     webmania_classedeimposto = models.CharField(max_length=255, null=True, blank=True)
-
 
     class Meta:
         verbose_name = "Empresa"
@@ -66,4 +67,4 @@ class DadosBancarios(models.Model):
         verbose_name_plural = "Bancos"
 
     def __str__(self):
-        return f"{self.banco}_{self.empresa.nome_fantasia}"
+        return f"{self.banco}, ag: {self.agencia}, conta: {self.conta} - empresa: {self.empresa.nome_fantasia}"

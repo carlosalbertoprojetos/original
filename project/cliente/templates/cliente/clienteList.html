@@ -24,12 +24,11 @@
                         <th>Nome Fantasia</th>
                         <th>Nome</th>
                         <th>Telefone</th>
-                        <th>Telefone2</th>
                         <th>Email</th>
                         <th>CPF</th>
                         <th>CNPJ</th>
                         <th>Estado</th>
-                        <th align="center">Ações</th>
+                        <th class="text-center">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -49,7 +48,7 @@
 <script>
     $(document).ready(function () {
         $('#tableID').DataTable({
-            "pageLength": 25,
+            "pageLength": 100,
             "language": {
                 "sProcessing": "Proccesando...",
                 "sLengthMenu": "Mostrar _MENU_ registros",
@@ -79,7 +78,7 @@
                 { "data": "nome_fantasia" },
                 { "data": "nome" },
                 { "data": "tel_principal" },
-                { "data": "tel_contato" },
+                // { "data": "tel_contato" },
                 { "data": "email" },
                 { "data": "cpf" },
                 { "data": "cnpj" },

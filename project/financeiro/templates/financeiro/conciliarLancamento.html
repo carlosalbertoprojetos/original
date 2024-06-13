@@ -1,0 +1,260 @@
+{% extends 'index.html' %}
+
+{% load static %}
+
+<title> {% block title %} Conciliar lançamento {% endblock title%} </title>
+
+{% block index %}
+
+<div class="container">
+    <div class="card mb-2">
+        <div class="card-header">
+            <label class="fs-5 fw-bold">Conta</label>
+        </div>
+        <div class="card-body p-3">
+            {% for c in conta %}
+            <div class="row">
+                <div class="col-12 col-lg-5">
+                    <label for="">{% if c.venda %}cliente/receita{% else %}fornecedor/despesa{% endif %} </label>
+                    <div class="form-control form-control-sm">
+                        {% if c.venda %}
+                        {% if c.venda.cliente %}
+                        {{ c.venda.cliente }}
+                        {% else %}
+                        {{ c.receita.nome }}
+                        {% endif %}
+                        {% else %}
+                        {% if c.compra %}
+                        {{ c.compra.fornecedor }}
+                        {% else %}
+                        {{ c.despesa.nome }}
+                        {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-6 col-lg text-center">
+                    <label for="">Data do pedido</label>
+                    <div class="form-control form-control-sm text-center">
+                        {{ c.datadocumento|date:'d/m/y' }}
+                    </div>
+                </div>
+                <div class="col-6 col-lg text-center">
+                    <label for="">Data do vencimento</label>
+                    <div class="form-control form-control-sm text-center">
+                        {{ c.datavencimento|date:'d/m/y' }}
+                    </div>
+                </div>
+                <div class="col text-end">
+                    </label>
+                    <label for="" class="pe-1">valor</label>
+                    <div class="form-control form-control-sm text-end">
+                        R$ {{ c.valor }}
+                    </div>
+                </div>
+                <div class="col">
+                    <label for="">forma de pagamento</label>
+                    <div class="form-control form-control-sm">
+                        {{ c.formapgto }}
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label for="">detalhes</label>
+                    <div class="form-control form-control-sm">
+                        {{ c.detalhes|default:'' }}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% if pagar %}
+            <div class="row">
+                <div class="me-3 mt-2">
+                    <div class="float-end"><a class="btn btn-primary btn-sm"
+                            href="{% url 'financeiro:contasapagar' %}">Retornar</a></div>
+                </div>
+            </div>
+            {% endif %}
+            {% if receber %}
+            <div class="row">
+                <div class="me-3 mt-2">
+                    <div class="float-end"><a class="btn btn-primary btn-sm"
+                            href="{% url 'financeiro:contasareceber' %}">Retornar</a></div>
+                </div>
+            </div>
+            {% endif %}
+            {% if mensagem %}
+            <div class="alert alert-danger my-2">
+                {{ mensagem }}
+            </div>
+            {% else %}
+        </div>
+    </div>
+    <div class="filters card border-1">
+        <div class="card-header">
+            <label class="fs-5 fw-bold">Conciliar Lançamento</label>
+        </div>
+        <div class="table-responsive p-3">
+            <table class="table table-sm mt-2" id="id_table" style="font-size: 12px;">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Lançamento</th>
+                        <th class="text-end pe-4">Valor</th>
+                        <th class="text-center"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in contas %}
+                    <tr style="font-weight:bold ; background-color:#c4f8c8;">
+                        <td class="text-start">{{ c.datavencimento|date:'d/m/y' }}</td>
+                        <td>{% if c.compra %}{{ c.compra.fornecedor.nome }}{% else %}{{ c.despesa.nome }}{% endif %}
+                        </td>
+                        <td class="text-end pe-4">
+                            R$ {{ c.valor|default:"" }}</td>
+                        <td class="text-center">
+                            Despesa
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% for lan in extrato %}
+                    <tr class="bg-conciliar">
+                        <td class="text-start">{{ lan.data|date:'d/m/y' }}</td>
+                        <td>{{ lan.lancamento }}</td>
+                        <td class="text-end pe-4" style="color:{% if lan.valor > 0 %} blue {% else %} red {% endif %};">
+                            R$ {{ lan.valor|default:"" }}</td>
+                        <td class="text-center">
+                            <abbr title='Conciliar'>
+                                <a href="" class="modal-trigger" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                                    data-id="{{ lan.id }}" data-data="{{ lan.data }}"
+                                    data-lancamento="{{ lan.lancamento }}" data-valor="{{ lan.valor }}"
+                                    style="font-size: 12px;">Conciliar
+                                </a>
+                            </abbr>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Conciliação</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="text-center pt-2">
+                <h6>Confirmar conciliação</h6>
+            </div>
+            <div class="modal-body">
+                <p class="m-0"><span class="text-muted text14">Data: </span><span class="text14" id="modal-data"></span>
+                </p>
+                <p class="m-0"><span class="text-muted text14">Lançamento: </span><span class="text14"
+                        id="modal-lancamento"></span></p>
+                <p class="m-0"><span class="text-muted text14">Valor: </span><span class="text14"
+                        id="modal-valor"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
+                <a id="id_confirmar" href="{% url 'suporte:suporteCreate' 0 %}"
+                    class="btn btn-primary btn-sm">Confirmar</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+
+<script>
+    // salva as informações de conciliação no lançamento do extrato e na conta
+    function idLinha(id) {
+        url_page = window.location.pathname;
+        var id_url_page = url_page.replace(/[^0-9]/g, '');
+        var url = "{% url 'financeiro:conciliarSalvarAjax' %}";
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: {
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                id_url_page: id_url_page,
+                id_linha: id
+            },
+            success: function (response) {
+                // Redirecionar para a URL correspondente após o sucesso da chamada AJAX
+                if (response.redirecionar == 'pagar') {
+                    window.location.href = "{% url 'financeiro:contasapagar' %}";
+                } else {
+                    window.location.href = "{% url 'financeiro:contasareceber' %}";
+                }
+
+
+            },
+        });
+    }
+</script>
+<script>
+    // retorna para o modal as informações específicas da venda selecionada
+    document.addEventListener('DOMContentLoaded', (event) => {
+        var modalTriggerElements = document.querySelectorAll('.modal-trigger');
+        modalTriggerElements.forEach(function (element) {
+            element.addEventListener('click', function () {
+                var id = this.getAttribute('data-id').replace('.', '');
+                var data = this.getAttribute('data-data');
+                var lancamento = this.getAttribute('data-lancamento');
+                var valor = this.getAttribute('data-valor');
+
+                document.getElementById('modal-data').textContent = data;
+                document.getElementById('modal-lancamento').textContent = lancamento;
+                document.getElementById('modal-valor').textContent = valor;
+                document.getElementById('id_confirmar').setAttribute("onclick", idLinha(id));
+            });
+        });
+    });
+</script>
+{% endblock %}
+
+
+{% block script %}
+<script src="{% static 'js/datatables.min.js' %}"></script>
+<script src="{% static 'js/jqueryDataTable.js' %}"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#id_table').DataTable({
+            columnDefs: [
+                { type: 'date-br', targets: 0 }
+            ],
+            "order": [0, 'date-br-desc'],
+            "pageLength": 100,
+            "language": {
+                "sProcessing": "Proccesando...",
+                "sLengthMenu": "Mostrar _MENU_ registros",
+                "sZeroRecords": "Nenhum resultado encontrado",
+                "sEmptyTable": "Nenhum dado disponivel",
+                "sInfo": "Mostrando registros de _START_ a _END_ de um total de _TOTAL_ registros",
+                "sInfoEmpty": "Mostrando registros de 0 a 0 de um total de 0 registros",
+                "sInfoFiltered": "(filtrado de um total de _MAX_ registros)",
+                "sInfoPostFix": "",
+                "sSearch": "Buscar:",
+                "sUrl": "",
+                "sInfoThousands": ",",
+                "sLoadingRecords": "Carregando...",
+                "oPaginate": {
+                    "sFirst": "Primero",
+                    "sLast": "Último",
+                    "sNext": "Seguinte",
+                    "sPrevious": "Anterior"
+                },
+                "oAria": {
+                    "sSortAscending": ": Ativar para ordenar a coluna de maneira ascendente",
+                    "sSortDescending": ": Ativar para ordenar a coluna de maneira descendente"
+                }
+            }
+        });
+    }); 
+</script>
+{% endblock %}

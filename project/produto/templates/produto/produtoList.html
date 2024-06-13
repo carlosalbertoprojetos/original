@@ -29,7 +29,8 @@
                         <th class="text-center">UniMed</th>
                         <th class="text-center">Peso</th>
                         <th class="text-center">Preço</th>
-                        <th class="text-center">Estoque Inicial</th>
+                        <th class="text-center">Estoque 127</th>
+                        <th class="text-center">Estoque 220</th>
                         <th class="text-center">Editar</th>
                         <th class="text-center">Deletar</th>
                     </tr>
@@ -42,7 +43,8 @@
                         <td class="text-center">{{ obj.unimed|default:"" }}</td>
                         <td class="text-center">{{ obj.peso|default:"" }}</td>
                         <td class="text-center">{{ obj.preco|floatformat:2 }}</td>
-                        <td class="text-center">{{ obj.estoque_ini }}</td>
+                        <td class="text-center">{{ obj.estoque_127 }}</td>
+                        <td class="text-center">{{ obj.estoque_220 }}</td>
                         <td align="center">
                             <abbr title="Editar">
                                 <a href="{{ obj.prod_gau_edit }}">
@@ -74,6 +76,7 @@
 
     $(document).ready(function () {
         $('#id_table').DataTable({
+            "pageLength": 100,
             "language": {
                 "sProcessing": "Proccesando...",
                 "sLengthMenu": "Mostrar _MENU_ registros",

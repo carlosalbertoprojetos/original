@@ -2,87 +2,208 @@
 
 {% load static %}
 
+
 <title> {% block title %} Suporte {% endblock title%} </title>
 
 {% block index %}
 
-<div class="container pt-0">
-    <div class="filters card border-1">
-        <div class="card-header">
-            <label class="fs-5 fw-bold">Suporte</label>
-        </div>
-        <div class="p-3">
-            <div id="id_table_filter" style="text-align:right">
-                <label>Buscar:
-                    <form name="pesquisa" id="pesquisa" action="" method="POST">
-                        {% csrf_token %}
-                        <input id="pesquisa" type="text" name="pesquisa" value="{{pesquisa}}"
-                            class="form-control form-control-sm" placeholder="" aria-controls="id_table">
-                    </form>
-                </label>
+<div class="container">
+    <div class="d-flex flex-column flex-lg-row gap-2 justify-content-center mb-2">
+        <div class="card col-md p-4">
+            <div
+                class="d-flex justify-content-between align-items-center justify-content-md-center justify-content-xl-between">
+                <div class="imageBlock d-flex align-items-center justify-content-center bg-white d-md-none d-xl-flex">
+                    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" font-size="1.5rem"
+                        class="iconify iconify--mdi" width="1em" height="1em" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M13 14h-2V9h2m0 9h-2v-2h2M1 21h22L12 2z"
+                            style="color: rgba(255, 221, 0);" />
+                    </svg>
+                </div>
+                <div>
+                    <div class="text14 text-end">Ações Vencem Hoje</div>
+                    <h6 class="text-end pe-5">{{ acvencendo }}</h6>
+                </div>
             </div>
-            <div class="table-responsive">
-                <table class="table table-sm" id="id_table">
-                    <div class="col-12 d-flex justify-content-end">
-                    </div>
-                    <thead>
-                        <tr>
-                            <th class="text-center">Venda</th>
-                            <th>Cliente</th>
-                            <th>Vendedor</th>
-                            <th class="text-center">Data</th>
-                            <th>Aberto por</th>
-                            <th>Status</th>
-                            <th>Responsável</th>
-                            <th>Editar</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for suporte in suportes %}
-                        <tr>
-                            <td class="text-center">{{ suporte.venda.id }}</td>
-                            <td>{{ suporte.venda.cliente|truncatechars:40 }}</td>
-                            <td>{{ suporte.venda.vendedor }}</td>
-                            <td class="text-center">{{ suporte.data|date:"d/m/y" }}</td>
-                            <td>{{ suporte.responsavel }}</td>
-                            <td id="status" class="bg-danger bg-opacity-50">{{ suporte.statusAtual }}</td>
-                            <td>{{ suporte.responsavelAtual }}</td>
-                            <td class="text-center pe-3">
-                                <abbr title="Editar">
-                                    <a href="{% url 'suporte:suporteCreate' venda=suporte.venda.id %}">
-                                        <i class="fa fa-edit"></i>
-                                    </a>
-                                </abbr>
-                            </td>
-                        </tr>
-                        {%endfor%}
-                    </tbody>
-                </table>
+        </div>
+        <div class="card col-md p-4">
+            <div
+                class="d-flex justify-content-between align-items-center justify-content-md-center justify-content-xl-between">
+                <div class="imageBlock d-flex align-items-center justify-content-center bg-white d-md-none d-xl-flex">
+                    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" font-size="1.5rem"
+                        class="iconify iconify--mdi" width="1em" height="1em" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M13 14h-2V9h2m0 9h-2v-2h2M1 21h22L12 2z"
+                            style="color: rgba(255, 0, 0, 0.713);" />
+                    </svg>
+                </div>
+                <div>
+                    <div class="text14 text-end">Ações Vencidas</div>
+                    <h6 class="text-end pe-4">{{ acvencidas }}</h6>
+                </div>
+            </div>
+        </div>
+        <div class="card col-md p-4">
+            <div
+                class="d-flex justify-content-between align-items-center justify-content-md-center justify-content-xl-between">
+                <div class="imageBlock d-flex align-items-center justify-content-center bg-white d-md-none d-xl-flex">
+                    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" font-size="1.5rem"
+                        class="iconify iconify--mdi" width="1em" height="1em" viewBox="0 0 24 24">
+                        <path fill="currentColor"
+                            d="M2 12c0 5 4 9 9 9c2.4 0 4.7-.9 6.4-2.6l-1.5-1.5c-1.3 1.4-3 2.1-4.9 2.1c-6.2 0-9.4-7.5-4.9-11.9S18 5.8 18 12h-3l4 4h.1l3.9-4h-3c0-5-4-9-9-9s-9 4-9 9m8 3h2v2h-2zm0-8h2v6h-2z"
+                            style="color: rgba(255, 221, 0);" />
+                    </svg>
+                </div>
+                <div>
+                    <div class="text14 text-end">Fluxos Vencem Hoje</div>
+                    <h6 class="text-end pe-5">{{ flvencendo }}</h6>
+                </div>
+            </div>
+        </div>
+        <div class="card col-md p-4">
+            <div
+                class="d-flex justify-content-between align-items-center justify-content-md-center justify-content-xl-between">
+                <div class="imageBlock d-flex align-items-center justify-content-center bg-white d-md-none d-xl-flex">
+                    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" font-size="1.5rem"
+                        class="iconify iconify--mdi" width="1em" height="1em" viewBox="0 0 24 24">
+                        <path fill="currentColor"
+                            d="M2 12c0 5 4 9 9 9c2.4 0 4.7-.9 6.4-2.6l-1.5-1.5c-1.3 1.4-3 2.1-4.9 2.1c-6.2 0-9.4-7.5-4.9-11.9S18 5.8 18 12h-3l4 4h.1l3.9-4h-3c0-5-4-9-9-9s-9 4-9 9m8 3h2v2h-2zm0-8h2v6h-2z"
+                            style="color: rgba(255, 0, 0, 0.713);" />
+                    </svg>
+                </div>
+                <div>
+                    <div class="text14 text-end">Fluxos Vencidos</div>
+                    <h6 class="text-end pe-5">{{ flvencidos }}</h6>
+                </div>
             </div>
         </div>
     </div>
+    <div class="filters card border-1">
+        <div class="card-header">
+            <label class="fs-5 fw-bold">Atendimentos</label>
+        </div>
+        <div class="table-responsive p-3">
+            <table class="table table-sm px-0" id="id_table">
+                <thead>
+                    <tr>
+                        <th class="text-center">Suporte</th>
+                        <th class="text-center">Venda</th>
+                        <th class="text-center">NF</th>
+                        <th>Cliente</th>
+                        <th>Criado por</th>
+                        <th>Criado em</th>
+                        <th class="text-center">Fluxo Atual</th>
+                        <th class="text-center">Concluir Fluxo</th>
+                        <th class="text-center">Ação Atual</th>
+                        <th class="text-center">Concluir Ação</th>
+                        <th>Responsável</th>
+                        <!-- <th>Transportadora</th> -->
+                        <th>Visualizar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for dados in lista %}
+                    <tr>
+                        <td class="text-center pe-3">{{ dados.id }}</td>
+                        <td class="text-center">{{ dados.venda }}</td>
+                        <td class="text-center">{{ dados.nf|default:'' }}</td>
+                        <td>{{ dados.cliente|truncatechars:40 }}</td>
+                        <td>{{ dados.criadopor }}</td>
+                        <td>{{ dados.data|date:'d/m/y H:i'}}</td>
+                        <td class="text-center">
+                            {{ dados.fluxo }}
+                        </td>
+                        <td class="text-center">
+                            {% if dados.pwfyellow == 'vencendo' %}
+                            <div class="card text-white bg-warning border-0">{{ dados.prazofluxo }}
+                            </div>
+                            {% elif dados.pwfred == 'vencido' %}
+                            <div class="card text-white bg-danger border-0">{{ dados.prazofluxo }}
+                            </div>
+                            {% else %}
+                            {{ dados.prazofluxo }}
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            <div class="card border-0 text-white p-1" style="background-color: {{ dados.coracao }}">
+                                {{ dados.acao }}
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            {% if dados.pacyellow == 'vencendo' %}
+                            <div class="card text-white bg-warning border-0">
+                                {{ dados.prazoacao|date:'d/m/y' }}
+                            </div>
+                            {% elif dados.pacred == 'vencido' %}
+                            <div class="card text-white bg-danger border-0">
+                                {{ dados.prazoacao|date:'d/m/y' }}
+                            </div>
+                            {% else %}
+                            {{ dados.prazoacao|date:'d/m/y' }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {{ dados.responsavelatual }}
+                        </td>
+                        <td class="text-center pe-3">
+                            <abbr title="Ação">
+                                <a href="{% url 'suporte:suporteCreate' dados.venda %}">
+                                    <i class="fa fa-eye"></i>
+                                </a>
+                            </abbr>
+                        </td>
+                    </tr>
+                    {%endfor%}
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
-
-
-<script type="text/javascript">
-    $('#pesquisa').keypress(function (e) {
-        if (e.which == 13) {
-            $('form#pesquisa').submit();
-        }
-    });
-</script>
 
 {% endblock %}
 
 {% block script %}
 
-<script>
 
+<script src="{% static 'js/datatables.min.js' %}"></script>
+<script src="{% static 'js/jqueryDataTable.js' %}"></script>
+
+<script>
     var a = document.getElementById("status");
     if (a.innerHTML == 'Concluído') {
         a.setAttribute('class', "bg-success bg-opacity-50");
     }
+</script>
 
+<script>
+    $(document).ready(function () {
+        $('#id_table').DataTable({
+            "pageLength": 100,
+            "order": [[0, 'desc']],
+            "language": {
+                "sProcessing": "Proccesando...",
+                "sLengthMenu": "Mostrar _MENU_ registros",
+                "sZeroRecords": "Nenhum resultado encontrado",
+                "sEmptyTable": "Nenhum dado disponivel",
+                "sInfo": "Mostrando registros de _START_ a _END_ de um total de _TOTAL_ registros",
+                "sInfoEmpty": "Mostrando registros de 0 a 0 de um total de 0 registros",
+                "sInfoFiltered": "(filtrado de um total de _MAX_ registros)",
+                "sInfoPostFix": "",
+                "sSearch": "Buscar:",
+                "sUrl": "",
+                "sInfoThousands": ",",
+                "sLoadingRecords": "Carregando...",
+                "oPaginate": {
+                    "sFirst": "Primero",
+                    "sLast": "Último",
+                    "sNext": "Seguinte",
+                    "sPrevious": "Anterior"
+                },
+                "oAria": {
+                    "sSortAscending": ": Ativar para ordenar a coluna de maneira ascendente",
+                    "sSortDescending": ": Ativar para ordenar a coluna de maneira descendente"
+                }
+            }
+        });
+    }); 
 </script>
 
 {% endblock %}

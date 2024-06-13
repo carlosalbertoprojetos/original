@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}Signup{% endblock %}
+
+{% block base %}
+
+<div class="container p-4">
+    <div class="col-11 col-lg-5 card border-0 shadow-lg m-auto p-4">
+        <div class="card-body mt-1">
+
+            <div class="card-title d-flex justify-content-center mb-4 pb-1">
+                <a class="logo d-flex gap-2 text-decoration-none" href="/">
+                    <img src="{% static 'img/logo.png' %}">
+                    <h6 class="m-auto ps-1 fs-4 text-dark text-uppercase">Original</h6>
+                </a>
+            </div>
+            <div class="">
+                <h5 class="">Bem vindo a Original! 👋🏻</h5>
+                <p class="text-muted font-weight-bold" style="font-size: 14px;">Por favor, insira seus dados para
+                    cadastrar.</p>
+            </div>
+            <form method="post" action="/accounts/signup/" class="d-flex flex-column justify-content-center"
+                id="formLogin">
+                {% csrf_token %}
+                <div class="form-floating mb-3">
+                    <input type="text" name="username" class="form-control" id="id_username" required
+                        placeholder="Nome do usuário">
+                    <label for="id_username" class="form-label" autocomplete="username" minlength="1"
+                        maxlength="150">Usuário</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="email" name="email" class="form-control" id="id_email" required placeholder="E-mail">
+                    <label for="id_email" class="form-label">E-mail</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="password" name="password1" id="id_password1" class="form-control" placeholder="Senha"
+                        autocomplete="new-password" required>
+                    <label for="id_password1" class="form-label">Senha</label>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <input type="password" name="password2" id="id_password2" class="form-control"
+                        placeholder="Senha (novamente)" autocomplete="new-password" required>
+                    <label for="id_password2" class="form-label">Senha (novamente)</label>
+                </div>
+                <button type="submit">Cadastrar</button>
+            </form>
+        </div>
+        <p class="ps-3">
+            Já tem uma conta? Faça o <a href="/accounts/login/">login</a>.
+        </p>
+    </div>
+</div>
+
+{% endblock %}

@@ -51,3 +51,4 @@ Thumbs.db
 db.sqlite3
 
 *.env
+*project/local_settings.py

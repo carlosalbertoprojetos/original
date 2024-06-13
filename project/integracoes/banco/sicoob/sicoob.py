@@ -8,7 +8,7 @@ import tempfile
 url_login = 'https://auth.sicoob.com.br/auth/realms/cooperado/protocol/openid-connect/token'
 url_extrato = 'https://api.sicoob.com.br/conta-corrente/v2/extrato/%s/%s'
 url_saldo = 'https://api.sicoob.com.br/conta-corrente/v2/saldo'
-print(url_extrato % ('03', '2023'))
+print(url_extrato % ('12', '2023'))
 
 headers = {
     'Content-Type':'application/x-www-form-urlencoded',
@@ -35,8 +35,8 @@ def pfx_to_pem(pfx_path, pfx_password):
                 f_pem.write(OpenSSL.crypto.dump_certificate(OpenSSL.crypto.FILETYPE_PEM, cert))
         f_pem.close()
         yield t_pem.name
-cert='./eder.pfx'
-with pfx_to_pem(cert, '1234') as cert:
+cert='eder.pfx'
+with pfx_to_pem(cert, '123456') as cert:
     data = {
         'client_id':'8cc4ae46-3c60-4ef3-b3cc-b212605ee195',
         'grant_type':'client_credentials',
@@ -44,6 +44,7 @@ with pfx_to_pem(cert, '1234') as cert:
     }
     x = requests.post(url_login, headers=headers, cert=cert, data=data)
     print(x.status_code)
+    import pdb;pdb.set_trace()
     headers = {
         'Content-Type': 'application/json',
         'Authorization':'Bearer ' + x.json()['id_token'],
@@ -55,7 +56,8 @@ with pfx_to_pem(cert, '1234') as cert:
         'grant_type':'client_credentials',
         'scope':'cco_extrato cco_saldo'
     }
-    #y = requests.get(url_extrato % ('03', '2023'), headers=headers, cert=cert)
+    y = requests.get(url_extrato % ('03', '2024'), headers=headers, cert=cert)
     
-    y = requests.get(url_saldo , headers=headers, cert=cert)
+    #y = requests.get(url_saldo , headers=headers, cert=cert)
+    import pdb;pdb.set_trace()
     print(y.text)

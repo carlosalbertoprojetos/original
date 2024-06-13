@@ -1,0 +1,124 @@
+{% extends 'cliente/account/clienteDashboard.html' %}
+
+{% load static %}
+
+{% block dashboard %}
+
+<div class="container my-2">
+    <form method="post" enctype="multipart/form-data" id="form">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <div class="hidden">{{ form }}</div>
+        {{ produto.management_form }}
+        {{ produto.non_field_errors }}
+        <div class="card my-2">
+            <div class="card-header"><label class="fs-5 fw-bold">Produtos</label></div>
+            <div class="card-body label py-2" id="produto-form-list">
+                {% for prod in produto %}
+                {{ prod.non_field_errors }}
+                <div class="hidden">
+                    {{ prod.torneira }}
+                    {{ prod.adesivado }}
+                </div>
+                <div class="row produto-form">
+                    {{ prod.id }}
+                    <div class="col-8 col-lg-3 ps-1 pe-0">
+                        {{ prod.produto.label_tag }}
+                        {{ prod.produto }}
+                    </div>
+                    <div class="col-4 col-lg-1 ps-1 pe-0">
+                        {{ prod.voltagem.errors }}
+                        {{ prod.voltagem.label_tag }}
+                        {{ prod.voltagem }}
+                    </div>
+                    <div class="col-3 col-lg-1 ps-1 pe-0">
+                        {{ prod.quantidade.label_tag }}
+                        {{ prod.quantidade }}
+                    </div>
+                    <div class="col-4 col-lg-1 ps-1 pe-0">
+                        {{ prod.preco.label_tag }}
+                        {{ prod.preco }}
+                    </div>
+                    <div class="col-5 col-lg-2 ps-1 pe-0">
+                        {{ prod.subtotal.label_tag }}
+                        {{ prod.subtotal }}
+                    </div>
+                    <hr class="d-block d-lg-none mt-2 mb-0">
+                </div>
+                {% endfor %}
+            </div>
+            <div class="card-header border-0">
+                <div class="col-8">
+                    <div class="row justify-content-end label">
+                        <label for="id_detalhes">Detalhes</label>
+                        <input type="text" class="form-control form-control-sm" name="detalhes" id="id_detalhes">
+                        <div class="col-4 col-lg-3 px-1">
+                            <label for="subtotal">Total</label>
+                            <input type="text" name="subtotal" value="0,00"
+                                class="form-control form-control-sm text-end" readonly="readonly" step="0.01"
+                                id="subtotal">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex float-end">
+            <div class="col-3 d-flex gap-2 align-middle">
+                <a role="button" class="btn btn-secondary btn-sm"
+                    href="{% url 'cliente:comprasList' request.user %}">Cancelar</a>
+                <div class="form-group form-button">
+                    <input type="submit" class="btn btn-primary btn-sm" value="Salvar" id="id_salvar" />
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script type="text/javascript" language="javascript">
+    // calcula a quantidade x o preco e retorna o subtotal
+    function change() {
+        var tvenda = document.getElementById("subtotal");
+        var ids = $('#id_vendaproduto_set-TOTAL_FORMS').val();
+        let sum = 0;
+
+        for (let i = 0; i < ids; i++) {
+            var produto = $(`#id_vendaproduto_set-${i}-produto`).val();
+            var quant = $(`#id_vendaproduto_set-${i}-quantidade`).val();
+            var preco = $(`#id_vendaproduto_set-${i}-preco`).val();
+            var subt = document.getElementById(`id_vendaproduto_set-${i}-subtotal`);
+
+            if (quant >= 0) {
+                calc = Number(quant) * Number(preco);
+                subt.value = calc.toFixed(2);
+            }
+            sum += Number(quant) * Number(preco);
+        }
+        console.log(sum)
+        tvenda.setAttribute('value', sum.toFixed(2));
+
+    }
+
+
+</script>
+</body>
+{% endblock %}
+
+
+{% block script %}
+<script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+<script src="{% static 'js/select2.min.js' %}"></script>
+
+
+<script>
+    var formID = document.getElementById("form");
+    var send = $("#id_salvar");
+
+    $(formID).submit(function (event) {
+        if (formID.checkValidity()) {
+            send.attr('disabled', 'disabled');
+        }
+    });
+
+
+</script>
+{% endblock %}

@@ -2,30 +2,31 @@
 
 {% load static %}
 {% load i18n %}
-{% load account socialaccount %}
 
 {% block title %}Logout{% endblock %}
 
 {% block index %}
-<main>
-  <div class="container mt-5">
-    <div calss="card ps-4">
-      <div class="card-title">
+
+<div class="container p-4">
+  <div class="col-11 col-lg-5 card border-0 shadow-lg m-auto p-4">
+    <div class="card-body mt-1">
+      <div>
         <h1>{% trans "Sign Out" %}</h1>
-      </div>
-      <div class="card-body">
+        <p class="text-muted font-weight-bold" style="font-size: 14px;">
         <p>{% trans 'Are you sure you want to sign out?' %}</p>
-        <form method="post" action="{% url 'account_logout' %}">
-          {% csrf_token %}
+        </p>
+      </div>
+      <form class="d-flex flex-column justify-content-center" id="formLogin" method="POST"
+        action="{% url 'account_logout' %}">
+        {% csrf_token %}
+        <div class="form-floating mb-3">
           {% if redirect_field_value %}
           <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
           {% endif %}
-          <button class="btn btn-primary btn-sm" type="submit">{% trans 'Sign Out' %}</button>
-        </form>
-      </div>
+          <button class="w-100" type="submit">{% trans 'Sign Out' %}</button>
+      </form>
     </div>
   </div>
-  <hr>
-</main>
+</div>
 
 {% endblock %}

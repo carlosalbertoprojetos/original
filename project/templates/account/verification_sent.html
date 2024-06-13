@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}Mensagem{% endblock %}
+
+{% block base %}
+
+<div class="container p-4">
+    <div class="col-11 col-lg-5 card border-0 shadow-lg m-auto p-4">
+        <div class="card-body mt-1">
+            <div class="card-title d-flex justify-content-center mb-4 pb-1">
+                <a class="logo d-flex gap-2 text-decoration-none" href="/">
+                    <img src="{% static 'img/logo.png' %}">
+                    <h6 class="m-auto ps-1 fs-4 text-dark text-uppercase">Original</h6>
+                </a>
+            </div>
+            <div>
+                <h5>Verifique seu endereço de e-mail</h5>
+                <p class="text-muted font-weight-bold" style="font-size: 14px;">
+                    Enviamos um e-mail para você para verificação. Siga o link fornecido para finalizar o processo de
+                    inscrição. Entre em contato conosco se você não recebê-lo dentro de alguns minutos.</p>
+            </div>
+        </div>
+        <div class="d-flex justify-content-center" id="formLogin">
+            <a class="w-100 text-white" href="/"><button class="w-100" type="submit">Login</button></a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

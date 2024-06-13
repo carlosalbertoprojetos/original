@@ -13,7 +13,7 @@
             <div class="card-header">
                 <label class="fs-5 fw-bold">{{ titulo }}</label>
             </div>
-            <div class="card-body label">
+            <div class="card-body label parcela-forms">
                 <div class="row mb-2">
                     <div class="col-12 col-md-5">
                         <label for="id_cliente" class="">Cliente</label>
@@ -35,11 +35,11 @@
                         <label for="id_total" class="">Total</label>
                         {{ form.total }}
                     </div>
-                    <div class="col-6 col-md-6">
+                    <div class="col-12 col-md-6">
                         <label for="id_nome" class="">Nome da Receita</label>
                         {{ form.nome }}
                     </div>
-                    <div class="col-6 col-md-6">
+                    <div class="col-12 col-md-6">
                         <label for="id_descricao" class="">Descricao</label>
                         {{ form.descricao }}
                     </div>
@@ -53,7 +53,7 @@
             <div class="card-header"><label class="fs-5 fw-bold">Parcelas</label></div>
             <div class="card-body label pt-0" id="parcela-form-list">
                 {% for parc in parcela %}
-                <div class="row parcela-form">
+                <div class="row parcela-form mt-2">
                     {{ parc.id }}
                     {{ parc.receita }}
                     {{ parc.datadocumento }}
@@ -77,6 +77,10 @@
                         {{ parc.datapagamento.label_tag }}
                         {{ parc.datapagamento.errors }}
                         {{ parc.datapagamento }}
+                    </div>
+                    <div class="col-6 col-lg-2">
+                        {{ parc.valor_pago.label_tag }}
+                        {{ parc.valor_pago }}
                     </div>
                     <div class="col-12 col-lg-4">
                         {{ parc.detalhes.label_tag }}
@@ -137,6 +141,10 @@
                     {{ parcela.empty_form.datapagamento.label_tag }}
                     {{ parcela.empty_form.datapagamento.errors }}
                     {{ parcela.empty_form.datapagamento }}
+                </div>
+                <div class="col-6 col-lg-2">
+                    {{ parcela.empty_form.valor_pago.label_tag }}
+                    {{ parcela.empty_form.valor_pago }}
                 </div>
                 <div class="col-12 col-lg-4">
                     {{ parcela.empty_form.detalhes.label_tag }}
@@ -199,42 +207,43 @@
         $('#id_cliente').select2();
     });
 
+    // adiciona nova parcela
     const addParcelaBtn = document.getElementById('add-parcela')
-    const totalPacelasrForms = document.getElementById('id_contareceber_set-TOTAL_FORMS')
+    const totalPacelasForms = document.getElementById('id_contareceber_set-TOTAL_FORMS')
+
+    const num_parcelas = document.getElementById('id_num_parcelas');
+    num_parcelas.setAttribute('value', totalPacelasForms.value);
 
     addParcelaBtn.addEventListener('click', add_new_parcela_form)
     function add_new_parcela_form(event) {
         if (event) {
-            event.preventDefault()
+            event.preventDefault();
         }
-        const currentParcelaForms = document.getElementsByClassName("parcela-form")
-        const currentParcelaFormCount = currentParcelaForms.length // + 1
-
-        const formParcelaCopyTarget = document.getElementById("parcela-form-list")
-        const copyParcelaEmptyFormEl = document.getElementById('empty-parcela').cloneNode(true)
-        copyParcelaEmptyFormEl.setAttribute('class', 'row parcela-form')
-        copyParcelaEmptyFormEl.setAttribute('id', `contareceber_set-${currentParcelaFormCount}`)
-        const regexParcela = new RegExp('__prefix__', 'g')
-        copyParcelaEmptyFormEl.innerHTML = copyParcelaEmptyFormEl.innerHTML.replace(regexParcela, currentParcelaFormCount)
-        totalPacelasrForms.setAttribute('value', currentParcelaFormCount + 1)
-
-        formParcelaCopyTarget.append(copyParcelaEmptyFormEl)
+        const currentParcelaForms = document.getElementsByClassName("parcela-form");
+        const currentParcelaFormCount = currentParcelaForms.length;
+        const formParcelaCopyTarget = document.getElementById("parcela-form-list");
+        const copyParcelaEmptyFormEl = document.getElementById('empty-parcela').cloneNode(true);
+        copyParcelaEmptyFormEl.setAttribute('class', 'row parcela-form');
+        copyParcelaEmptyFormEl.setAttribute('id', `contareceber_set-${currentParcelaFormCount}`);
+        const regexParcela = new RegExp('__prefix__', 'g');
+        copyParcelaEmptyFormEl.innerHTML = copyParcelaEmptyFormEl.innerHTML.replace(regexParcela, currentParcelaFormCount);
+        totalPacelasForms.setAttribute('value', currentParcelaFormCount + 1);
+        formParcelaCopyTarget.append(copyParcelaEmptyFormEl);
+        num_parcelas.setAttribute('value', totalPacelasForms.value);
     }
 
-    function somaTotal() {
-        var parc = document.getElementById('id_num_parcelas');
-        parc.setAttribute('value', totalPacelasrForms.value);
-        var total = document.getElementById('id_total');
-        let sum = 0;
 
-        for (let i = 0; i < totalPacelasrForms.value; i++) {
+    var total = document.getElementById('id_total');
+
+    // soma o valor das parcelas
+    function somaTotal() {
+        let sum = 0;
+        for (let i = 0; i < num_parcelas.value; i++) {
             var preco = $(`#id_contareceber_set-${i}-valor`).val();
             sum += Number(preco)
         }
         total.setAttribute('value', sum.toFixed(2));
     }
-
-
 
 </script>
 {% endblock %}

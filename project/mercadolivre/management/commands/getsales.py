@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from mercadolivre.models import ContasMercadoLivre
+from mercadolivre.models import ContasMercadoLivre, AnunciosMercadoLivre
 from cliente.models import Cliente
 from transportadora.models import Transportadora
 from venda.models import Venda, VendaProduto, CondicaoVenda,FormaPagamento, Voltagem, Adesivado, Torneira
@@ -41,6 +41,8 @@ class Command(BaseCommand):
             dados = resposta.json()
             #import pdb;pdb.set_trace()
             #print('dados', dados)
+
+
             if 'results' in dados:
                 for result in dados['results']:
                     buyer = result['buyer']
@@ -49,7 +51,7 @@ class Command(BaseCommand):
                     print('pedido_id', pedido_id)
                     #import time
                     #time.sleep(3)
-                    #if (pedido_id == 2000007161001140):
+                    #if (pedido_id == 2000007836116216  ):
                     #  import pdb;pdb.set_trace()
                     #import pdb;pdb.set_trace()
                     url_pedido  = 'https://api.mercadolibre.com/orders/%s' % pedido_id
@@ -85,8 +87,18 @@ class Command(BaseCommand):
                         #
                         produto_id = produto['item']['id']
                         title = produto['item']['title']
+                        #
+                        #
+                        anuncios = AnunciosMercadoLivre.objects.filter(anuncio=produto_id)
+                        if not anuncios:
+                            AnunciosMercadoLivre.objects.create(anuncio=produto_id, conta=conta, titulo=title)
+                        #
+                        #
+
+
                         unit_price = produto['unit_price']
                         quantity = produto['quantity']
+                        torneira = ''
                         voltagem = ''
                         variations = produto['item']['variation_attributes']
                         descritivo = ''
@@ -94,6 +106,7 @@ class Command(BaseCommand):
                         for variation in variations:
                             if variation['name'] == 'Voltagem':
                                 voltagem = variation['value_name']
+                                torneira = variation['value_name']
                             else:
                                 descritivo += ' ' + variation['value_name'] + ' <br>'
                         #
@@ -116,6 +129,8 @@ class Command(BaseCommand):
                                 tam = 25
                             elif '200' in title:
                                 tam = 200
+                            elif produto['item']['id'] == 'MLB1358506477':
+                                tam = 50
     
                         _produto['tam'] = tam
 
@@ -230,7 +245,7 @@ class Command(BaseCommand):
 
                             else:
                                 #cliente nao tem dados como cnpj ou cnpj
-                                status_expedicao = 'Combinar Entrega'
+                                status_expedicao = 'Fazer cotação'
                                 cliente = Cliente.objects.filter(mercadolivre_id = buyer_id)
                                 if cliente:
                                     cliente = cliente[0]
@@ -261,7 +276,8 @@ class Command(BaseCommand):
                             print('descritivo', descritivo)
                             print('conta email', conta.email)
                             print('status', status)
-                            cliente.cep = cep
+                            if not cliente.cep and cep:
+                                cliente.cep = cep
                             cliente.pais = pais
                             if estado:
                                 cliente.estado = ESTADOS_NOME_SIGLA[estado.upper()]
@@ -291,10 +307,10 @@ class Command(BaseCommand):
                               cliente.tel_principal = telefone_recebedor
 
                             cliente.save()
-
-                            id_transportadora = 24
-                            if cliente.estado == 'RJ':
-                                id_transportadora = 28
+                            id_transportadora = 1
+                            #id_transportadora = 24
+                            #if cliente.estado == 'RJ':
+                            #    id_transportadora = 28
 
                             venda = Venda.objects.filter(codigo_mercadolivre = pedido_id)
                             if venda: 
@@ -347,7 +363,11 @@ class Command(BaseCommand):
                                     venda.save()
 
                                 for _produto in _produtos:
-                                     produto = Produto.objects.filter(nome__contains=_produto['tam'])
+                                     if produto_id == 'MLB1358506477':
+                                        tam = '50'
+
+                                     if  _produto['tam']:
+                                         produto = Produto.objects.filter(nome__contains=_produto['tam'])
                                      if produto:
                                         produto = produto[0]
                                         voltagem = Voltagem.objects.get(nome='Nao sei')
@@ -360,17 +380,31 @@ class Command(BaseCommand):
                                         elif tam == 200:
                                             torneira = Torneira.objects.get(nome='4t')
                                         
-                                        if '220' in _produto['voltagem']:
+                                        if '220' in _produto['voltagem'] or '220' in _produto['title']:
                                             _voltagem = Voltagem.objects.filter(nome__contains='220')
                                             if _voltagem:
                                                 voltagem = _voltagem[0]
 
-                                        if '110' in _produto['voltagem'] or '127' in  _produto['voltagem']:
+                                        if '110' in _produto['voltagem'] or '127' in  _produto['voltagem'] or '110' in _produto['title'] or '127' in _produto['title']:
                                                 _voltagem = Voltagem.objects.filter(nome__contains='127')
                                                 if _voltagem:
                                                     voltagem = _voltagem[0]
+                                        if '1 Torneira e 1 Jato' in  _produto['voltagem']:
+                                            torneira = Torneira.objects.get(nome = '1t 1j')
 
+                                        if '2 Torneira e 1 Jato' in  _produto['voltagem']:
+                                            torneira = Torneira.objects.get(nome = '2t 1j')
+
+                                        if produto_id == 'MLB1358506477':
+                                            torneira = Torneira.objects.get(nome='2t')
+
+  
                                         adesivado = Adesivado.objects.get(nome='Não')
+                                        anuncios = AnunciosMercadoLivre.objects.filter(anuncio=produto_id)
+                                        if anuncios:
+                                            anuncio = anuncios[0]
+                                            if anuncio.adesivado:
+                                                adesivado = anuncio.adesivado
                                         vendaproduto = VendaProduto.objects.create(
                                             venda=venda,
                                             produto = produto,

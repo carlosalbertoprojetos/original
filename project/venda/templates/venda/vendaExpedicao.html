@@ -5,18 +5,7 @@
 
 {% block index %}
 
-<head>
-    <style>
-        .external-event {
-            box-shadow: 0 0 1px rgb(0 0 0 / 13%), 0 1px 3px rgb(0 0 0 / 20%);
-            border-radius: .25rem;
-            cursor: pointer;
-            font-weight: 700;
-            margin-bottom: 4px;
-            padding: 5px 10px;
-        }
-    </style>
-</head>
+
 <div class="container">
     <form method="POST" enctype="multipart/form-data" action="" id="myform">
         {% csrf_token %}
@@ -27,381 +16,590 @@
             {% endfor %}
         </div>
         {% endif %}
+
+        <div id="div_mensagem_boleto" class="alert alert-info mb-2" role="alert">
+            <label id="mensagem_boleto">Condição Pagamento: {{ venda.condicaopgto }} - Forma Pagamento:
+                {{ venda.formapgto }}</label><br />
+        </div>
         <div class="d-lg-flex justify-content-between mb-2">
-            <div class="card col-12 col-lg-7 mb-2 mb-lg-0">
-                <div class="">
-                    <div class="card-header">
-                        <h5 class="card-title text-center m-0">EXPEDIÇÃO</h5>
-                        <div class="d-flex">
-                            <div class="col text-center">
-                                <label class="text-muted">Pedido</label>
-                                <h6>{{ venda.id }}</h6>
-                            </div>
-                            <div class="col text-center">
-                                <label class="text-muted">Vendedor</label>
-                                <h6 class="text-uppercase">{{ venda.vendedor.first_name }}</h6>
-                            </div>
+            <div class="card col-12 col-lg-5 mb-2 mb-lg-0">
+                <div class="card-header py-1">
+                    <h5 class="card-title text-center m-0">EXPEDIÇÃO</h5>
+                    <div class="d-flex">
+                        <div class="col text-center">
+                            <label class="text-muted">Pedido</label>
+                            <h6 class="m-0">{{ venda.id }}</h6>
+                        </div>
+                        <div class="col row p-1">
+                            <label class="text-muted">Data do pedido</label>
+                            <h6 class="m-0">{{ venda.data_pedido|date:"d/m/Y" }}</h6>
+                        </div>
+                        <div class="col text-center">
+                            <label class="text-muted">Vendedor</label>
+                            <h6 class="m-0">{{ venda.vendedor|capfirst }}</h6>
                         </div>
                     </div>
-                    <div class="cabecalho row px-3 pb-2">
-                        <div class="col-12">
-                            <label class="text-muted">Fornecedor</label>
-                            <h6 class="text-uppercase">{{ empresa.nome }}</h6>
+                </div>
+                <div class="cabecalho row px-3 pb-2">
+                    <div class="col-8 p-1">
+                        <label class="text-muted">Fornecedor</label>
+                        <h6 class="text-uppercase">{{ empresa.nome }}</h6>
+                    </div>
+                    <div class="col-12 p-1">
+                        <label class="text-muted" for="">Rua</label>
+                        <h6>{{ empresa.logradouro|default:'' }}</h6>
+                    </div>
+                    <div class="col-2 p-1">
+                        <label class="text-muted" for="">Número</label>
+                        <h6>{{ empresa.numero|default:'' }}</h6>
+                    </div>
+
+                    <div class="col-3 col-lg-3 p-1">
+                        <label class="text-muted" for="">Complemento</label>
+                        <h6>{{ empresa.complemento|default:'' }}</h6>
+                    </div>
+                    <div class="col-12 p-1">
+                        <label class="text-muted" for="">Bairro</label>
+                        <h6>{{ empresa.bairro }}</h6>
+                    </div>
+                    <div class="col-8 p-1">
+                        <label class="text-muted" for="">Cidade/UF</label>
+                        <h6>{{ empresa.cidade }}/{{ empresa.estado }}</h6>
+                    </div>
+                    <div class="col-4 p-1">
+                        <label class="text-muted" for="">Cep</label>
+                        <h6 style="font-size:14px;">{{ empresa.cep|default:'' }}</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="card col-12 col-lg-7 ">
+                <div class="card-header text-center py-1">
+                    <h5 class="card-title text-center m-0">COTAÇÃO TRANSPORTADORA</h5>
+                    <div class="d-flex justify-contente-evenly">
+                        <div class="col-9 col-lg-11">
+                            <label class="text-muted">VALOR TOTAL</label>
+                            <h6 class="text-uppercase m-0">{{vendadadostratado.valortotal}}</h6>
                         </div>
-                        <div class="col-6 col-lg-3">
-                            <label class="text-muted" for="">Telefone</label>
-                            <h6>{{ empresa.tel_principal|default:'' }}</h6>
+                        <div class="col-3 col-lg-1 m-auto text-center p-0">
+                            <label class="text-muted">Copiar</label>
+                            <a href="#" class="form-control form-control-sm border-0 bg-light copy">
+                                <i class="fa fa-clone btnMaster" aria-hidden="true"></i>
+                            </a>
                         </div>
-                        <div class="col-6 col-lg-3">
-                            <label class="text-muted">Data do pedido</label>
-                            <h6 class="ps-4">{{ empresa.data_pedido|date:"d/m/Y" }}</h6>
+                    </div>
+                </div>
+                <div class="row mx-1 p-1">
+                    <div class="col-12 col-lg-7 p-0">
+                        <label for="transp_selected" class="text-muted">Transportadora</label>
+                        <select class="form-select form-select-sm" name="transportadora" id="id_transp_selected">
+                            {%for transportadora in transportadoras%}
+                            <option {%ifequal transportadora.id venda.transportadora.id%} selected="selected"
+                                {%endifequal%} value="{{transportadora.id}}">
+                                {{transportadora.nome}}
+                            </option>
+                            {%endfor%}
+                        </select>
+                    </div>
+                    <div class="col-3 col-lg-1 text-center p-0">
+                        <label class="text-muted">Prazo</label>
+                        <input class="form-control form-control-sm text-center" type="number" name="prazo" id="id_prazo"
+                            value="{% if venda.prazo %}{{ venda.prazo }}{% else %}0{% endif %}">
+                    </div>
+                    <div class="col-5 col-lg-2 text-center p-0">
+                        <label class="text-muted">Valor Frete</label>
+                        <input class="form-control form-control-sm text-center" type="text" name="valor-frete"
+                            id="id_valor_frete"
+                            value="{% if venda.valor_frete %}{{ venda.valor_frete }}{% else %}0{% endif %}">
+                    </div>
+                    <div class="col-4 col-lg-2 text-center p-0">
+                        <label class="text-muted">Cotação</label>
+                        <input class="form-control form-control-sm text-center" type="text" name="numero-cotacao"
+                            id="id_num_cotacao"
+                            value="{% if venda.cotacao_transportadora %}{{ venda.cotacao_transportadora }}{% endif %}">
+                    </div>
+                </div>
+                {% if not venda.redesp_cotacao_transportadora %}
+                <div class="input-group pt-2 ps-2">
+                    <label class=" align-middle text-muted pe-2" for="id_redespacho">Redespacho</label>
+                    <input class="form-controle" type="checkbox" value="false" id="id_redespacho"
+                        onclick="redespacho()">
+                </div>
+                <div class="hidden" id="id_dados_redespacho">
+                    {% else %}
+                    <div class="row mx-1 p-1" id="id_dados_redespacho">
+                        {% endif %}
+                        <div class="col-12 col-lg-7 p-0">
+                            <label for="id_redesp_cotacao_transportadora" class="text-muted">Transportadora</label>
+                            <select class="form-select form-select-sm" id="id_redesp_cotacao_transportadora"
+                                name="redesp_cotacao_transportadora">
+                                {%for transportadora in transportadoras%}
+                                <option {%ifequal transportadora.id venda.redesp_cotacao_transportadora.id%}
+                                    selected="selected" {%endifequal%} value="{{transportadora.id}}">
+                                    {{transportadora.nome}}
+                                </option>
+                                {%endfor%}
+                            </select>
                         </div>
-                        <div class="col-12 col-lg-6">
-                            <label class="text-muted" for="">Rua</label>
-                            <h6>{{ empresa.logradouro|default:'' }}</h6>
+                        <div class="col-4 col-lg-2 text-center p-0">
+                            <label class="text-muted">Prazo</label>
+                            <input class="form-control form-control-sm text-center" type="number" id="id_redesp_prazo"
+                                name="redesp_prazo"
+                                value="{% if venda.redesp_prazo %}{{ venda.redesp_prazo }}{% else %}0{% endif %}">
                         </div>
-                        <div class="col-2 col-lg-2">
-                            <label class="text-muted" for="">Número</label>
-                            <h6>{{ empresa.numero|default:'' }}</h6>
+                        <div class="col-4 col-lg-3 text-center p-0">
+                            <label class="text-muted" for="id_redesp_valor_frete">Valor Frete</label>
+                            <input class="form-control form-control-sm text-center" type="text"
+                                id="id_redesp_valor_frete" name="redesp_valor_frete"
+                                value="{% if venda.redesp_valor_frete %}{{ venda.redesp_valor_frete }}{% else %}0{% endif %}">
                         </div>
-                        <div class="col-3 col-lg-3">
-                            <label class="text-muted" for="">Complemento</label>
-                            <h6>{{ empresa.complemento|default:'' }}</h6>
-                        </div>
-                        <div class="col-7 col-lg-7">
-                            <label class="text-muted" for="">Bairro</label>
-                            <h6>{{ empresa.bairro }}</h6>
-                        </div>
-                        <div class="col-8 col-lg-3">
-                            <label class="text-muted" for="">Cidade/UF</label>
-                            <h6>{{ empresa.cidade }}/{{ empresa.estado }}</h6>
-                        </div>
-                        <div class="col-4 col-lg-3">
-                            <label class="text-muted" for="">Cep</label>
-                            <h6 style="font-size:14px;">{{ empresa.cep|default:'' }}</h6>
+                    </div>
+                    <div class=" text-end mt-2 me-2">
+                        <button type="submit" class="btn btn-primary btn-sm" name="enviar_cotacao_tranportadora"
+                            value="Salvar" style="width:90px">Salvar</button>
+                    </div>
+                    <div class="col-12 px-2">
+                        <label class="text-muted">Selecionar uma Transportadora</label><br />
+                        <table id="exp_table" class="table table-striped w-100">
+                            <thead>
+                                <tr>
+                                    <th>Transportadora</th>
+                                    <th class="text-center">Cotação</th>
+                                    <th class="text-center">Prazo</th>
+                                    <th class="text-center pe-0">Valor Frete</th>
+                                    <th class="text-center">Apagar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for cotacao in cotacoes %}
+                                <tr id="{{ cotacao.transportadora }}"
+                                    onclick="selectCotacao('{{ cotacao.transportadora.id }}', '{{ cotacao.transportadora.nome }}', '{{ cotacao.cotacao }}', '{{ cotacao.prazo }}', '{{ cotacao.valor }}')">
+                                    <td class="pe-0">{{ cotacao.transportadora.nome }}</td>
+                                    <td class="text-center pe-0">{{ cotacao.cotacao }}</td>
+                                    <td class="text-center">{{ cotacao.prazo }}</td>
+                                    <td class="text-center">{{ cotacao.valor }}</td>
+                                    <td class="text-center" id="filters">
+                                        <abbr title="Excluir">
+                                            <a href="{% url 'venda:deletarCotacao' venda.id cotacao.id %}">
+                                                <i class="fa fa-close no"></i>
+                                            </a>
+                                        </abbr>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="card bg-light px-3 py-2 mb-2">
+                <div class="col-12 col-lg-6m-0">
+                    <label for="id_fileComprovante" class="card-title text-uppercase fw-bold text-muted">
+                        Comprovante do Pagamento
+                    </label>
+                    <div class="col-12 col-lg-5">
+                        <label>Arquivos</label>
+                        <input type="file" name="arquivo" multiple="" class="form-control form-control-sm"
+                            id="id_arquivos">
+                    </div>
+                    <div class="row pt-1 pe-0">
+                        <p class="text12 mb-0 pe-0">
+                            <label class="pe-2">Anexos</label>
+                            {% for a in arquivos %}
+                            <a class="text-decoration-none pe-1" href="/media/{{ a.arquivo }}" target="_blank">
+                                {{ a.arquivo }}</a>
+                            {% endfor %}
+                        </p>
+                    </div>
+                    <div class="col-12">
+                        <div class="col-lg-3 float-end">
+                            <button type="submit" class="col-lg-3 btn btn-primary btn-sm float-end"
+                                id="id_salvarArquivos" name="salvarArquivos" value="Salvar"
+                                style="width:90px">Salvar</button>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="card col-12 col-lg-5 ">
-                <div class="">
-                    <div class="card-header">
-                        <h5 class="card-title text-center m-0">COTAÇÃO TRANSPORTADORA</h5>
+            {% if erros_NF %}
+            <div id="div_mensagem" class="alert alert-danger" role="alert">
+                Para emissão de NF falta:<br />
+                {%for erro in erros_NF%}
+                <label id="mensagem">{{erro}}</label><br />
+                {%endfor%}
+            </div>
+            {%endif%}
+            <div class="card">
+                <div class="card-header">Destinatário</div>
+                <div class="cabecalho row p-3">
+                    <div class="col-12 text-lg-end py-2">
+                        <h6 class="">{%if cliente.contribuinte_inss%}Contribuinte INSS:
+                            {{cliente.get_contribuinte_inss_display }}{%endif%}</h6>
                     </div>
-                    <div class="p-3" id="external-events">
-                        <label class="text-muted">Transportadora</label>
-                        <select class="form-select form-select-sm" name="transportadora">
-                            {% for transportadora in transportadoras %}
-                            <option {% ifequal transportadora.id venda.transportadora.id %} selected="selected"
-                                {%endifequal %} value="{{ transportadora.id }}">
-                                {{ transportadora.nome }}
+                    <div class="col-12 col-lg-6">
+                        <label class="text-muted">Cliente</label>
+                        <input type="text" class="form-control form-control-sm" name="nome"
+                            value="{{ cliente.nome }}" />
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <label class="text-muted">Nome Fantasia</label>
+                        <input type="text" class="form-control form-control-sm" name="nome_fantasia"
+                            value="{{ cliente.nome_fantasia }}" />
+                    </div>
+                    <div class="col-12 col-lg-4">
+                        <label class="text-muted">Nome do recebedor</label>
+                        <input type="text" class="form-control form-control-sm" name="quemrecebe_mercadolivre"
+                            value="{% if venda.quemrecebe_mercadolivre %}{{ venda.quemrecebe_mercadolivre }}{% endif %}" />
+                    </div>
+                    <div class="col-6 col-lg-2">
+                        <label class="text-muted">Telefone do recebedor</label>
+                        <input type="text" class="form-control form-control-sm" name="telefonequemrecebe_mercadolivre"
+                            value="{% if venda.telefonequemrecebe_mercadolivre %}{{ venda.telefonequemrecebe_mercadolivre }}{% endif %}" />
+                    </div>
+                    <div class="col-6 col-lg-2">
+                        <label class="text-muted">Pedido de urgência</label>
+                        <select class="form-control form-control-sm" name="urgente">
+                            <option {% if venda.urgente %} selected="selected" {% endif %} value="sim">Sim</option>
+                            <option {% if not venda.urgente %} selected="selected" {% endif %} value="nao">Não
                             </option>
+                        </select>
+                    </div>
+                    <div class="col-12 col-lg-2">
+                        <label class="text-muted">Telefone</label>
+                        <input type="text" class="form-control form-control-sm" name="tel_principal"
+                            value="{{ cliente.tel_principal }}" />
+                    </div>
+                    <div class="col-6 col-lg-2">
+                        {% if cliente.cpf %}
+                        <label class="text-muted">CPF</label>
+                        <input type="text" class="form-control form-control-sm" name="cpf" value="{{ cliente.cpf }}" />
+                        {% elif cliente.cnpj %}
+                        <label class="text-muted">CNPJ</label>
+                        <input type="text" class="form-control form-control-sm" name="cnpj"
+                            value="{{ cliente.cnpj }}" />
+                        {% else %}
+                        <label class="text-muted">CPF/CNPJ</label>
+                        <input type="text" class="form-control form-control-sm" name="cpf/cnpj" />
+                        {% endif %}
+                    </div>
+                    <div class="col-6 col-lg-2">
+                        <label class="text-muted">Inscrição Estadual</label>
+                        <input type="text" class="form-control form-control-sm" name="insc_estadual"
+                            value="{{ cliente.insc_estadual }}" />
+                    </div>
+                    <div class="col-6 col-lg-1">
+                        <label class="text-muted">Estado</label>
+                        <select type="text" class="form-select form-select-sm" name="estado">
+                            <option selected>{{ cliente.estado }}</option>
+                            {% for uf in ufs %}
+                            <option value="{{ uf }}">{{ uf }}</option>
                             {% endfor %}
                         </select>
-                        <label class="text-muted">Numero Cotação</label>
-                        <input class="form-control form-control-sm" type="text" name="numero-cotacao"
-                            value="{% if venda.cotacao_transportadora %}{{ venda.cotacao_transportadora }}{% endif %}">
-                        <label class="text-muted">Valor Frete</label>
-                        <input class="form-control form-control-sm" type="text" name="valor-frete"
-                            value="{% if venda.valor_frete %}{{ venda.valor_frete }}{% endif %}">
-                        <div class="text-end mt-2">
-                            <button type="submit" class="btn btn-primary btn-sm" name="enviar_cotacao_tranportadora"
-                                value="Salvar">Salvar</button>
+                    </div>
+                    <div class="col-6 col-lg-2">
+                        <label class="text-muted">Cep</label>
+                        <input type="text" class="form-control form-control-sm" name="cep" value="{{ cliente.cep }}" />
+                    </div>
+                    <div class="col-12 col-lg-3">
+                        <label class="text-muted">Cidade</label>
+                        <input type="text" class="form-control form-control-sm" name="cidade"
+                            value="{{ cliente.cidade }}" />
+                    </div>
+                    <div class="col-12 col-lg-8">
+                        <label class="text-muted">Rua</label>
+                        <input type="text" class="form-control form-control-sm" name="logradouro"
+                            value="{{ cliente.logradouro }}" />
+                    </div>
+                    <div class="col-4 col-lg-1">
+                        <label class="text-muted">Número</label>
+                        <input type="text" class="form-control form-control-sm" name="numero"
+                            value="{{cliente.numero}}" />
+                    </div>
+                    <div class="col-8 col-lg-3">
+                        <label class="text-muted">Complemento</label>
+                        <input type="text" class="form-control form-control-sm" name="complemento"
+                            value="{{ cliente.complemento|default:'' }}" />
+                    </div>
+                    <div class="col-12 col-lg-5">
+                        <label class="text-muted">Bairro</label>
+                        <input type="text" class="form-control form-control-sm" name="bairro"
+                            value="{{ cliente.bairro }}" />
+                    </div>
+                    <br />
+                    <div class="col-12 col-lg-12">
+                        <label class="text-muted">Detalhes</label>
+                        <input type="text" class="form-control form-control-sm" name="detalhes"
+                            value="{%if venda.detalhes%}{{venda.detalhes}}{%endif%}" />
+                    </div>
+                    <br />
+                    <div class="col-12 col-lg-12">
+                        <label class="text-muted">Comentario</label>
+                        <input type="text" class="form-control form-control-sm" name="comentario"
+                            value="{%if venda.comentario%}{{venda.comentario}}{%endif%}" />
+                    </div>
+                    <div class="col-12 col-lg-12">
+                        <label class="text-muted">Informação adicional para sair na nota fiscal</label>
+                        <input type="text" class="form-control form-control-sm" name="informacao_adicional_notafiscal"
+                            value="{%if venda.informacao_adicional_notafiscal%}{{venda.informacao_adicional_notafiscal}}{%endif%}" />
+                    </div>
+
+
+                    <div class="text-end mt-2">
+                        <button type="submit" class="btn btn-primary btn-sm" name="salvar" value="Salvar"
+                            style="width:90px">Salvar</button>
+                    </div>
+                </div>
+            </div>
+            <hr class="m-0">
+            <div class="card table-responsive my-2 px-2">
+                <table class="table table-sm px-2 mb-0" id="id_table">
+                    <thead>
+                        <tr>
+                            <th>Descrição</th>
+                            <th class="text-center">Quant</th>
+                            <th class="text-center">Voltagem</th>
+                            <th class="text-center">Torneira</th>
+                            <th class="text-center">Adesivado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for produto in selectProdutos %}
+                        <tr>
+                            <td>{{ produto }}</td>
+                            <td class="text-center">{{ produto.quantidade }}</td>
+                            <td class="text-center">
+                                <select class="form-select form-select-sm" id="id_voltagem"
+                                    name="voltagem{{ produto.id|cut:" ." }}">
+                                    <option selected>{{ produto.voltagem }}</option>
+                                    {% for voltagem in voltagens %}
+                                    <option value="{{ voltagem.id }}">
+                                        {{ voltagem.nome }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                            <td class="text-center">
+                                <select class="form-select form-select-sm" id="id_torneira"
+                                    name="torneira{{ produto.id|cut:" ." }}">
+                                    <option selected>{{ produto.torneira }}</option>
+                                    {% for torneira in torneiras %}
+                                    <option value="{{ torneira.id }}">
+                                        {{ torneira.nome }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                            <td class="text-center">
+                                <select class="form-select form-select-sm" id="id_adesivado"
+                                    name="adesivado{{ produto.id|cut:" ." }}">
+                                    <option selected>{{ produto.adesivado }}</option>
+                                    {% for adesivo in adesivado %}
+                                    <option value="{{ adesivo.id }}">
+                                        {{ adesivo.nome }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div class="text-end m-2">
+                    <button type="submit" id="id_salvarProdutos" class="btn btn-primary btn-sm" name="salvarProdutos"
+                        value="Salvar" style="width:90px">Salvar</button>
+                </div>
+            </div>
+            <div id="external-events"
+                class="{{ venda.status_expedicao_backgroundcolor }} border rounded-3 bg-opacity-50 mb-2">
+                <div class="d-flex justify-content-center align-items-center my-2 px-5">
+                    <div class="text-center">
+                        <label class="text-muted">status expedição</label>
+                        {%if venda.etiqueta_impressa%}<br /><label class="text-muted">etiqueta impressa
+                            {{venda.data_impressao}}{%endif%}</label><br />
+                        <h6 class="m-0">{{ venda.data_impressao }}</h6>
+                        <h5 class="fw-bold text-uppercase">
+                            {{ venda.status_expedicao }}
+                        </h5>
+                    </div>
+                </div>
+            </div>
+            <div id="external-events"
+                class="{{ venda.status_posvenda_backgroundcolor }} border rounded-3 bg-opacity-50 mb-2">
+                <div class="d-flex justify-content-center align-items-center my-2 px-5">
+                    <div class="text-center">
+                        <label class="text-muted">status pós venda</label>
+                        <h6 class="m-0">{{ venda.data_status_posvenda }}</h6>
+                        <h5 class="fw-bold text-uppercase">
+                            {{ venda.status_posvenda }}
+                        </h5>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-1">
+            <div class="d-flex gap-1">
+                <div class="card p-0">
+                    <div class="card-header">
+                        <h5 class="card-title text-center text-uppercase">Mudar Ação</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="external-events">
+                            <div onclick="javascript:muda_status('Combinar Entrega')"
+                                class="external-event bg-danger ui-draggable ui-draggable-handle"
+                                style="position: relative;">
+                                Combinar Entrega</div>
+                            <div onclick="javascript:muda_status('Conferir dados')"
+                                class="external-event bg-danger ui-draggable ui-draggable-handle"
+                                style="position: relative;">
+                                Conferir Dados</div>
+                            <div onclick="javascript:muda_status('Parado')"
+                                class="external-event bg-secondary ui-draggable ui-draggable-handle"
+                                style="position: relative;">Parado</div>
+                            <div onclick="javascript:muda_status('Aguardando Concluir Produtos')"
+                                class="external-event bg-indigo ui-draggable ui-draggable-handle"
+                                style="position: relative;">
+                                Aguardando Concluir Produtos</div>
+                            <div onclick="javascript:muda_status('Fazer Cotação')"
+                                class="external-event bg-info ui-draggable ui-draggable-handle"
+                                style="position: relative;">
+                                Fazer Cotação</div>
+                            <div onclick="javascript:muda_status('Imprimir Etiqueta')"
+                                class="external-event bg-yellow ui-draggable ui-draggable-handle"
+                                style="position: relative;">
+                                Imprimir Etiqueta</div>
+                            <div onclick="javascript:muda_status('Imprimir Nota Fiscal')"
+                                class="external-event bg-yellow ui-draggable ui-draggable-handle"
+                                style="position: relative;">
+                                Imprimir Nota Fiscal</div>
+                            <div onclick="javascript:muda_status('Agendar Transportadora')"
+                                class="external-event bg-info ui-draggable ui-draggable-handle"
+                                style="position: relative;">
+                                Agendar Transportadora</div>
+                            <div onclick="javascript:muda_status('Informar cliente p/ buscar')"
+                                class="external-event bg-info ui-draggable ui-draggable-handle"
+                                style="position: relative;">
+                                Informar cliente p/ buscar</div>
+                            <div onclick="javascript:muda_status('Aguardando transportadora')"
+                                class="external-event bg-warning ui-draggable ui-draggable-handle"
+                                style="position: relative;">
+                                Aguardando transportadora</div>
+                            <div onclick="javascript:muda_status('Aguardando Cliente')"
+                                class="external-event bg-warning ui-draggable ui-draggable-handle"
+                                style="position: relative;">
+                                Aguardando Cliente</div>
+                            <div onclick="javascript:muda_status('Emitir Boleto')"
+                                class="external-event bg-danger ui-draggable ui-draggable-handle"
+                                style="position: relative;">
+                                Emitir Boleto</div>
+                            <div onclick="javascript:muda_status('Enviado')"
+                                class="external-event bg-success ui-draggable ui-draggable-handle"
+                                style="position: relative;">
+                                Enviado</div>
+                            <div onclick="javascript:muda_status('Aguardando Pagamento')"
+                                class="external-event bg-danger  ui-draggable ui-draggable-handle"
+                                style="position: relative;">
+                                Aguardando Pagamento</div>
+                            <div onclick="javascript:muda_status('Pedido Pronto')"
+                                class="external-event bg-pronto  ui-draggable ui-draggable-handle"
+                                style="position: relative;">
+                                Pedido Pronto</div>
+                            <div onclick="javascript:muda_status('Muito Caro')"
+                                class="external-event bg-secondary  ui-draggable ui-draggable-handle"
+                                style="position: relative;">
+                                Muito Caro</div>
+                            <div onclick="javascript:muda_status('Concluido')"
+                                class="external-event bg-success  ui-draggable ui-draggable-handle"
+                                style="position: relative;">
+                                Concluido</div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        <div class="card bg-light px-3 py-2 mb-2">
-            <div class="col-12 col-lg-6m-0">
-                <label for="id_fileComprovante" class="card-title text-uppercase fw-bold text-muted">
-                    Comprovante do Pagamento
-                </label>
-                <div class="d-flex gap-2">
-                    <h6 class="text12">Atualmente:</h6>
-                    <a class="text12 text-decoration-none" href="/media/{{ comprovante }}" target="_blank">
-                        {{ comprovante }}</a>
-                </div>
-                <h6 class="text12">Modificar:</h6>
-                <input class="form-control form-control-sm float mb-2" id="id_comprovante" type="file"
-                    name="comprovante" value="{{ comprovante }}">
-                <div class="col-12">
-                    <div class="col-lg-3 float-end">
-                        <button type="submit" class="col-lg-3 btn btn-primary btn-sm float-end" id="id_saveComprovante"
-                            name="saveComprovante" value="Salvar">Salvar</button>
+                {%if not venda.numero_nf%}
+                <div class="col">
+                    <br />
+                    <div class="text-center text-lg-start m-0">&nbsp;&nbsp;
+                        <input type="submit" class="btn btn-primary btn-sm" name="EmitirNF" value="Emitir Nota Fiscal">
                     </div>
                 </div>
+                {%endif%}
+                {% include "venda/includes/dadosnf.html" %}
             </div>
-        </div>
-        {% if erros_NF %}
-        <div id="div_mensagem" class="alert alert-danger" role="alert">
-            Para emissão de NF falta:<br />
-            {%for erro in erros_NF%}
-            <label id="mensagem">{{erro}}</label><br />
-            {%endfor%}
-        </div>
-        {% endif %}
-        <div class="card">
-            <div class="card-header">Destinatário</div>
-            <div class="cabecalho row p-3">
-                <div class="col-12 col-lg-6">
-                    <label class="text-muted">Cliente</label>
-                    <input type="text" class="form-control form-control-sm" name="nome" value="{{ cliente.nome }}" />
-                </div>
-                <div class="col-12 col-lg-6">
-                    <label class="text-muted">Nome Fantasia</label>
-                    <input type="text" class="form-control form-control-sm" name="nome_fantasia"
-                        value="{{ cliente.nome_fantasia }}" />
-                </div>
-                <div class="col-12 col-lg-4">
-                    <label class="text-muted">Nome do receptor</label>
-                    <input type="text" class="form-control form-control-sm" name="quemrecebe_mercadolivre"
-                        value="{% if venda.quemrecebe_mercadolivre %}{{ venda.quemrecebe_mercadolivre }}{% endif %}" />
-                </div>
-                <div class="col-12 col-lg-4">
-                    <label class="text-muted">Telefone do receptor</label>
-                    <input type="text" class="form-control form-control-sm" name="telefonequemrecebe_mercadolivre"
-                        value="{% if venda.telefonequemrecebe_mercadolivre %}{{ venda.telefonequemrecebe_mercadolivre }}{% endif %}" />
-                </div>
-                <div class="col-12 col-lg-4">
-                    <label class="text-muted">Pedido de urgência</label>
-                    <select class="form-control form-control-sm" name="urgente">
-                        <option {% if venda.urgente %} selected="selected" {% endif %} value="sim">Sim</option>
-                        <option {% if not venda.urgente %} selected="selected" {% endif %} value="nao">Não</option>
-                    </select>
-                </div>
-                <div class="col-12 col-lg-4">
-                    <label class="text-muted">Telefone</label>
-                    <input type="text" class="form-control form-control-sm" name="tel_principal"
-                        value="{{ cliente.tel_principal }}" />
-                </div>
-                <div class="col-12 col-lg-4">
-                    {% if cliente.cpf %}
-                    <label class="text-muted">CPF</label>
-                    <input type="text" class="form-control form-control-sm" name="cpf" value="{{cliente.cpf}}" />
-                    {% elif cliente.cnpj %}
-                    <label class="text-muted">CNPJ</label>
-                    <input type="text" class="form-control form-control-sm" name="cnpj" value="{{cliente.cnpj}}" />
-                    {% else %}
-                    <label class="text-muted">CPF/CNPJ</label>
-                    <input type="text" class="form-control form-control-sm" name="cpf/cnpj" />
-                    {% endif %}
-                </div>
-                <div class="col-12 col-lg-4">
-                    <label class="text-muted">Inscrição Estadual</label>
-                    <input type="text" class="form-control form-control-sm" name="insc_estadual"
-                        value="{{ cliente.insc_estadual }}" />
-                </div>
-                <div class="col-12 col-lg-6">
-                    <label class="text-muted">Rua</label>
-                    <input type="text" class="form-control form-control-sm" name="logradouro"
-                        value="{{ cliente.logradouro }}" />
-                </div>
-                <div class="col-12 col-lg-3">
-                    <label class="text-muted">Número</label>
-                    <input type="text" class="form-control form-control-sm" name="numero" value="{{cliente.numero}}" />
-                </div>
-                <div class="col-12 col-lg-3">
-                    <label class="text-muted">Complemento</label>
-                    <input type="text" class="form-control form-control-sm" name="complemento"
-                        value="{{ cliente.complemento|default:'' }}" />
-                </div>
-                <div class="col-12 col-lg-5">
-                    <label class="text-muted">Bairro</label>
-                    <input type="text" class="form-control form-control-sm" name="bairro"
-                        value="{{ cliente.bairro }}" />
-                </div>
-                <div class="col-12 col-lg-4">
-                    <label class="text-muted">Cidade</label>
-                    <input type="text" class="form-control form-control-sm" name="cidade"
-                        value="{{ cliente.cidade }}" />
-                </div>
-                <div class="col-12 col-lg-1">
-                    <label class="text-muted">Estado</label>
-                    <select type="text" class="form-select form-select-sm" name="estado">
-                        <option selected>{{ cliente.estado }}</option>
-                        {% for uf in ufs %}
-                        <option value="{{ uf }}">{{ uf }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-12 col-lg-2">
-                    <label class="text-muted">Cep</label>
-                    <input type="text" class="form-control form-control-sm" name="cep" value="{{ cliente.cep }}" />
-                </div>
-                <div class="text-end mt-2">
-                    <button type="submit" class="btn btn-primary btn-sm" name="salvar" value="Salvar">Salvar</button>
-                </div>
-            </div>
-        </div>
-        <hr class="m-0">
-        <div class="card table-responsive my-2 px-2">
-            <table class="table table-sm px-2 mb-0" id="id_table">
-                <thead>
-                    <tr>
-                        <th>Descrição</th>
-                        <th class="text-center">Quant</th>
-                        <th class="text-center">Voltagem</th>
-                        <th class="text-center">Torneira</th>
-                        <th class="text-center">Adesivado</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for produto in selectProdutos %}
-                    <tr>
-                        <td>{{ produto }}</td>
-                        <td class="text-center">{{ produto.quantidade }}</td>
-                        <td class="text-center">
-                            <select class="form-select form-select-sm" id="id_voltagem" name="voltagem{{ produto.id }}">
-                                <option selected>{{ produto.voltagem }}</option>
-                                {% for voltagem in voltagens %}
-                                <option value="{{ voltagem.id }}">
-                                    {{ voltagem.nome }}
-                                </option>
-                                {% endfor %}
-                            </select>
-                        </td>
-                        <td class="text-center">
-                            <select class="form-select form-select-sm" id="id_torneira" name="torneira{{ produto.id }}">
-                                <option selected>{{ produto.torneira }}</option>
-                                {% for torneira in torneiras %}
-                                <option value="{{ torneira.id }}">
-                                    {{ torneira.nome }}
-                                </option>
-                                {% endfor %}
-                            </select>
-                        </td>
-                        <td class="text-center">
-                            <select class="form-select form-select-sm" id="id_adesivado"
-                                name="adesivado{{ produto.id }}">
-                                <option selected>{{ produto.adesivado }}</option>
-                                {% for adesivo in adesivado %}
-                                <option value="{{ adesivo.id }}">
-                                    {{ adesivo.nome }}
-                                </option>
-                                {% endfor %}
-                            </select>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            <div class="text-end m-2">
-                <button type="submit" id="id_salvarProdutos" class="btn btn-primary btn-sm" name="salvarProdutos"
-                    value="Salvar">Salvar</button>
-            </div>
-        </div>
-        <div id="external-events"
-            class="{{ venda.status_expedicao_backgroundcolor }} border rounded-3 bg-opacity-50 mb-2">
-            <div class="d-flex justify-content-center align-items-center my-2 px-5">
-                <div class="text-center">
-                    <label class="text-muted">desde</label>
-                    <h6 class="m-0">{{ venda.data_status_expedicao }}</h6>
-                    <h5 class="fw-bold text-uppercase">
-                        {{ venda.status_expedicao }}
-                    </h5>
-                </div>
-            </div>
-        </div>
-        <hr class="my-1">
-        <div class="d-flex gap-1">
-            <div class="card p-0">
-                <div class="card-header">
-                    <h5 class="card-title text-center text-uppercase">Mudar Ação</h5>
-                </div>
-                <div class="card-body">
-                    <div id="external-events">
-                        <div onclick="javascript:muda_status('Combinar Entrega')"
-                            class="external-event bg-danger ui-draggable ui-draggable-handle"
-                            style="position: relative;">
-                            Combinar Entrega</div>
-                        <div onclick="javascript:muda_status('Conferir dados')"
-                            class="external-event bg-danger ui-draggable ui-draggable-handle"
-                            style="position: relative;">
-                            Conferir Dados</div>
-                        <div onclick="javascript:muda_status('Parado')"
-                            class="external-event bg-secondary ui-draggable ui-draggable-handle"
-                            style="position: relative;">Parado</div>
-                        <div onclick="javascript:muda_status('Aguardando Concluir Produtos')"
-                            class="external-event bg-danger ui-draggable ui-draggable-handle"
-                            style="position: relative;">
-                            Aguardando Concluir Produtos</div>
-                        <div onclick="javascript:muda_status('Fazer Cotação')"
-                            class="external-event bg-info ui-draggable ui-draggable-handle" style="position: relative;">
-                            Fazer Cotação</div>
-                        <div onclick="javascript:muda_status('Agendar Transportadora')"
-                            class="external-event bg-info ui-draggable ui-draggable-handle" style="position: relative;">
-                            Agendar Transportadora</div>
-                        <div onclick="javascript:muda_status('Informar cliente p/ buscar')"
-                            class="external-event bg-info ui-draggable ui-draggable-handle" style="position: relative;">
-                            Informar cliente p/ buscar</div>
-                        <div onclick="javascript:muda_status('Aguardando transportadora')"
-                            class="external-event bg-warning ui-draggable ui-draggable-handle"
-                            style="position: relative;">
-                            Aguardando transportadora</div>
-                        <div onclick="javascript:muda_status('Aguardando Cliente')"
-                            class="external-event bg-warning ui-draggable ui-draggable-handle"
-                            style="position: relative;">
-                            Aguardando Cliente</div>
-                        <div onclick="javascript:muda_status('Emitir Boleto')"
-                            class="external-event bg-danger ui-draggable ui-draggable-handle"
-                            style="position: relative;">
-                            Emitir Boleto</div>
-                        <div onclick="javascript:muda_status('Enviado')"
-                            class="external-event bg-success ui-draggable ui-draggable-handle"
-                            style="position: relative;">
-                            Enviado</div>
-                        <div onclick="javascript:muda_status('Aguardando Pagamento')"
-                            class="external-event bg-danger  ui-draggable ui-draggable-handle"
-                            style="position: relative;">
-                            Aguardando Pagamento</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="text-end text-lg-start m-0">
-                    <button type="submit" class="btn btn-primary btn-sm" name="EmitirNF" id="id_emitirnf">Emitir Nota
-                        Fiscal</button>
-                </div>
-            </div>
-            {% include "venda/includes/dadosnf.html" %}
-        </div>
     </form>
+    <textarea name="" class="hidden" rows="10">
+    Venda: {{ venda.id }}
+    REMETENTE    
+    {% if empresa.cnpj %}CNPJ: {{ empresa.cnpj }}{% else %}CPF: {{ empresa.cpf }}{% endif %}
+    CEP: {{ empresa.cep }}
+    
+    DESTINATÁRIO
+    CLIENTE: {{ cliente.nome }}
+    {% if cliente.cnpj %}CNPJ: {{ cliente.cnpj }}{% else %}CPF: {{ cliente.cpf }}{% endif %}
+    CEP: {{ cliente.cep }}
+
+    Tomador do frete: {% if empresa.cnpj != 27980581000121 %}cif {% else %}fob {% endif %}
+    Volumes: {{ quantProdutos }}
+    Peso Total: {{ pesoTotal }} kg    
+    Valor da NF: R$ {{vendadadostratado.valortotal}}
+    {% for k, v in produto.items %}
+    {{ k }}: {% for k, v in v.items %}{{ v }}{% if k != 'comprimento' %} x{% endif %} {% endfor %}{% endfor %}
+    ----------------------------------------------------------------------------------------------
+    </textarea>
 </div>
 
 <script type="text/javascript">
     function muda_status(status) {
         window.location.href = '?status_expedicao=' + status;
     }
+
+    function redespacho() {
+        var red = document.getElementById("id_redespacho");
+        var dados_red = document.getElementById("id_dados_redespacho");
+        if (red.value == 'false') {
+            red.setAttribute('value', 'true');
+            dados_red.setAttribute('class', 'row mx-1 p-1');
+        } else {
+            red.setAttribute('value', 'false');
+            dados_red.setAttribute('class', 'hidden');
+        }
+    }
+
+    function selectCotacao(id, transportadora, cotacao, prazo, valorFrete) {
+        var transporteSelecionado = document.querySelector('#id_transp_selected');
+        for (var i = 0; i < transporteSelecionado.options.length; i++) {
+            if (transporteSelecionado.options[i].value === id) {
+                transporteSelecionado.selectedIndex = i;
+                break;
+            }
+        }
+        var cotac = document.getElementById('id_num_cotacao');
+        cotac.value = cotacao;
+        var _prazo = document.getElementById('id_prazo');
+        if (prazo) {
+            _prazo.value = parseInt(prazo);
+        }
+        var vlrFrete = document.getElementById('id_valor_frete');
+        vlrFrete.value = valorFrete
+    }
 </script>
 
-{% endblock %}
-
-{% block script %}
-<!-- <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script> -->
-
 <script>
-    // var volt = document.getElementById('id_voltagem');
-    // var torn = document.getElementById('id_torneira');
-    // var ades = document.getElementById('id_adesivado');
+    const btnCopy = document.querySelector('a.copy');
+    const btnPaste = document.querySelector('a.paste');
+    const textArea = document.querySelector('textarea');
 
-    // // select.addEventListener('change', myFunction);
-    // // function myFunction() {
+    btnCopy.addEventListener('click', (e) => {
+        e.preventDefault();
 
-    // // }
+        navigator.clipboard.writeText(textArea.value);
+        alert('Texto copiado para área de transferência! Ctrl+V em algum local para colar');
+    });
 
-    // $('#id_voltagem').change(function () {
-    //     console.log('mudou')
 
-    //     // document.getElementById("id_salvarProdutos").submit();
+    btnPaste.addEventListener('click', async (e) => {
+        e.preventDefault();
 
-    // });
-    // const dropdown = document.getElementById("id_voltagem");
+        const response = await navigator.clipboard.readText();
+        textArea.value = response;
 
-    // dropdown.addEventListener("change", function () {
-
-    //     document.getElementById("myForm").submit();
-    // });
+        alert('Um texto que você tenha copiado da área de transferência foi inserido no campo, clique em ok para ver!');
+    });
 
 </script>
 

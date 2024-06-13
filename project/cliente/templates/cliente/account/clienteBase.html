@@ -1,0 +1,17 @@
+{% extends 'cliente/account/clienteDashboard.html' %}
+
+{% load static %}
+
+{% block dashboard %}
+
+<main class="content px-3 py-2">
+    <div class="container-fluid">
+        <div class="mb-3">
+            {% for objeto in objeto %}
+            <h3>Seja bem vindo, {{ objeto.nome_fantasia }}!</h3>
+            {% endfor %}
+        </div>
+    </div>
+</main>
+
+{% endblock %}

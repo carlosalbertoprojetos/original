@@ -6,6 +6,7 @@
 
 {% block index %}
 
+
 <!-- Modal -->
 <div class="modal fade" id="ex1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
     aria-labelledby="upload_xmlLabel" aria-hidden="true">
@@ -63,9 +64,7 @@
                             <td><b><input name="imprimir" value="{{nome.id}}" type="checkbox" /></b></td>
                         </tr>
                         {%endfor%}
-
                         {%endfor%}
-
                     </tbody>
                     <tfoot>
                         <tr>
@@ -81,71 +80,244 @@
 <div class="container">
     <div class="filters card border-1 mt-2">
         <div class="card-header">
-            <label class="fs-5 fw-bold">Vendas na Expedição</label>
+            <label class="fs-5 fw-bold">Estoque Fiscal</label>
+            <button class="btn" type="button" onclick="javascript:abre_estoquefiscal()" aria-expanded="false"
+                aria-controls="collapseExample">
+                +
+            </button>
         </div>
-        <div class="p-3">
-            <div id="id_table_filter" style="text-align:right">
-                <label>Buscar:
-                    <form name="pesquisa" id="pesquisa" action="" method="POST">
-                        {% csrf_token %}
-                        <input id="pesquisa" type="text" name="pesquisa" value="{{pesquisa}}"
-                            class="form-control form-control-sm" placeholder="" aria-controls="id_table">
-                    </form>
-                </label>
-            </div>
-            <table class="table table-sm" id="id_table">
+        <div class="p-3 collapse" id="EstoqueFiscal">
+            <table class="table table-sm">
                 <div class="col-12 d-flex justify-content-end">
                 </div>
                 <thead>
                     <tr>
-                        <th>Cód</th>
+                        <th>Nome</th>
+                        <th>Voltagem</th>
+                        <th>Qtde</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {%for bebedouro in estoquefiscal%}
+                    <tr>
+                        <td><b>{{bebedouro.nome}}</b></td>
+                        <td><b>{{bebedouro.voltagem}}</b></td>
+                        <td><b>{{bebedouro.qtde}}</b></td>
+
+                    </tr>
+                    {%for nome in bebedouro.nomes%}
+                    <tr>
+                        <td colspan="5">{{nome.id}} - {{nome.nome}} - {{nome.vendedor}}</td>
+                        <td><b><input name="imprimir" value="{{nome.id}}" type="checkbox" /></b></td>
+                    </tr>
+                    {%endfor%}
+                    {%endfor%}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="5"></th>
+                        <th><input class="btn btn-primary btn-sm" type="submit" name="submit" value="imprimir"></th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="filters card border-1 mt-2">
+        <div class="card-header">
+            <label class="fs-5 fw-bold">Vendas na Expedição</label>
+            <div class="d-flex align-items-center float-end mt-1">
+                <label class="col-10">Cotação</label>
+                <a href="#" class="col-3 copy">
+                    <i class="fa fa-clone btnMaster" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+        <div class="p-3 overflow-auto">{{filtro}}
+            <input type="radio" onclick="javascript:location.href='?filtro='" {%ifequal filtro '' %} checked=checked
+                {%endifequal%} value="" name="filtro" /> Todos <input
+                onclick="javascript:location.href='?filtro=mercadolivre'" value="mercadolivre" type="radio"
+                name="filtro" {%ifequal filtro 'mercadolivre' %} checked=checked {%endifequal%} />Mercado livre <input
+                onclick="javascript:location.href='?filtro=original'" value="original" type="radio"
+                name="filtrooriginal" {%ifequal filtro 'original' %} checked=checked {%endifequal%} /> Original
+            <div id="id_table_filter" style="text-align:right">
+                <form class="col-5 col-lg-3 d-flex gap-1 float-end" name="pesquisa" id="pesquisa" action=""
+                    method="POST">
+                    {% csrf_token %}
+                    <label class="m-auto">Buscar: </label>
+                    <input id="pesquisa" type="text" name="pesquisa" value="{{pesquisa}}"
+                        class="form-control form-control-sm" placeholder="" aria-controls="id_table">
+                </form>
+            </div>
+            <table class="table table-sm " id="id_table">
+                <div class="col-12 d-flex justify-content-end">
+                </div>
+                <thead>
+                    <tr>
+                        <th class="text-center">Cód</th>
                         <th>Cliente</th>
+                        <th>Empresa</th>
                         <th>Vendedor</th>
-                        <th>Data Pedido</th>
-                        <th>Numero NF</th>
+                        <th class="text-center">Data Pedido</th>
+                        <th class="text-center">NF</th>
                         <th>Transportadora</th>
-                        <th>Adesivou?</th>
-                        <th>Urgente</th>
-                        <th>Status</th>
+                        <th>Adesivado</th>
+                        <th class="text-center">Urgente</th>
+                        <th class="text-center">Status</th>
                         <th>Data Status</th>
+                        <th>Atendimento</th>
                         <th>Visualizar</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {%for venda in vendas%}
+                    {% for venda in vendas %}
                     <tr>
-                        <td>{{venda.id}}</td>
+                        <td class="text-center">
+                            {{venda.id}}
+                            {% if venda.data_entrega|date:'d/m/y' == venda.data_pedido|date:'d/m/y' %}
+                            <!-- <i class="fa fa-trophy" aria-hidden="true" style="font-size: 15px; color:goldenrod;"></i> -->
+                            <img src="{% static 'img/icons/trophy.gif' %}" width="35" height="20">
+                            {% endif %}
+                        </td>
                         <td>{{venda.cliente}}</td>
+                        <td>
+                            {{venda.vendedor.extenduser.empresa}}
+                        </td>
                         <td>{{venda.vendedor}}{%if venda.detalhes%} - {{venda.detalhes}} {%endif%}</td>
-                        <td>{{venda.data_pedido}}</td>
+                        <td>{{venda.data_pedido|date:'d/m/y'}}</td>
                         <td>{%if venda.numero_nf%} {{venda.numero_nf}}{%endif%}</td>
                         <td>{{venda.transportadora.nome}}</td>
                         <td>{%if venda.etiqueta_impressa%}Sim{%endif%}</td>
-                        <td>{%if venda.urgente%}<img src="{% static '/img/icons/fire.gif' %}" width="30"
-                                height="23">{%endif%}</td>
-                        <td>
-                            <div class="{{venda.status_expedicao_backgroundcolor}}">{{venda.status_expedicao.title}}
+                        <td>{% if venda.urgente %}
+                            <img src="{% static 'img/icons/fire.gif' %}" width="60" height="30">
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            <div class="{{venda.status_expedicao_backgroundcolor}}">
+                                {{venda.status_expedicao.title}}
                             </div>
                         </td>
-                        <td>{{venda.data_status_expedicao}}</td>
-                        <td align="center pe-1">
-                            <abbr title="Editar">
-                                <a href="{{ venda.venda_expedicao_edit }}">
-                                    <i class=" fa fa-eye"></i>
+                        <td>{{venda.data_status_expedicao|date:'d/m/y H:i'}}</td>
+                        {% if not venda.id in atendimento %}
+                        <td class="text-center">
+                            <abbr title='Atendimento'>
+                                <a href="#" class="modal-trigger" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                                    data-id="{{ venda.id }}" data-empresa="{{ venda.vendedor.extenduser.empresa }}"
+                                    data-cliente="{{ venda.cliente }}" data-urgente="{{ venda.urgente }}"
+                                    data-status_expedicao_title="{{ venda.status_expedicao.title }}"
+                                    data-data_status_expedicao="{{ venda.data_status_expedicao }}">
+                                    <i class="fa fa-cog" aria-hidden="true"></i>
                                 </a>
                             </abbr>
-                            <abbr title='Orçamento'><a href='../venda/{{venda.get_hash}}/orcamento' target='_blank'><i
-                                        class='fa fa-file-text-o'></i></a></abbr>
+                        </td>
+                        <td class="text-center pe-1">
+                            <abbr title="Editar">
+                                <a href="{{ venda.venda_expedicao_edit }}">
+                                    <i class="fa fa-eye"></i>
+                                </a>
+                                {% else %}
+                        <td colspan="2" class="text-end pe-3">
+                            <abbr title="Editar">
+                                <a href="{{ venda.venda_expedicao_edit }}">
+                                    <i class="fa fa-eye ms-4"></i>
+                                </a>
+                                {% endif %}
+                            </abbr>
+                            <abbr title='Orçamento'><a href='../venda/{{venda.get_hash}}/orcamento/{{venda.get_id}}'
+                                    target='_blank'><i class='fa fa-file-text-o'></i></a></abbr>
                         </td>
                     </tr>
-                    {%endfor%}
+                    {% if venda.id in atendimento %}
+                    {% for d in data %}{% if d.venda.id == venda.id %}
+                    {% if d.conclusao %}
+                    <tr>
+                        <td colspan="13" class="bg-success opacity-75 p-0 ps-4">
+                            <a href="{% url 'suporte:suporteCreate' venda.id %}" class="text-white"
+                                style="font-size: 12px;">Atendimento concluído em:
+                                {{ d.conclusao|date:'d/m/Y' }}
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="13" class="bg-warning opacity-75 p-o ps-4">
+                            <a href="{% url 'suporte:suporteCreate' venda.id %}" class="text-black"
+                                style="font-size: 12px;">Há um atendimento aberto para este
+                                produto, iniciado em
+                                {{ d.data|date:'d/m/Y H:i' }}
+                            </a>
+                        </td>
+                    </tr>
+                    {% endif %}{% endif %}{% endfor %}
+                    {% endif %}
+                    {% if venda.comentario %}
+                    <tr>
+                        <td colspan="13"><b>{{venda.comentario}}</b></td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
     </div>
 </div>
-<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
 
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Atendimento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="text-center pt-2">
+                <h6>Iniciar atendimento</h6>
+            </div>
+            <div class="modal-body">
+                <p class="m-0"><span class="text-muted text14">Empresa: </span><span class="text14"
+                        id="modal-empresa"></span></p>
+                <p class="m-0"><span class="text-muted text14">Cliente: </span><span class="text14"
+                        id="modal-cliente"></span></p>
+                <p class="m-0"><span class="text-muted text14">Status: </span><span class="text14"
+                        id="modal-status"></span></p>
+                <p class="m-0"><span class="text-muted text14">Status atualizado em: </span><span class="text14"
+                        id="modal-data"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
+                <a id="id_confirmar" href="" class="btn btn-primary btn-sm">Confirmar</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="col-12">
+        <textarea class="hidden" cols="122" rows="30">
+
+            {% for v in vendas %}{% if v.status_expedicao == 'Fazer Cotação' %}Venda: {{ v.id }}
+        REMETENTE
+        {% if v.vendedor.extenduser.empresa.cnpj %}CNPJ: {{ v.vendedor.extenduser.empresa.cnpj }} {% else %}CPF: {{ v.vendedor.extenduser.empresa.cpf }}{% endif %}
+        CEP: {{ v.vendedor.extenduser.empresa.cep }}    
+        
+        DESTINATÁRIO
+        CLIENTE: {{ v.cliente.nome }}
+        {% if v.cliente.cnpj %}CNPJ: {{ v.cliente.cnpj }} {% else %}CPF: {{ v.cliente.cpf }} {% endif %}
+        CEP: {{ v.cliente.cep }}
+        
+        Tomador do frete: {% if v.vendedor.extenduser.empresa.cnpj != '27980581000121' %}fob {% else %}cif {% endif %} {% for vp in volume_peso %}{% if vp.venda == v.id %}{% for k, va in vp.items %}{% if k != 'venda'%}
+        {{ k }}: {{ va }}{% if k == 'Peso' %} kg{% endif %}{% endif %}{% endfor %}{% endif %}{% endfor %}
+        Valor da NF: R$ {{ v.valor_venda }}
+        {% for p in produtos %}{% if p.venda == v %}
+        {{ p.produto }}: {{ p.produto.altura }} x {{ p.produto.largura }} x {{ p.produto.comprimento }}{% endif %}{% endfor %}
+
+        ----------------------------------------------------------------------------------------------
+        {% endif %}{% endfor %}</textarea>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
 
 <script type="text/javascript">
     $("#checkAll").change(function () {
@@ -160,12 +332,60 @@
         $("#collapseExample").collapse('toggle');
     }
 
+    function abre_estoquefiscal() {
+        $("#EstoqueFiscal").collapse('toggle');
+    }
+
     $('#pesquisa').keypress(function (e) {
         if (e.which == 13) {
             $('form#pesquisa').submit();
         }
     });
 
+    const btnCopy = document.querySelector('a.copy');
+    const btnPaste = document.querySelector('a.paste');
+    const textArea = document.querySelector('textarea');
+
+    btnCopy.addEventListener('click', (e) => {
+        e.preventDefault();
+
+        navigator.clipboard.writeText(textArea.value);
+        alert('Texto copiado para área de transferência! Ctrl+V em algum local para colar');
+    });
+
+    btnPaste.addEventListener('click', async (e) => {
+        e.preventDefault();
+
+        const response = await navigator.clipboard.readText();
+        textArea.value = response;
+
+        alert('Um texto que você tenha copiado da área de transferência foi inserido no campo, clique em ok para ver!');
+    });
 </script>
 
+<script>
+    // retorna para o modal as informações específicas da venda selecionada
+    document.addEventListener('DOMContentLoaded', (event) => {
+        var modalTriggerElements = document.querySelectorAll('.modal-trigger');
+        modalTriggerElements.forEach(function (element) {
+            element.addEventListener('click', function () {
+                var id = this.getAttribute('data-id').replace('.', '');
+                var empresa = this.getAttribute('data-empresa');
+                var cliente = this.getAttribute('data-cliente');
+                var status = this.getAttribute('data-status_expedicao_title');
+                var data = this.getAttribute('data-data_status_expedicao');
+
+                document.getElementById('modal-empresa').textContent = empresa;
+                document.getElementById('modal-cliente').textContent = cliente;
+                document.getElementById('modal-status').textContent = status;
+                document.getElementById('modal-data').textContent = data;
+
+                // Construir a URL dinamicamente para o botão de confirmação
+                var baseUrl = "{% url 'suporte:suporteCreate' 0 %}";
+                var confirmarUrl = baseUrl.replace('0', id);
+                document.getElementById('id_confirmar').setAttribute("href", confirmarUrl);
+            });
+        });
+    });
+</script>
 {% endblock %}

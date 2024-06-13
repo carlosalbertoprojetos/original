@@ -42,7 +42,8 @@ class ProdutoAdmin(admin.ModelAdmin):
                         "preco",
                         "peso",
                     ), 
-                    ("estoque_ini"),
+                    ("estoque_127"),
+                    ("estoque_220"),
                     "status_produto",
                 )
             },

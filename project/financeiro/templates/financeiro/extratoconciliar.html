@@ -1,0 +1,96 @@
+{% extends 'index.html' %}
+
+{% load static %}
+
+<title> {% block title %} Lançamentos {% endblock title%} </title>
+
+{% block index %}
+
+<div class="container">
+    <div class="card mb-2">
+        <div class="card-header">
+            <label class="fs-5 fw-bold">Lançamentos não conciliados</label>
+        </div>
+        <div class="table-responsive p-3">
+            <table class="table table-sm mt-2" id="id_table">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Lançamento</th>
+                        <th class="text-center">Origem</th>
+                        <th class="text-end pe-5">Valor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for lan in extrato %}
+                    {% if lan.conciliado %}
+                    <tr class="bg-conciliado">
+                        {% elif lan.saldo %}
+                    <tr>
+                        {% else %}
+                    <tr class="bg-conciliar">
+                        {% endif %}
+                        <td class="text-start">{{ lan.data|date:'Y-m-d' }}</td>
+                        <td>{{ lan.lancamento }}</td>
+                        <td class="text-center pe-4">{{ lan.origem }}</td>
+                        <td class="text-end pe-5" style="color:{% if lan.valor > 0 %} blue {% else %} red {% endif %};">
+                            {{ lan.valor|default:"" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script src="{% static 'js/datatables.min.js' %}"></script>
+<script src="{% static 'js/jqueryDataTable.js' %}"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#id_table').DataTable({
+            "columnDefs": [
+                {
+                    "targets": 0, // Supondo que a coluna de data seja a primeira
+                    "render": function (data, type, row, meta) {
+                        if (type === 'display') {
+                            var dateSplit = data.split('-');
+                            return dateSplit[2] + '/' + dateSplit[1] + '/' + dateSplit[0]; // Formato DD/MM/YYYY
+                        }
+                        return data; // Para sort e outros tipos, retornar data sem modificação
+                    }
+                }
+            ],
+            "order": [0, 'desc'],
+            "pageLength": 100,
+            "language": {
+                "sProcessing": "Proccesando...",
+                "sLengthMenu": "Mostrar _MENU_ registros",
+                "sZeroRecords": "Nenhum resultado encontrado",
+                "sEmptyTable": "Nenhum dado disponivel",
+                "sInfo": "Mostrando registros de _START_ a _END_ de um total de _TOTAL_ registros",
+                "sInfoEmpty": "Mostrando registros de 0 a 0 de um total de 0 registros",
+                "sInfoFiltered": "(filtrado de um total de _MAX_ registros)",
+                "sInfoPostFix": "",
+                "sSearch": "Buscar:",
+                "sUrl": "",
+                "sInfoThousands": ",",
+                "sLoadingRecords": "Carregando...",
+                "oPaginate": {
+                    "sFirst": "Primero",
+                    "sLast": "Último",
+                    "sNext": "Seguinte",
+                    "sPrevious": "Anterior"
+                },
+                "oAria": {
+                    "sSortAscending": ": Ativar para ordenar a coluna de maneira ascendente",
+                    "sSortDescending": ": Ativar para ordenar a coluna de maneira descendente"
+                }
+            }
+        });
+    }); 
+</script>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% load static i18n %}
+{% block head_title %}{% trans "Confirm E-mail Address" %}{% endblock %}
+
+{% block base %}
+
+<div class="container p-4">
+    <div class="col-11 col-lg-5 card border-0 shadow-lg m-auto p-4">
+        <div class="card-body mt-1">
+
+            <div class="card-title d-flex justify-content-center mb-4 pb-1">
+                <a class="logo d-flex gap-2 text-decoration-none" href="/">
+                    <img src="{% static 'img/logo.png' %}">
+                    <h6 class="m-auto ps-1 fs-4 text-dark text-uppercase">Original</h6>
+                </a>
+            </div>
+            <div>
+                <h5>Envio de E-mail Bem-sucedido</h5>
+                <p class="text-muted font-weight-bold" style="font-size: 14px;">Um e-mail foi enviado
+                    com instruções
+                    para redefinir sua senha. Verifique sua caixa de entrada.</p>
+            </div>
+            <form class="d-flex flex-column justify-content-center" id="formLogin" method="POST"
+                action="{% url 'account_confirm_email' confirmation.key %}">
+                {% csrf_token %}
+                <button type="submit" name="action">Confirmar</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

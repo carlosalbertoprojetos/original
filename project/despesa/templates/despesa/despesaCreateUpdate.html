@@ -1,6 +1,6 @@
 {% extends 'index.html' %}
 
-{% load static crispy_forms_tags %}
+{% load static %}
 
 <title> {% block title %} Despesa {% endblock title%} </title>
 
@@ -14,31 +14,35 @@
             <div class="card-header">
                 <label class="fs-5 fw-bold">{{ titulo }}</label>
             </div>
-            <div class="card-body label">
+            <div class="card-body label parcela-forms">
                 <div class="row mb-2">
                     <div class="col-12 col-md-5">
-                        <label for="id_fornecedor" class="">Fornecedor</label>
+                        <label for="id_fornecedor">Fornecedor</label>
                         {{ form.fornecedor }}
                     </div>
                     <div class="col-6 col-md-2">
-                        <label for="id_categoria1" class="">Categoria 1</label>
+                        <label for="id_categoria1">Categoria 1</label>
                         {{ form.categoria1 }}
                     </div>
                     <div class="col-3 col-lg-1">
-                        <label for="-d_num_parcelas" class="">Parcelas</label>
+                        <label for="id_num_parcelas">Parcelas</label>
                         {{ form.num_parcelas }}
                     </div>
                     <div class="col-4 col-md-2">
-                        <label for="id_total" class="">Total</label>
+                        <label for="id_total">Total</label>
                         {{ form.total }}
                     </div>
                     <div class="col-6 col-md-6">
-                        <label for="id_nome" class="">Nome da Despesa</label>
+                        <label for="id_nome">Nome da Despesa</label>
                         {{ form.nome }}
                     </div>
                     <div class="col-6 col-md-6">
-                        <label for="id_descricao" class="">Descricao</label>
+                        <label for="id_descricao">Descricao</label>
                         {{ form.descricao }}
+                    </div>
+                    <div class="col-6 col-md-6">
+                        <label for="id_comprovante">Comprovante de Recebimento da Nota Fiscal</label>
+                        {{ form.comprovante }}
                     </div>
                 </div>
             </div>
@@ -51,7 +55,7 @@
             <div class="card-header"><label class="fs-5 fw-bold">Parcelas</label></div>
             <div class="card-body label pt-0" id="parcela-form-list">
                 {% for parc in parcela %}
-                <div class="row parcela-form">
+                <div class="row parcela-form mt-2">
                     {{ parc.id }}
                     {{ parc.datadocumento }}
                     <div class="col-6 col-lg-2">
@@ -74,6 +78,10 @@
                         {{ parc.datapagamento.label_tag }}
                         {{ parc.datapagamento.errors }}
                         {{ parc.datapagamento }}
+                    </div>
+                    <div class="col-6 col-lg-2">
+                        {{ parc.valor_pago.label_tag }}
+                        {{ parc.valor_pago }}
                     </div>
                     <div class="col-12 col-lg-4">
                         {{ parc.detalhes.label_tag }}
@@ -133,6 +141,10 @@
                     {{ parcela.empty_form.datapagamento.label_tag }}
                     {{ parcela.empty_form.datapagamento.errors }}
                     {{ parcela.empty_form.datapagamento }}
+                </div>
+                <div class="col-6 col-lg-2">
+                    {{ parcela.empty_form.valor_pago.label_tag }}
+                    {{ parcela.empty_form.valor_pago }}
                 </div>
                 <div class="col-12 col-lg-4">
                     {{ parcela.empty_form.detalhes.label_tag }}
@@ -195,38 +207,40 @@
         $('#id_fornecedor').select2();
     });
 
-    const addParcelaBtn = document.getElementById('add-parcela')
-    const totalPacelasrForms = document.getElementById('id_contapagar_set-TOTAL_FORMS')
+    // adiciona nova parcela
+    const addParcelaBtn = document.getElementById('add-parcela');
+    const totalParcelasForms = document.getElementById('id_contapagar_set-TOTAL_FORMS');
 
-    addParcelaBtn.addEventListener('click', add_new_parcela_form)
+    const num_parcelas = document.getElementById('id_num_parcelas');
+    num_parcelas.setAttribute('value', totalParcelasForms.value);
 
+    addParcelaBtn.addEventListener('click', add_new_parcela_form);
     function add_new_parcela_form(event) {
         if (event) {
-            event.preventDefault()
+            event.preventDefault();
         }
-        const currentParcelaForms = document.getElementsByClassName("parcela-form")
-        const currentParcelaFormCount = currentParcelaForms.length // + 1
-
-        const formParcelaCopyTarget = document.getElementById("parcela-form-list")
-        const copyParcelaEmptyFormEl = document.getElementById('empty-parcela').cloneNode(true)
-        copyParcelaEmptyFormEl.setAttribute('class', 'row parcela-form')
-        copyParcelaEmptyFormEl.setAttribute('id', `contapagar_set-${currentParcelaFormCount}`)
-        const regexParcela = new RegExp('__prefix__', 'g')
-        copyParcelaEmptyFormEl.innerHTML = copyParcelaEmptyFormEl.innerHTML.replace(regexParcela, currentParcelaFormCount)
-        totalPacelasrForms.setAttribute('value', currentParcelaFormCount + 1)
-
-        formParcelaCopyTarget.append(copyParcelaEmptyFormEl)
+        const currentParcelaForms = document.getElementsByClassName("parcela-form");
+        const currentParcelaFormCount = currentParcelaForms.length;
+        const formParcelaCopyTarget = document.getElementById("parcela-form-list");
+        const copyParcelaEmptyFormEl = document.getElementById('empty-parcela').cloneNode(true);
+        copyParcelaEmptyFormEl.setAttribute('class', 'row parcela-form');
+        copyParcelaEmptyFormEl.setAttribute('id', `contapagar_set-${currentParcelaFormCount}`);
+        const regexParcela = new RegExp('__prefix__', 'g');
+        copyParcelaEmptyFormEl.innerHTML = copyParcelaEmptyFormEl.innerHTML.replace(regexParcela, currentParcelaFormCount);
+        totalParcelasForms.setAttribute('value', currentParcelaFormCount + 1);
+        formParcelaCopyTarget.append(copyParcelaEmptyFormEl);
+        num_parcelas.setAttribute('value', totalParcelasForms.value);
     }
 
-    function somaTotal() {
-        var parc = document.getElementById('id_num_parcelas');
-        parc.setAttribute('value', totalPacelasrForms.value);
-        var total = document.getElementById('id_total');
-        let sum = 0;
 
-        for (let i = 0; i < totalPacelasrForms.value; i++) {
+    var total = document.getElementById('id_total');
+
+    // soma o valor das parcelas
+    function somaTotal() {
+        var sum = 0;
+        for (let i = 0; i < num_parcelas.value; i++) {
             var preco = $(`#id_contapagar_set-${i}-valor`).val();
-            sum += Number(preco)
+            sum += Number(preco);
         }
         total.setAttribute('value', sum.toFixed(2));
     }

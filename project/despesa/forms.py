@@ -1,5 +1,4 @@
 from django import forms
-
 from .models import Despesa
 
 
@@ -13,6 +12,7 @@ class DespesaForm(forms.ModelForm):
             "num_parcelas",
             "descricao",
             "fornecedor",
+            "comprovante",
         )
         widgets = {
             "nome": forms.TextInput(
@@ -26,7 +26,9 @@ class DespesaForm(forms.ModelForm):
             ),
             "categoria1": forms.Select(attrs={"class": "form-select form-select-sm"}),
             "num_parcelas": forms.NumberInput(
-                attrs={"class": "form-control form-control-sm text-center"}
+                attrs={
+                    "class": "form-control form-control-sm text-center",
+                }
             ),
             "descricao": forms.TextInput(
                 attrs={
@@ -41,3 +43,6 @@ class DespesaForm(forms.ModelForm):
         super(DespesaForm, self).__init__(*args, **kwargs)
         self.fields["total"].widget.attrs["readonly"] = True
         self.fields["num_parcelas"].widget.attrs["readonly"] = True
+        self.fields["comprovante"].widget.attrs[
+            "class"
+        ] = "form-control form-control-sm"

@@ -2,256 +2,653 @@
 
 {% load static %}
 
-<title> {% block title %} TimeLine Suporte {% endblock title%} </title>
-
 {% block index %}
 
-<head>
-    <style>
-        .external-event {
-            box-shadow: 0 0 1px rgb(0 0 0 / 13%), 0 1px 3px rgb(0 0 0 / 20%);
-            border-radius: .25rem;
-            cursor: pointer;
-            font-weight: 700;
-            margin-bottom: 4px;
-            padding: 5px 10px;
-        }
-    </style>
-</head>
-<form method="POST" action="">
-    {% csrf_token %}
-    <div class="container">
-        {% for d in dados %}
-        <div class="card">
-            <div class="card-header d-lg-flex justify-content-between justify-content-lg-between align-items-center">
-                <h6 class="col-lg-4 text-center text-lg-start 
-                    fs-5 fw-bold mb-0">Dados do Cliente</h6>
-                {% if concluido %}
-                <div class="col-lg-6">
-                    <h6 class="text-end text13 mb-0 px-1">
-                        concluído em {{ dias|default:"0" }} dias,
-                        de {{ d.data|date:"d/m/Y"}} a {{ concluido|date:"d/m/Y"}}
-                    </h6>
-                </div>
-                {% else %}
-                <div class="col-lg-6">
-                    <h6 class="text-end text13 mb-0 px-1">
-                        Aberto há {{ dias|default:"0" }} dias,
-                        desde {{ d.data|date:"d/m/Y H:m" }}
-                    </h6>
+<div class="container">
+    {% if suporte.conclusao %}
+    <div
+        class="col bg-success bg-opacity-50 text-center border border-success border-opacity-25 rounded-3 fw-bold text-white my-2 pt-3">
+        <div class="col-12 text-center">
+            <label class="text-muted fs-5" id="id_concluido">Atendimento CONCLUÍDO em {{ suporte.conclusao }}</label>
+            {% for conc in conclusoes %}
+            <p class="text-start text-lg-center mb-0 ps-3">
+            </p>
+            <p>Problema:
+                {{ conc.problema}} - {{ conc.subproblema}} <br> {{ conc.prodescricao }}</p>
+            </p>
+            {% endfor %}
+            {% else %}
+            <div class="col alert alert-info text-center rounded-3 fw-bold text-white mb-2 p-0 pt-3">
+                <div class="col-12 text-center">
+                    <div class="text-muted">Atendimento aberto
+                        {% if dias == 0 %}
+                        hoje</div>
+                    {% else %} a {{ dias }}
+                    {% endif %}
+                    {% if dias == 1 %}
+                    dia
+                    {% elif dias == 0 %}
+                    <div class="text-muted"></div>
+                    {% else %}
+                    dias
                 </div>
                 {% endif %}
-                <div id="status" class="col-12 col-lg-2 text-center bg-warning bg-opacity-25 rounded pb-1">
-                    <label for="">Status do suporte</label>
-                    <h6 class="mb-0" id="statusSuporte">{{ d.status }}</h6>
-                </div>
             </div>
-            <div class="card-body p-0 px-3">
-                <div class="form-floating">
-                    <div class="cabecalho row">
-                        <div class="col-12 col-lg-6">
-                            <label class="text-muted" for="">Cliente</label>
-                            <h6>{{ d.venda.cliente }}</h6>
-                        </div>
-                        <div class="col-6 col-lg-2">
-                            <label class="text-muted" for="">Telefone</label>
-                            <h6>{{ d.venda.cliente.tel_principal }}</h6>
-                        </div>
-                        <div class="col-6 col-lg-2">
-                            <label class="text-muted" for="">Pedido da compra</label>
-                            <h6 class="ps-4">{{ d.venda.data_pedido|date:"d/m/Y" }}</h6>
-                        </div>
-                        <div class="col-6 col-lg-2 text-center m-auto">
-                            <h6 class="align-middle">Venda {{ d.venda }}</h6>
-                        </div>
-                        <div class="col-12 col-lg-6">
-                            <label class="text-muted" for="">Rua</label>
-                            <h6>{{ d.venda.cliente.logradouro }}</h6>
-                        </div>
-                        <div class="col-2 col-lg-1">
-                            <label class="text-muted" for="">Número</label>
-                            <h6>{{ d.venda.cliente.numero }}</h6>
-                        </div>
-                        <div class="col-3 col-lg-1">
-                            <label class="text-muted" for="">Complemento</label>
-                            <h6>{{ d.venda.cliente.complemento }}</h6>
-                        </div>
-                        <div class="col-7 col-lg-2">
-                            <label class="text-muted" for="">Bairro</label>
-                            <h6>{{ d.venda.cliente.bairro }}</h6>
-                        </div>
-                        <div class="col-8 col-lg-3">
-                            <label class="text-muted" for="">Cidade/UF</label>
-                            <h6>{{ d.venda.cliente.cidade }}/{{ d.venda.cliente.estado }}</h6>
-                        </div>
-                        <div class="col-4 col-lg-1">
-                            <label class="text-muted" for="">Cep</label>
-                            <h6 style="font-size:14px;">{{ d.venda.cliente.cep }}</h6>
-                        </div>
-                        <div class="col-6 col-lg-2">
-                            <label class="text-muted" for="">Vendedor</label>
-                            <h6>{{ d.venda.vendedor }}</h6>
-                        </div>
-                        <div class="col-12 col-lg-6">
-                            <label class="text-muted" for="">Transportadora</label>
-                            <h6>{{ d.venda.transportadora }}</h6>
-                        </div>
+            {% endif %}
+            <div class="d-flex flex-wrap justify-content-between my-2">
+                <div class="col-6 col-lg align-items-center justify-content-center p-1">
+                    <div class="d-flex flex-column text-center" style="min-height: 20px;">
+                        <label>Prazo limite</label>
+                        <h6 class="text-muted">{{ prazotimeline|date:"d/m/y" }}</h6>
+                    </div>
+                </div>
+                <div class="col-6 col-lg align-items-center justify-content-center p-1">
+                    <div class="d-flex flex-column text-center" style="min-height: 20px;">
+                        <label for="">Responsável</label>
+                        <h6 class="text-muted">{{ responsavel_atual }}</h6>
+                    </div>
+                </div>
+                <div class="col-6 col-lg align-items-center justify-content-center p-1">
+                    <div class="d-flex flex-column text-center" style="min-height: 20px;">
+                        <label for="">Fluxo de Trabalho</label>
+                        <h6 class="text-muted">{{ last_timeline.fluxo }}</h6>
+                    </div>
+                </div>
+                <div class="col-6 col-lg align-items-center justify-content-center p-1">
+                    <div class="d-flex flex-column text-center" style="min-height: 20px;">
+                        <label for="">Ultima ação</label>
+                        <h6 class="text-muted">{{ last_timeline.acao.nome }}</h6>
                     </div>
                 </div>
             </div>
         </div>
-        {% endfor %}
-        <div class="card table-responsive my-2 px-2">
-            <table class="table table-sm px-2" id="id_table">
-                <thead>
-                    <tr>
-                        <th>Produto</th>
-                        <th class="text-center">Quant</th>
-                        <th class="text-center">Voltagem</th>
-                        <th class="text-center">Torneira</th>
-                        <th class="text-center">Adesivado</th>
-                        <th>Valor unit</th>
-                        <th>Valor total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for produto in produtos %}
-                    <tr>
-                        <td>{{ produto.produto.nome }}</td>
-                        <td class="text-center">{{ produto.quantidade }}</td>
-                        <td class="text-center">{{ produto.voltagem }}</td>
-                        <td class="text-center">{{ produto.torneira }}</td>
-                        <td class="text-center">{{ produto.adesivado }}</td>
-                        <td>R$ {{ produto.preco }}</td>
-                        <td>R$ {{ produto.subtotal }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        <div class="d-flex-column me-lg-5 pe-3">
-            <div class="me-lg-3 pe-lg-5 pb-2">
-                <h6 class="text-end fw-bold m-0 ">
-                    {% for da in dados %}
-                    Valor do Frete: R$ {{ da.venda.valor_frete|default:"0,00" }}
-                    {% endfor %}
-                </h6>
-            </div>
-            <div class="me-lg-3 pe-lg-5 pb-2">
-                <h6 class="text-end fw-bold m-0 ">
-                    Valor Total da Nota: R$ {{ total }}
-                </h6>
-            </div>
-        </div>
-        <div id="status2" class="border rounded-3 bg-warning bg-opacity-25 mb-2">
-            <div class="d-flex justify-content-between gap-lg-5 justify-content-lg-center align-items-center my-2 px-5">
-                <div class="text-center">
-                    <label class="text-muted">Status Atual</label>
-                    <h5 class="m-0">{{ suporte.statusAtual }}</h5>
+        <form method="POST" enctype="multipart/form-data" id="id_myform">
+            <div class="card col-12">
+                <div class="card-header">
+                    <h5 class="card-title text-center m-0">Dados do Cliente</h5>
                 </div>
-                <div class="text-center">
-                    <label class="text-muted">Responsável Atual</label>
-                    <h5 class="m-0">{{ suporte.responsavelAtual }}</h5>
-                </div>
-            </div>
-        </div>
-        <div class="card py-2 px-1">
-            <div class="d-flex-column d-lg-flex justify-content-between">
-                <div class="card col-lg-3 mx-2 mb-2 mb-lg-0 mx-lg-1">
-                    <div class="card-header">
-                        <h5 class="text-center card-title">Alterar Status</h5>
+                <div class="card-body row pb-0">
+                    <div class="col-12 col-lg-5 text-muted">
+                        <label class="text-muted">Cliente:</label>
+                        <label class="fw-bold text-muted">{{ venda.cliente.nome }}</label>
                     </div>
-                    <div id="statusTM" class="card-body">
-                        {% for st in status %}
-                        <div id="{{ st.id }}" value="{{ st }}" data-bs-toggle="modal" data-bs-target="#exampleModal"
-                            class="external-event text-light bg-primary ui-draggable ui-draggable-handle">
-                            {{ st }}
+                    <div class="col-12 col-lg-4">
+                        <label class="text-muted">Nome Fantasia:</label>
+                        <label class="fw-bold text-muted">{{ venda.cliente.nome_fantasia }}</label>
+                    </div>
+                    {% if venda.quemrecebe_mercadolivre %}
+                    <div class="col col-lg-5">
+                        <label class="text-muted">Quem recebe:</label>
+                        <label class="fw-bold text-muted">{{ venda.quemrecebe_mercadolivre }}</label>
+                    </div>
+                    {% endif %}
+                    {% if venda.telefonequemrecebe_mercadolivre %}
+                    <div class="col col-lg-3">
+                        <label class="text-muted">Telefone do receptor:</label>
+                        <label class="fw-bold text-muted">{{ venda.telefonequemrecebe_mercadolivre }}</label>
+                    </div>
+                    {% endif %}
+                    {% if venda.cliente.tel_principal %}
+                    <div class="col-8 col-lg-3">
+                        <label class="text-muted">Telefone:</label>
+                        <label class="fw-bold text-muted"> {{ venda.cliente.tel_principal }}</label>
+                    </div>
+                    {% endif %}
+                    {% if venda.cliente.cpf %}
+                    <div class="col col-lg-2">
+                        <label class="text-muted">CPF:</label>
+                        <label class="fw-bold text-muted">{{ venda.cliente.cpf }}</label>
+                    </div>
+                    {% endif %}
+                    {% if venda.cliente.cnpj %}
+                    <div class="col col-lg-2">
+                        <label class="text-muted">CNPJ:</label>
+                        <label class="fw-bold text-muted">{{ venda.cliente.cnpj }}</label>
+                    </div>
+                    {% endif %}
+                    {% if venda.cliente.insc_estadual %}
+                    <div class="col-5 col-lg-3">
+                        <label class="text-muted">Insc. Estadual:</label>
+                        <label class="fw-bold text-muted">{{ venda.cliente.insc_estadual }}</label>
+                    </div>
+                    {% endif %}
+                    {% if venda.cliente.cidade %}
+                    <div class="col-6 col-lg-4">
+                        <label class="text-muted">Cidade:</label>
+                        <label class="fw-bold text-muted">{{ venda.cliente.cidade }}</label>
+                    </div>
+                    {% endif %}
+                    {% if venda.cliente.estado %}
+                    <div class="col col-lg-1">
+                        <label class="text-muted">UF:</label>
+                        <label class="fw-bold text-muted">{{ venda.cliente.estado }}</label>
+                    </div>
+                    {% endif %}
+                    {% if venda.cliente.logradouro %}
+                    <div class="col-12 col-lg-5">
+                        <label class="text-muted">Rua:</label>
+                        <label class="fw-bold text-muted">{{ venda.cliente.logradouro }}</label>
+                    </div>
+                    {% endif %}
+                    {% if venda.cliente.numero %}
+                    <div class="col-4 col-lg-2">
+                        <label class="text-muted">Número:</label>
+                        <label class="fw-bold text-muted">{{ venda.cliente.numero }}</label>
+                    </div>
+                    {% endif %}
+                    {% if venda.cliente.complemento %}
+                    <div class="col-8 col-lg-5">
+                        <label class="text-muted">Complemento:</label>
+                        <label class="fw-bold text-muted">{{ venda.cliente.complemento }}</label>
+                    </div>
+                    {% endif %}
+                    {% if venda.cliente.bairro %}
+                    <div class="col-6 col-lg-5">
+                        <label class="text-muted">Bairro:</label>
+                        <label class="fw-bold text-muted">{{ venda.cliente.bairro }}</label>
+                    </div>
+                    {% endif %}
+                    {% if venda.cliente.cep %}
+                    <div class="col col-lg">
+                        <label class="text-muted">Cep:</label>
+                        <label class="fw-bold text-muted">{{ venda.cliente.cep }}</label>
+                    </div>
+                    {% endif %}
+
+                </div>
+
+                {% if suporte.cliente_final %}
+                <div class="card-body row pt-0">
+                    <div class="col-12 col-lg-6">
+                        <label class="text-muted">Cliente Final:</label>
+                        <input type="text" name="cliente_final" value="{{ suporte.cliente_final|default:'' }}"
+                            class="form-control form-control-sm text13 fw-bold text-muted">
+                    </div>
+                    <div class="col-12 col-lg-2">
+                        <label class="text-muted">Telefone Cliente Final:</label>
+                        <input type="tel" name="tel_cliente_final" value="{{ suporte.tel_cliente_final|default:'' }}"
+                            class="form-control form-control-sm mask-telefone text13 fw-bold text-muted" minlength="9"
+                            maxlength="14">
+                    </div>
+                </div>
+                {% else %}
+                <div class="card-body pt-0">
+                    <a class="btn btn-primary btn-sm float-end" id="id_cliente">Cliente Final</a>
+                </div>
+                <div class="hidden" id="id_cliente_final">
+                    <div class="col-12 col-lg-6">
+                        <label class="text-muted">Cliente Final:</label>
+                        <input type="text" name="cliente_final" value="{{ suporte.cliente_final|default:'' }}"
+                            class="form-control form-control-sm text13 fw-bold text-muted">
+                    </div>
+                    <div class="col-12 col-lg-2">
+                        <label class="text-muted">Telefone Cliente Final:</label>
+                        <input type="tel" name="tel_cliente_final" value="{{ suporte.tel_cliente_final|default:'' }}"
+                            class="form-control form-control-sm mask-telefone text13 fw-bold text-muted" minlength="9"
+                            maxlength="14">
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% if venda.urgente %}
+            <div
+                class="col bg-danger bg-opacity-25 text-center border border-danger border-opacity-25 rounded-3 fw-bold text-white mt-2 py-3">
+                <h6 class="text-black mb-0">ATENDIMENTO COM URGÊNCIA</h6>
+            </div>
+            {% endif %}
+            <div class="card col-12 col-lg-12 my-2">
+                <div class="card-header">
+                    <h5 class="card-title text-center m-0">Dados da Venda</h5>
+                </div>
+                <div class="card-body row pb-0">
+                    <div class="col-6 col-lg-2">
+                        <label class="text-muted">Tags: </label>
+                        <label class="fw-bold text-muted">Reclamação</label>
+                    </div>
+                    <div class="col-6 col-lg-3">
+                        <label class="text-muted">Vendedor: </label>
+                        <label class="fw-bold text-muted">{{ venda.vendedor }} - {{ venda.detalhes|default:''}}
+                        </label>
+                    </div>
+                    <div class="col-6 col-lg-2" id="filters">
+                        <label class="text-muted">Pedido: </label>
+                        <label class="fw-bold text-muted">
+                            <a class="text-decoration-none" href="{% url 'venda:vendaUpdate' venda.id %}">
+                                {{ venda.id }}
+                            </a>
+                        </label>
+                    </div>
+                    <div class="col-12 col-lg-5">
+                        <label class="text-muted">Empresa:</label>
+                        <label class="fw-bold text-muted">{{ venda.vendedor.extenduser.empresa }}</label>
+                    </div>
+                    <div class="col-5">
+                        <label class="text-muted">NF:</label>
+                        {% if venda.danfe == None %}
+                        <label class="text-muted">Não foi gerada nota fiscal para esta venda</label>
+                        {% else %}
+                        <label class="text-muted">
+                            <a href="{{ venda.danfe }}" target="_blank" class="card-link">{{ venda.numero_nf }}</a>
+                        </label>
+                        {% endif %}
+                    </div>
+                    <div class="col-12 col-lg">
+                        <label class="text-muted">Transportadora</label>
+                        <label class="fw-bold text-muted">{{ venda.transportadora.nome }}</label>
+                    </div>
+                    <div class="col-12 p-1">
+                        <div class="card table-responsive my-2 px-2">
+                            <label class="text-muted ps-1"> Produtos:</label>
+                            <table class="table table-sm px-2 mb-0" id="id_table">
+                                <thead>
+                                    <tr>
+                                        <th>Descrição</th>
+                                        <th class="text-center">Quant</th>
+                                        <th class="text-center">Voltagem</th>
+                                        <th class="text-center">Torneira</th>
+                                        <th class="text-center">Adesivado</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for produto in selectProdutos %}
+                                    <tr>
+                                        <td>{{ produto }}</td>
+                                        <td class="text-center">{{ produto.quantidade }}</td>
+                                        <td class="text-center">{{ produto.voltagem }}</td>
+                                        <td class="text-center">{{ produto.torneira }}</td>
+                                        <td class="text-center">{{ produto.adesivado }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="id_fluxo_mensagem" class="hidden">
+                <label id="id_mensagem_fluxo"></label>
+            </div>
+
+            {% csrf_token %}
+            <div class="col-12 card mb-2">
+                <div class="card-header">
+                    <h5 class="card-title text-center ">Fluxo de Trabalho</h5>
+                </div>
+                <div class="row card-body">
+                    <div class="col-12 col-lg-6 ui-draggable ui-draggable-handle" style="position: relative;">
+                        <label class="text-muted ps-1" for="id_fluxo">Fluxo </label>
+                        <select class="form-select form-select-sm" onchange="acoesFluxo()" name="fluxo" id="id_fluxo">
+                            <option {% if last_timeline %} value="{{ last_timeline.fluxo.id }}"
+                                name="{{ last_timeline.fluxo }}" selected="selected" {% endif %}>
+                                {{ last_timeline.fluxo }}
+                            </option>
+                            {% for fl in fluxo %}
+                            <option value="{{ fl.id }}">
+                                {{ fl.nome }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <label for="">Prazo de conclusão: <label class="fw-bold fs-6" id="id_prazo_fluxo"></label>
+                            Dias</label>
+                    </div>
+                    <div class="col-12 col-lg-6 ui-draggable ui-draggable-handle" style="position: relative;"
+                        id="id_div_mensagem">
+                        <label class="text-muted ps-1" for="id_desc_fluxo">Observação</label>
+                        <textarea class="form-control form-control-sm" name="desc_fluxo"
+                            id="id_desc_fluxo">{{ last_timeline.desc_fluxo }}</textarea>
+                    </div>
+                    <div class="text-end mt-2">
+                        <a class="btn btn-primary btn-sm" style="width:90px" id="id_buttonFluxo"
+                            onclick="salvarFluxo()">Salvar</a>
+                    </div>
+                </div>
+            </div>
+            <div class="card mb-2 p-2">
+                <div class="row">
+                    <div class="col-12 col-lg-6 card-body pt-0">
+                        <label class="text-muted">Arquivos</label>
+                        <input type="file" name="arquivo" multiple="" class="form-control form-control-sm"
+                            id="id_arquivos">
+                    </div>
+                    <div class="col-12 col-lg-6 card-body pt-0 pt-lg-2">
+                        <div class="row pt-1 pe-0">
+                            <label class="text-muted">Anexos</label>
+                            <p class="text12 mb-0 pe-0">
+                                {% for a in arquivos %}
+                                <a class="text-decoration-none pe-1" href="/media/{{ a.arquivo }}" target="_blank">
+                                    {{ a.arquivo }}</a>
+                                {% endfor %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% if last_timeline.acao.instrucoes %}
+            {% if suporte.conclusao %}
+            <div class="hidden">
+                {% else %}
+                <div class="col alert alert-info text-center rounded-3 fw-bold text-white">
+                    {% endif %}
+                    <div class="d-flex flex-column text-muted text-start ps-3">
+                        <h6>Intruções: <b>{{ last_timeline.acao.instrucoes | linebreaks }}</b></h6>
+                        <h6 class="mb-0">Próxima ação: <b>
+                                <p class="mb-0">{{ last_timeline.acao.proximaacao }}</p>
+                            </b></h6>
+                    </div>
+                </div>
+                {% endif %}
+                <div id="id_acao_mensagem" class="hidden">
+                    <label id="id_mensagem"></label>
+                </div>
+                <div class="d-lg-flex justify-content-between">
+                    <div class="card col-12 col-lg-3 mb-2 p-0">
+                        <div class="card-header">
+                            <h5 class="card-title text-center ">Ação</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="external-events">
+                                <div class="ui-draggable ui-draggable-handle mb-2" style="position: relative;">
+                                    <label class="text-muted ps-1" for="id_descricao">Descrição</label>
+                                    <textarea class="form-control form-control-sm" name="descricao" id="id_descricao"
+                                        onclick="fluxo_selected()"></textarea>
+                                </div>
+                                <div class="ui-draggable ui-draggable-handle mb-2" style="position: relative;">
+                                    <label class="text-muted ps-1" for="id_responsavel">Responsável</label>
+                                    <select class="form-select form-select-sm" name="responsavel" id="id_responsavel"
+                                        onclick="fluxo_selected()">
+                                        <option> </option>
+                                        {% for resp in responsavel %}
+                                        <option value="{{ resp.id }}">
+                                            {{ resp.username }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="d-flex flex-column mb-0 ps-0" id="id_lista-acoes">
+                                </div>
+                                <input class="hidden" type="text" value="" name="acao" id="id_acao">
+                                {% if not suporte.conclusao %}
+                                <li class="hidden" style="list-style: none;" name=concluir id='id_concluir'
+                                    data-bs-toggle="modal" data-bs-target="#myModal">Concluir atendimento</li>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card col-12 col-lg-9 mb-2 ">
+                        <div class="card-header mb-2">
+                            <h5 class="card-title text-center ">Histórico de Atendimento</h5>
+                        </div>
+
+                        {% if suporte.conclusao %}
+                        <div class="text-center text-white bg-success rounded-1 py-3 mb-2">
+                            <span>Atendimento Concluído
+                                em:
+                                {{ suporte.conclusao|date:'d/m/Y' }}
+                            </span>
+                            <span class="float-end me-3">
+                                <a href="{% url 'suporte:reabrirAtendimento' suporte.id %}"
+                                    class="btn btn-outline-light btn-sm" onclick="reabrir()">
+                                    Reabrir
+                                </a>
+                            </span>
+                        </div>
+                        {% endif %}
+
+                        {% if not timeline %}
+                        <div class="text-center pt-3">
+                            <h5>Não há registro de atendimento!</h5>
+                        </div>
+                        {% endif %}
+
+                        {% for tl in timeline %}
+                        <div class="timeline m-0">
+                            <div class="time-label d-flex m-0">
+                                {% if suporte.conclusao or last_timeline.id != tl.id %}
+                                <span
+                                    class="col-3 col-lg-2 bg-success rounded-2 fw-bold text-white text-center text14 ms-2 p-1">
+                                    {{ tl.data|date:'d/m/Y' }}
+                                </span>
+                                {% else %}
+                                <span
+                                    class="col-3 col-lg-2 bg-warning bg-opacity-50 rounded-2 fw-bold text-white text14 text-center mx-2 p-1">
+                                    {{ tl.data|date:'d/m/Y' }}
+                                </span>
+                                {% endif %}
+                                <span class="text12 text-muted">Prazo de conclusão:
+                                    {% if tl.acao %}
+                                    {{ tl.acao.tempo }}
+                                    {% else %}
+                                    {{ tl.fluxo.tempo }}
+                                    {% endif %}
+                                    dia(s)
+                                </span>
+                            </div>
+                            <div>
+                                <div class="timeline-item my-2">
+                                    <span class="time"><i class="fas fa-clock"></i> {{ tl.data|date:'H:i' }}</span>
+                                    <div class="card-header timeline-body">
+                                        <div class="d-flex justify-content-between" style="font-size:12px">
+                                            <div>
+                                                {% if tl.acao %}
+                                                <p class="m-0">Ação <b>{{ tl.acao.nome }}</b></p>
+                                                <p class="m-0">Fluxo <b>{{ tl.fluxo }}</b></p>
+                                                {% else %}
+                                                Ação não registrada!
+                                                <p class="m-0">Fluxo <b>{{ tl.fluxo|default:'' }}</b></p>
+                                                {% endif %}
+                                            </div>
+                                            <div>Responsável <div class="fw-bold">{{ tl.responsavel }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-control form-control-sm border-0 p-4 px-2">
+                                        <h6 class="m-0">{{ tl.descricao }}</h6>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         {% endfor %}
                     </div>
                 </div>
-                <div class="card col-lg mx-2 mx-lg-1">
-                    <div class="card-header">
-                        <div class="d-flex justify-content-between">
-                            <h5>TimeLine</h5>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12 mt-2">
-                            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-                                aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="exampleModalLabel">Nova TimeLine</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            {{ form.non_field_errors }}
-                                            {{ form }}
-                                            {{ form.media }}
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary btn-sm"
-                                                data-bs-dismiss="modal">Cancelar</button>
-                                            <button type="submit" class="btn btn-primary  btn-sm">Salvar</button>
-                                        </div>
-                                    </div>
-                                </div>
+                <!-- Modal -->
+                <div class="modal fade" id="myModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+                    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="staticBackdropLabel">Selecione o problema</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
                             </div>
-                            <ul class="timeline">
-                                {% for tl in timeLine %}
-                                <li class="bg-white rounded m-3">
-                                    <div class="cabecalho d-flex justify-content-between label-color">
-                                        <a href="{% url 'suporte:suporteTimeLineUpdate' timeline=tl.id %}"
-                                            class="text-decoration-none text-uppercase label-color fw-bold">
-                                            {{ tl.status }}</a>
-                                        <h6 class="fw-bold text-center">Responsável: {{ tl.responsavel }}</h6>
-                                        <h6 class="fw-bold float-end">{{ tl.data|date:"d/m/Y" }}</h6>
-                                    </div>
-                                    <p id="id_timeline" class="px-2">{{ tl.descricao }}</p>
-                                </li><br>
-                                {% endfor %}
-                            </ul>
+                            <div class="modal-body">
+                                <label class="text-muted ps-1" for="id_nomeProblema">Problema</label>
+                                <select class="form-select form-select-sm" name="problema" id="id_problema">
+                                    <option {% if problema %} value="{{ problema.id }}" name="{{ problema.name }}"
+                                        selected="selected" {% endif %}>
+                                        {{ problema.nome }}
+                                    </option>
+                                    {% for pro in problema %}
+                                    <option value="{{ pro.id }}">
+                                        {{ pro.nome }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                                <label class="text-muted ps-1" for="id_nomeSubProblema">SubProblema</label>
+                                <select class="form-select form-select-sm" name="subproblema" id="id_subproblema">
+                                    <option {% if subproblema %} value="{{ subproblema.id }}"
+                                        name="{{ subproblema.name }}" selected="selected" {% endif %}>
+                                        {{ subproblema.nome }}
+                                    </option>
+                                    {% for subpro in subproblema %}
+                                    <option value="{{ subpro.id }}">
+                                        {{ subpro.nome }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                                <label class="text-muted ps-1" for="id_descProblema">Descrição</label>
+                                <textarea type="text" class="form-control form-control-sm" name="descProblema"
+                                    id="id_descProblema"></textarea>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary btn-sm">Salvar</button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
+        </form>
     </div>
-</form>
+    <input class="hidden" id="id_suporte" name="suporte_id" value="{{ suporte }}">
+</div>
+
+<script>
+    var bd_fluxo = document.getElementById('id_fluxo');
+    var fluxo_mensagem = document.getElementById('id_fluxo_mensagem');
+    function fluxo_selected() {
+        if (!bd_fluxo.value) {
+            fluxo_mensagem.setAttribute('class', 'col alert alert-info text-center rounded-3 fw-bold text-white');
+            $('#id_mensagem_fluxo').text('Selecione um fluxo de trabalho')
+            window.location.href = '#id_table';
+        }
+        $('#id_concluir').attr('class', 'external-event ui-draggable ui-draggable-handle bg-primary text-white');
+    };
+
+</script>
+
+<script type="text/javascript">
+    var acao = document.getElementById('id_acao');
+    var desc = document.getElementById('id_descricao');
+    var resp = document.getElementById('id_responsavel');
+    var acao_mensagem = document.getElementById('id_acao_mensagem');
+    var opcaoValor = resp.options[resp.selectedIndex].value;
+
+    function salvar(id) {
+        acao.setAttribute('value', id);
+        // verifica se os campos descrição e responsável foram preenchidos
+        if (desc.value && resp.value) {
+            document.getElementById('id_myform').submit();
+        } else {
+            if (!desc.value) {
+                acao_mensagem.setAttribute('class', 'col alert alert-info text-center rounded-3 fw-bold text-white');
+                $('#id_mensagem').text('Insira uma descrição para a ação')
+            } else if (!opcaoValor) {
+                acao_mensagem.setAttribute('class', 'col alert alert-info text-center rounded-3 fw-bold text-white');
+                $('#id_mensagem').text('Selecione um responsável para a ação')
+            }
+            window.location.href = '#id_div_mensagem';
+        }
+    };
+
+    // botao impede salvar sem um fluxo e/ou observação
+    var fluxo = document.getElementById('id_fluxo');
+    var descFluxo = document.getElementById('id_desc_fluxo');
+
+    function salvarFluxo() {
+        if (fluxo.value || descFluxo.value) {
+            document.getElementById('id_myform').submit();
+        } else {
+            fluxo_mensagem.setAttribute('class', 'col alert alert-info text-center rounded-3 fw-bold text-dark');
+            $('#id_fluxo_mensagem').text('Selecione um fluxo ou insira uma observação')
+        }
+    };
+
+    // reabre atendimento concluído
+    function reabrir() {
+        fluxo.removeAttribute("disabled");
+        fluxo.value = '';
+        descFluxo.removeAttribute("disabled");
+        resp.removeAttribute("disabled");
+        desc.removeAttribute("disabled");
+        document.getElementById('id_lista-acoes').removeAttribute("class", 'hidden');
+        document.getElementById('id_fluxo').setAttribute("value", '');
+    };
+
+</script>
 
 {% endblock %}
 
 {% block script %}
 <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
-
-{% if show_modal %}
-<script>
-    $(document).ready(function () {
-        $("#exampleModal").modal('show');
-        var status = 1;
-        document.getElementById('id_status').value = status
-    });    
-</script>
-{% endif %}
+<script src="{% static 'js/jquery.mask.min.js' %}"></script>
+<script src="{% static 'js/jquery.masks.js' %}"></script>
 
 <script>
-    $('.external-event').click(function () {
-        var id = (this.id);
-        document.getElementById('id_status').value = id
+    // ocultar mensagens inserir descrição e selecionar responsável da ação
+    $("#id_responsavel").on('change', function () {
+        $("#id_acao_mensagem").attr('class', 'hidden');
     });
-</script>
 
-<script>
-    var a = document.getElementById("statusSuporte");
-    var b = document.getElementById("status");
-    var c = document.getElementById("status2");
-    if (a.innerHTML == 'Concluído') {
-        b.setAttribute('class', "col-12 col-lg-2 text-center bg-success bg-opacity-25 rounded");
-        c.setAttribute('class', "border rounded-3 bg-success bg-opacity-25 mb-2");
-    }
-</script>
+    // ocultar mensagens inserir selecionar fluxo
+    $("#id_fluxo").on('change', function () {
+        $("#id_fluxo_mensagem").attr('class', 'hidden');
+        $("#id_acao_mensagem").attr('class', 'hidden');
+    });
 
+    $("#id_desc_fluxo").on('change', function () {
+        $("#id_fluxo_mensagem").attr('class', 'hidden');
+    });
+
+    $('#id_cliente').on('click', function () {
+        $("#id_cliente").attr('class', 'hidden');
+        $("#id_cliente_final").attr('class', 'card-body row pt-0');
+    });
+
+    $(document).ready(function () {
+        // desabilita a seleção do fluxo após salvar a primeira ação
+        if ($('#id_fluxo').val()) {
+            acoesFluxo()
+            $('#id_concluir').attr('class', 'external-event ui-draggable ui-draggable-handle bg-primary text-white');
+        };
+
+        // desabilita função de ação após concluído o atendimento
+        if ($('#id_concluido').text()) {
+            $('#id_fluxo').attr('disabled', 'disabled');
+            $('#id_descricao').attr('disabled', 'disabled');
+            $('#id_responsavel').attr('disabled', 'disabled');
+            $('#id_lista-acoes').attr('class', 'hidden');
+        };
+
+        $('#id_problema').change(function () {
+            var problema_id = $(this).val();
+            $.ajax({
+                url: '{% url "suporte:subproblemasAjax" %}',
+                data: {
+                    'problema_id': problema_id
+                },
+                dataType: 'json',
+                success: function (data) {
+                    // var options = '<option value="">Selecione um subproblema</option>';
+                    var options = ''
+                    for (var i = 0; i < data.length; i++) { options += '<option value="' + data[i].id + '">' + data[i].nome + '</option>'; }
+                    $('#id_subproblema').html(options);
+                }
+            });
+        });
+    });
+
+    // lista das ações correspondentes a cada fluxo
+    function acoesFluxo() {
+        var fluxo = $('#id_fluxo').val();
+        $('#id_concluir').attr('class', 'external-event ui-draggable ui-draggable-handle bg-primary text-white');
+        $.ajax({
+            type: 'GET',
+            url: '{% url "suporte:acoesFluxoAjax" %}',
+            data: {
+                'fluxo': fluxo,
+            },
+            dataType: 'json',
+            success: function (data) {
+                $('#id_prazo_fluxo').text(data.tempo);
+                // Limpa a lista de ações antes de adicionar novas
+                $('#id_lista-acoes').empty();
+                // Itera sobre as ações recebidas e adiciona à lista
+                $.each(data.acoes, function (index, acao) {
+                    $('#id_lista-acoes').append(
+                        '<li onclick="salvar(this.id)"class= "external-event ui-draggable ui-draggable-handle shadow-sm text-white" style = "list-style: none; background-color: ' + acao.cor + ' " name = ' + acao.nome + ' id = ' + acao.id + ' > ' + acao.nome + '</li > '
+                    )
+                });
+            }
+        });
+    };
+
+</script>
 {% endblock %}

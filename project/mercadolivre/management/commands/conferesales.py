@@ -20,19 +20,20 @@ load_dotenv()
 
 
 class Command(BaseCommand):
-    help = "confere sales"
+    help = "get compleints"
 
     def handle(self, *args, **options):
         for conta in ContasMercadoLivre.objects.filter(status='Conectado'):
             print('conta', conta.email)
-            #if conta.email != 'edersaulocosta@yahoo.com.br':
-            if conta.email != 'alexsandrahelena@hotmail.com':
+            if conta.email.find('alexsandra') == -1:
                 continue
-            headers={'Authorization':'Bearer '+ conta.access_token}
+            #if conta.email != 'edersaulocosta@yahoo.com.br':
+            #if conta.email != 'alexsandrahelena@hotmail.com':
+            #    continue
+            headers={'Authorization':'Bearer '+ conta.access_token, 'accept': 'application/json','content-type': 'application/json'}
             params={}
             #codig = '2000006735183108'
             #url = 'https://api.mercadolibre.com/merchant_orders/' + codig #str(conta.codigo)
-
             url = 'https://api.mercadopago.com/v1/payments/search?sort=money_release_date&criteria=desc'
             url = 'https://api.mercadolibre.com/billing/integration/periods'
             url = 'https://api.mercadolibre.com/billing/integration/monthly/periods'
@@ -46,13 +47,54 @@ class Command(BaseCommand):
             url = 'https://api.mercadolibre.com/billing/integration/periods/key/2023-11-06/group/ML/details?document_type=CREDIT_NOTE'
             url = 'https://api.mercadolibre.com/billing/integration/group/ML/perceptions/details?document_id=66382261258&tax_type=CIVA'
             ###url = 'https://api.mercadolibre.com/billing/integration/periods/key/2023-12-01/group/ML/insurtech/details?document_type=BILL&detail_type=bonus'
-            url = 'https://api.mercadolibre.com/billing/integration/periods/key/2023-12-01/group/ML/payment/details'
+            url = 'https://api.mercadolibre.com/billing/integration/periods/key/2024-01-01/group/ML/payment/details'
+            url = "https://api.mercadopago.com/v1/payments/search?status=approved&criteria=desc"
+            #url = 'https://api.mercadolibre.com/v1/claims/search?stage=dispute'
+            #url = "https://api.mercadolibre.com/orders/2000007418838412"
+            #url = "https://api.mercadopago.com/money_requests?acceshttps://api.mercadopago.coms_token=%s" % conta.access_token
             params = {}
+
+            #data = '{"begin_date": "2024-01-01T00:00:00Z", "end_date": "2024-01-02T00:00:00Z" }'
+
+            #response = requests.post('https://api.mercadopago.com/v1/account/bank_report', headers=headers, data=data)
+
+            data = '{"file_name_prefix": "bank-report-USER_ID","include_withdrawal_at_end": false,"execute_after_withdrawal":true,"display_timezone": "GMT-03","notification_email_list": ["gustavo@intip.com.br","alexsandrahelena@hotmail.com"],"frequency": {"hour": 0,"type": "daily"},"columns": [{"key": "DATE"},{"key": "SOURCE_ID"},{"key": "EXTERNAL_REFERENCE"}]}'
+            import json
+            #data = json.dumps(data)
+            #response = requests.post('https://api.mercadopago.com/v1/account/release_report/schedule', headers=headers)
+            #response = requests.put('https://api.mercadopago.com/v1/account/release_report/config', headers=headers, data=data)
+            #import pdb;pdb.set_trace()
+            data = '{ "begin_date": "2024-01-01T00:00:00Z", "end_date": "2024-02-01T00:00:00Z" }'
+ 
+            #response2 = requests.post('https://api.mercadopago.com/v1/account/release_report', headers=headers, data=data)
+
+
+
+
+            headers={'Authorization':'Bearer '+ conta.access_token, 'accept':'application/json'}
+            
+            #response = requests.get('https://api.mercadopago.com/v1/account/release_report/:file_name', headers=headers)
+
+            response = requests.get('https://api.mercadopago.com/v1/account/release_report/list', headers=headers)
+        
+
+
+
+            print(response)
+
+            response2 = requests.get('https://api.mercadopago.com/v1/account/release_report/reserve-release-468673808-2024-02-09-210040.csv', headers=headers)
+            #print(response2)
+            import pandas as pd
+            df = pd.DataFrame([row.split(';') for row in response2.text.split('\n')])
+            import pdb;pdb.set_trace()
+            continue
+
 
             resposta = requests.get(url=url, headers=headers, data=params)
             dados = resposta.json()
             print(dados)
             import pdb;pdb.set_trace()
+            continue
             #print('dados', dados)
             if 'results' in dados:
                 for result in dados['results']:

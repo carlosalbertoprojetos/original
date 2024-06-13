@@ -1,0 +1,266 @@
+{% extends 'cliente/account/clienteDashboard.html' %}
+
+{% load static %}
+
+{% block dashboard %}
+
+<div class="container my-2">
+    <!-- <div class="d-flex flex-wrap justify-content-between text-white mb-2">
+        <div class="col-6 col-lg card align-items-center justify-content-center bg-secondary border p-1"
+            style="min-height: 98px;">
+            <div class="box d-flex gap-4 text-center">
+                Prazo limite
+            </div>
+            <div class="box d-flex gap-4 text-center fw-bold">
+                {{ prazotimeline|date:"d/m/y" }}
+            </div>
+        </div>
+        <div class="col-6 col-lg card align-items-center justify-content-center bg-primary border p-1"
+            style="min-height: 98px;">
+            <div class="box d-flex gap-4 text-center">
+                Responsável
+            </div>
+            <div class="box d-flex gap-4 text-center fw-bold">
+                {{ last_timeline.responsavel }}
+            </div>
+        </div>
+        <div class="col-6 col-lg card align-items-center justify-content-center bg-danger border p-1"
+            style="min-height: 98px;">
+            <div class="box d-flex gap-4 text-center">
+                Fluxo de Trabalho
+            </div>
+            <div class="box d-flex gap-4 text-center fw-bold">
+                {{ last_timeline.fluxo }}
+            </div>
+        </div>
+        <div class="col-6 col-lg card align-items-center justify-content-center bg-warning border p-1"
+            style="min-height: 98px;">
+            <div class="box d-flex gap-4 text-center">
+                Ultima ação
+            </div>
+            <div class="box d-flex gap-4 text-center fw-bold">
+                {{ last_timeline.acao.nome }}
+            </div>
+        </div>
+    </div> -->
+    {% if suporte.conclusao %}
+    <div
+        class="col bg-success bg-opacity-50 text-center border border-success border-opacity-25 rounded-3 fw-bold text-white my-2 pt-3">
+        <div class="col-12 text-center">
+            <label class="text-muted fs-5" id="id_concluido">Atendimento CONCLUÍDO em {{ suporte.conclusao }}</label>
+            {% for conc in conclusoes %}
+            <p class="text-start text-lg-center mb-0 ps-3">
+                Problema:
+            <p>{{ conc.problema}} - {{ conc.subproblema}}</p>
+            <p>{{ prodescricao }}</p>
+            </p>
+            {% endfor %}
+            {% else %}
+            <div class="col alert alert-info text-center rounded-3 fw-bold text-white my-2 p-0 pt-3">
+                <div class="col-12 text-center">
+                    <div class="text-muted">Atendimento aberto
+                        {% if dias == 0 %}
+                        hoje</div>
+                    {% else %} a {{ dias }}
+                    {% endif %}
+                    {% if dias == 1 %}
+                    dia
+                    {% elif dias == 0 %}
+                    <div class="text-muted"></div>
+                    {% else %}
+                    dias
+                </div>
+                {% endif %}
+                {% endif %}
+            </div>
+            <div class="d-flex flex-wrap justify-content-between my-2">
+                <div class="col-6 col-lg align-items-center justify-content-center p-1">
+                    <div class="d-flex flex-column text-center" style="min-height: 20px;">
+                        <label>Prazo limite</label>
+                        <h6 class="text-muted">{{ prazotimeline|date:"d/m/y" }}</h6>
+                    </div>
+                </div>
+                <div class="col-6 col-lg align-items-center justify-content-center p-1">
+                    <div class="d-flex flex-column text-center" style="min-height: 20px;">
+                        <label for="">Responsável</label>
+                        <h6 class="text-muted">{{ last_timeline.responsavel }}</h6>
+                    </div>
+                </div>
+                <div class="col-6 col-lg align-items-center justify-content-center p-1">
+                    <div class="d-flex flex-column text-center" style="min-height: 20px;">
+                        <label for="">Fluxo de Trabalho</label>
+                        <h6 class="text-muted">{{ last_timeline.fluxo }}</h6>
+                    </div>
+                </div>
+                <div class="col-6 col-lg align-items-center justify-content-center p-1">
+                    <div class="d-flex flex-column text-center" style="min-height: 20px;">
+                        <label for="">Ultima ação</label>
+                        <h6 class="text-muted">{{ last_timeline.acao.nome }}</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card col-12">
+            <div class="card-header">
+                <h5 class="card-title text-center m-0">DADOS DO CLIENTE</h5>
+            </div>
+            <div class="card-body row">
+                <div class="col-12 col-lg-5 text-muted">
+                    <label class="text-muted">Cliente:</label>
+                    <label class="fw-bold text-muted">{{ venda.cliente.nome }}</label>
+                </div>
+                <div class="col-12 col-lg-4">
+                    <label class="text-muted">Nome Fantasia:</label>
+                    <label class="fw-bold text-muted">{{ venda.cliente.nome_fantasia }}</label>
+                </div>
+                {% if venda.quemrecebe_mercadolivre %}
+                <div class="col col-lg">
+                    <label class="text-muted">Quem recebe:</label>
+                    <label class="fw-bold text-muted">{{ venda.quemrecebe_mercadolivre }}</label>
+                </div>
+                {% endif %}
+                {% if venda.telefonequemrecebe_mercadolivre %}
+                <div class="col col-lg">
+                    <label class="text-muted">Telefone do receptor:</label>
+                    <label class="fw-bold text-muted">{{ venda.telefonequemrecebe_mercadolivre }}</label>
+                </div>
+                {% endif %}
+                {% if venda.cliente.tel_principal %}
+                <div class="col-8 col-lg-3">
+                    <label class="text-muted">Telefone:</label>
+                    <label class="fw-bold text-muted"> {{ venda.cliente.tel_principal }}</label>
+                </div>
+                {% endif %}
+                {% if venda.cliente.cpf %}
+                <div class="col col-lg-2">
+                    <label class="text-muted">CPF:</label>
+                    <label class="fw-bold text-muted">{{ venda.cliente.cpf }}</label>
+                </div>
+                {% endif %}
+                {% if venda.cliente.cnpj %}
+                <div class="col col-lg-2">
+                    <label class="text-muted">CNPJ:</label>
+                    <label class="fw-bold text-muted">{{ venda.cliente.cnpj }}</label>
+                </div>
+                {% endif %}
+                {% if venda.cliente.insc_estadual %}
+                <div class="col-5 col-lg-3">
+                    <label class="text-muted">Insc. Estadual:</label>
+                    <label class="fw-bold text-muted">{{ venda.cliente.insc_estadual }}</label>
+                </div>
+                {% endif %}
+                {% if venda.cliente.cidade %}
+                <div class="col-6 col-lg-4">
+                    <label class="text-muted">Cidade:</label>
+                    <label class="fw-bold text-muted">{{ venda.cliente.cidade }}</label>
+                </div>
+                {% endif %}
+                {% if venda.cliente.estado %}
+                <div class="col col-lg-1">
+                    <label class="text-muted">UF:</label>
+                    <label class="fw-bold text-muted">{{ venda.cliente.estado }}</label>
+                </div>
+                {% endif %}
+                {% if venda.cliente.logradouro %}
+                <div class="col-12 col-lg-5">
+                    <label class="text-muted">Rua:</label>
+                    <label class="fw-bold text-muted">{{ venda.cliente.logradouro }}</label>
+                </div>
+                {% endif %}
+                {% if venda.cliente.numero %}
+                <div class="col-4 col-lg-2">
+                    <label class="text-muted">Número:</label>
+                    <label class="fw-bold text-muted">{{ venda.cliente.numero }}</label>
+                </div>
+                {% endif %}
+                {% if venda.cliente.complemento %}
+                <div class="col-8 col-lg-3">
+                    <label class="text-muted">Complemento:</label>
+                    <label class="fw-bold text-muted">{{ venda.cliente.complemento }}</label>
+                </div>
+                {% endif %}
+                {% if venda.cliente.bairro %}
+                <div class="col-6 col-lg-5">
+                    <label class="text-muted">Bairro:</label>
+                    <label class="fw-bold text-muted">{{ venda.cliente.bairro }}</label>
+                </div>
+                {% endif %}
+                {% if venda.cliente.cep %}
+                <div class="col col-lg">
+                    <label class="text-muted">Cep:</label>
+                    <label class="fw-bold text-muted">{{ venda.cliente.cep }}</label>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% if venda.urgente %}
+        <div
+            class="col bg-danger bg-opacity-25 text-center border border-danger border-opacity-25 rounded-3 fw-bold text-white mt-2 py-3">
+            <h6 class="text-black mb-0">ATENDIMENTO COM URGÊNCIA</h6>
+        </div>
+        {% endif %}
+        <div class="card col-12 col-lg-12 my-2">
+            <div class="card-header">
+                <h5 class="card-title text-center m-0">DADOS DA VENDA</h5>
+            </div>
+            <div class="card-body row pb-0">
+                <div class="col-6 col-lg-2">
+                    <label class="text-muted">Tags: </label>
+                    <label class="fw-bold text-muted">Reclamação</label>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <label class="text-muted">Vendedor: </label>
+                    <label class="fw-bold text-muted">{{ venda.vendedor }}</label>
+                </div>
+                <div class="col-6 col-lg-2">
+                    <label class="text-muted">Pedido: </label>
+                    <label class="fw-bold text-muted">{{ venda.id }} </label>
+                </div>
+                <div class="col-12 col-lg-5">
+                    <label class="text-muted">Empresa:</label>
+                    <label class="fw-bold text-muted">{{ venda.vendedor.extenduser.empresa }}</label>
+                </div>
+                <div class="col-12">
+                    <label class="text-muted">NF:</label>
+                    {% if venda.danfe == None %}
+                    <label class="text-muted">Não foi gerada nota fiscal para esta venda</label>
+                    {% else %}
+                    <label class="text-muted">
+                        <a href="{{ venda.danfe }}" target="_blank" class="card-link">{{ venda.numero_nf }}</a>
+                    </label>
+                    {% endif %}
+                </div>
+                <div class="col-12 p-1">
+                    <div class="card table-responsive my-2 px-2">
+                        <label class="text-muted ps-1"> Produtos:</label>
+                        <table class="table table-sm px-2 mb-0" id="id_table">
+                            <thead>
+                                <tr>
+                                    <th>Descrição</th>
+                                    <th class="text-center">Quant</th>
+                                    <th class="text-center">Voltagem</th>
+                                    <th class="text-center">Torneira</th>
+                                    <th class="text-center">Adesivado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for produto in selectProdutos %}
+                                <tr>
+                                    <td>{{ produto }}</td>
+                                    <td class="text-center">{{ produto.quantidade }}</td>
+                                    <td class="text-center">{{ produto.voltagem }}</td>
+                                    <td class="text-center">{{ produto.torneira }}</td>
+                                    <td class="text-center">{{ produto.adesivado }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <input class="hidden" id="id_suporte" name="suporte_id" value="{{ suporte }}">
+</div>
+
+{% endblock %}

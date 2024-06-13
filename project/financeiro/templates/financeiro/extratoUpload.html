@@ -1,0 +1,143 @@
+{% extends 'index.html' %}
+
+{% load static %}
+
+<title> {% block title %} Financeiro {% endblock title%} </title>
+
+{% block index %}
+
+<div class="container">
+    <div class="col-12 card m-auto mb-2 p-3">
+        <div class="row p-2">
+            {% if messages %}
+            <div class="col-12 col-lg-7 messages p-0">
+                {% for message in messages %}
+                {% if message.level != 25 %}
+                <div class="{{ message.tags }} alert alert-danger p-1 ps-2" role="alert">
+                    <label>{{ message }}</label><br />
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% if extrato_defasado %}
+            <div class="col-12 col-lg-7 messages p-0">
+                <div class="{{ message.tags }} alert alert-danger p-1 ps-2" role="alert">
+                    <label>{{ extrato_defasado }}</label><br />
+                </div>
+            </div>
+            {% endif %}
+            <div class="col-12 col-lg-7 p-0">
+                <label class="text-muted">Arquivos</label>
+                <form method="post" enctype="multipart/form-data" id="form" class="d-flex">
+                    {% csrf_token %}
+                    <input type="file" name="arquivo" class="form-control form-control-sm" id="id_arquivo" required>
+                    <button type="submit" class="btn btn-primary btn-sm ms-2">Salvar</button>
+                </form>
+            </div>
+        </div>
+        {% if extrato %}
+        <div class="col"><label>Último upload</label>{{ data_ }}
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <label for="">Empresa: {{ conta.conta.empresa.nome }}</label>
+            </div>
+            <div class="col-12 col-lg-4"> <label for="">Banco: {{ conta.conta.banco }}</label></div>
+            <div class="col-6 col-lg-2"> <label for="">Agência: {{ conta.conta.agencia }}</label></div>
+            <div class="col-6 col-lg-2"> <label for="">Conta: {{ conta.conta.conta }}</label></div>
+        </div>
+    </div>
+    <div class="col-12 card m-auto p-3">
+        <table class="table table-sm mt-2" id="id_table">
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Lançamento</th>
+                    <th class="text-center">Origem</th>
+                    <th class="text-center">Valor</th>
+                    <!-- <th class="text-center">Saldo</th> -->
+                    <th class="text-center">Conciliado</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for lan in extrato %}
+                {% if lan.conciliado %}
+                <tr class="bg-conciliado">
+                    {% elif lan.saldo %}
+                <tr>
+                    {% else %}
+                <tr class="bg-conciliar">
+                    {% endif %}
+                    <td class="text-start">{{ lan.data|date:"Y-m-d" }}</td>
+                    <td>{{ lan.lancamento }}</td>
+                    <td class="text-center pe-4">{{ lan.origem }}</td>
+                    <td class="text-end pe-4" style="color:{% if lan.valor > 0 %} blue {% else %} red {% endif %};">
+                        {{ lan.valor|default:"" }}</td>
+                    <!-- <td class="text-end pe-4" style="color:{% if lan.saldo > 0 %} blue {% else %} red {% endif %};">
+                        {{ lan.saldo|default:"" }}</td> -->
+                    <td class="text-center pe-3">
+                        {% if lan.conciliado %}
+                        <i class="fa fa-check-square-o" aria-hidden="true" style="color:green;"></i>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </div>
+</div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script src="{% static 'js/datatables.min.js' %}"></script>
+<script src="{% static 'js/jqueryDataTable.js' %}"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#id_table').DataTable({
+            "columnDefs": [
+                {
+                    "targets": 0, // Supondo que a coluna de data seja a primeira
+                    "render": function (data, type, row, meta) {
+                        if (type === 'display') {
+                            var dateSplit = data.split('-');
+                            return dateSplit[2] + '/' + dateSplit[1] + '/' + dateSplit[0]; // Formato DD/MM/YYYY
+                        }
+                        return data; // Para sort e outros tipos, retornar data sem modificação
+                    }
+                }
+            ],
+            "order": [0, 'desc'],
+            "pageLength": 100,
+            "language": {
+                "sProcessing": "Proccesando...",
+                "sLengthMenu": "Mostrar _MENU_ registros",
+                "sZeroRecords": "Nenhum resultado encontrado",
+                "sEmptyTable": "Nenhum dado disponivel",
+                "sInfo": "Mostrando registros de _START_ a _END_ de um total de _TOTAL_ registros",
+                "sInfoEmpty": "Mostrando registros de 0 a 0 de um total de 0 registros",
+                "sInfoFiltered": "(filtrado de um total de _MAX_ registros)",
+                "sInfoPostFix": "",
+                "sSearch": "Buscar:",
+                "sUrl": "",
+                "sInfoThousands": ",",
+                "sLoadingRecords": "Carregando...",
+                "oPaginate": {
+                    "sFirst": "Primero",
+                    "sLast": "Último",
+                    "sNext": "Seguinte",
+                    "sPrevious": "Anterior"
+                },
+                "oAria": {
+                    "sSortAscending": ": Ativar para ordenar a coluna de maneira ascendente",
+                    "sSortDescending": ": Ativar para ordenar a coluna de maneira descendente"
+                }
+            }
+        });
+    }); 
+</script>
+{% endblock %}

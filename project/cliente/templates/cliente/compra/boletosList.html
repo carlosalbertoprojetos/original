@@ -1,0 +1,99 @@
+{% extends 'cliente/account/clienteDashboard.html' %}
+
+{% load static %}
+
+{% block dashboard %}
+
+<div class="container mt-3">
+    <div class="filters card border-1">
+        <div class="card-header">
+            <label class="fs-5 fw-bold">Boletos de venda</label>
+        </div>
+        <div class="table-responsive p-3">
+            <table class="table table-sm" id="id_table">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Vendedor</th>
+                        <th>Venda</th>
+                        <th>Parcela</th>
+                        <th>Valor</th>
+                        <th>Vencimento</th>
+                        <th>Pagamento</th>
+                        <th>Detalhes</th>
+                        <!-- <th class="px-0">Visualizar</th> -->
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for object in boletos %}
+                    <tr>
+                        <td>{{ object.datadocumento|date:"d/m/y" }}</td>
+                        <td>{{ object.venda.vendedor }}</td>
+                        <td><a class="px-1" href="">{{ object.venda }}</a></td>
+                        <td>{{ object.parcela }}</td>
+                        <td>R$ {{ object.valor }}</td>
+                        <td>{{ object.datavencimento|date:"d/m/y" }}</td>
+                        <td>{{ object.datapagamento|date:"d/m/y" }}</td>
+                        <td>{{ object.detalhes|default:"" }}</td>
+                        <!-- <td>
+                            <form method="post" id="form">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary btn-sm" name="exibirBoleto"
+                                    value="{{ object.venda.id }},{{ object.parcela }}"
+                                    style="font-size: 10px">Exibir</button>
+                            </form>
+                        </td> -->
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script src="{% static 'js/datatables.min.js' %}"></script>
+<script src="{% static 'js/jqueryDataTable.js' %}"></script>
+<script>
+    function filtro() {
+        let dataInicio = document.getElementById('data_ini')
+        let datafim = document.getElementById('data_fim')
+    };
+
+    $(document).ready(function () {
+        $('#id_table').DataTable({
+            "columnDefs": [{ type: 'date', 'targets': [2, 3] }],
+            "order": [[0, "desc"]],
+            "pageLength": 100,
+            "language": {
+                "sProcessing": "Proccesando...",
+                "sLengthMenu": "Mostrar _MENU_ registros",
+                "sZeroRecords": "Nenhum resultado encontrado",
+                "sEmptyTable": "Nenhum dado disponivel",
+                "sInfo": "Mostrando registros de _START_ a _END_ de um total de _TOTAL_ registros",
+                "sInfoEmpty": "Mostrando registros de 0 a 0 de um total de 0 registros",
+                "sInfoFiltered": "(filtrado de um total de _MAX_ registros)",
+                "sInfoPostFix": "",
+                "sSearch": "Buscar:",
+                "sUrl": "",
+                "sInfoThousands": ",",
+                "sLoadingRecords": "Carregando...",
+                "oPaginate": {
+                    "sFirst": "Primero",
+                    "sLast": "Último",
+                    "sNext": "Seguinte",
+                    "sPrevious": "Anterior"
+                },
+                "oAria": {
+                    "sSortAscending": ": Ativar para ordenar a coluna de maneira ascendente",
+                    "sSortDescending": ": Ativar para ordenar a coluna de maneira descendente"
+                }
+            }
+        }
+
+        );
+    }); 
+</script>
+{% endblock %}

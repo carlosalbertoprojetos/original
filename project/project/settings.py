@@ -1,4 +1,5 @@
 import os
+from .settings import *
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -39,7 +40,6 @@ INSTALLED_APPS = [
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
-    "crispy_forms",
     "widget_tweaks",
     "django.contrib.humanize",
     "import_export",
@@ -54,7 +54,6 @@ INSTALLED_APPS = [
     "financeiro",
     "fornecedor",
     "funcionario",
-    "garantia",
     "materiaprima",
     "notafiscal",
     "producao",
@@ -64,6 +63,7 @@ INSTALLED_APPS = [
     "empresa",
     "mercadolivre",
     "suporte",
+    "representante",
 ]
 
 MIDDLEWARE = [
@@ -75,6 +75,13 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+
+try:
+    from .local_settings import *
+except ImportError:
+    pass
+
 
 ROOT_URLCONF = "project.urls"
 
@@ -90,14 +97,20 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
             ],
+            "libraries": {
+                "notifications_tags": "project.templatetags.notifications_tags",
+            },
         },
     },
 ]
 
+SESSION_SAVE_EVERY_REQUEST = True
+SESSION_COOKIE_AGE = 700000
+
 # WSGI_APPLICATION = "project.wsgi.application"
 WSGI_APPLICATION = "project.wsgi.application"
-
-
+USE_THOUSAND_SEPARATOR = False
+# SESSION_COOKIE_AGE = 36000
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
@@ -119,6 +132,17 @@ DATABASES = {
 #    }
 # }
 
+ACCOUNT_SIGNUP_REDIRECT_URL = "/"
+
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_LOGIN_ON_PASSWORD_RESET = True
+
+ACCOUNT_EMAIL_REQUIRED = True
+
+# ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+# ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 3
+
+ACCOUNT_LOGIN_ON_PASSWORD_RESET = True
 
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
@@ -126,6 +150,12 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 ACCOUNT_AUTHENTICATION_METHOD = "username_email"
+ACCOUNT_SESSION_REMEMBER = True
+ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = True
+
+ACCOUNT_SESSION_REMEMBER = True
+
+ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = True
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -147,9 +177,13 @@ AUTH_PASSWORD_VALIDATORS = [
 
 SITE_ID = 1
 
+ACCOUNT_ADAPTER = "project.adapter.MyAccountAdapter"
+
+# SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+# SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 LOGIN_URL = "/"
-LOGIN_REDIRECT_URL = "index"
+# LOGIN_REDIRECT_URL = "index"
 LOGOUT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 

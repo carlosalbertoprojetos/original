@@ -32,7 +32,7 @@
   <a class="btn btn-primary float-end" onclick="adicionar_despesa()" href="{% url 'despesa:despesaCreate' %}"
     id="add-new-event">Adicionar Despesa</a><br /><br />
 
-  <div id="calendar"/>
+  <div id="calendar" />
 </div>
 
 
@@ -56,6 +56,13 @@
         left: 'prev,next today',
         center: 'title',
         right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
+      },
+      buttonText: {
+        today: 'Hoje',
+        month: 'Mês',
+        week: 'Semana',
+        day: 'Hoje',
+        list: 'Lista'
       },
       //initialDate: '2023-05-12',
       navLinks: true, // can click day/week names to navigate views

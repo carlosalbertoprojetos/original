@@ -1,6 +1,6 @@
 {% extends 'index.html' %}
 
-{% load static crispy_forms_tags %}
+{% load static %}
 
 <title> {% block title %} Transportadora {% endblock title %} </title>
 
@@ -97,6 +97,10 @@
                     <div class="col-9 col-md-2">
                         <label for="id_cidade" class="">Cidade</label>
                         {{ form.cidade }}
+                    </div>
+                    <div class="col-9 col-md-2">
+                        <label for="id_atuacao" class="">Atuação</label>
+                        {{ form.atuacao }}
                     </div>
                     <div class="col-6 col-md-1 mt-3">
                         <label for="id_status_cliente" class="">Ativo</label>

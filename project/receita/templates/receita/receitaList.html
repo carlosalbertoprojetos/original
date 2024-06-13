@@ -14,7 +14,6 @@
         </div>
         <div class="table-responsive p-3">
             <table class="table table-sm" id="id_table">
-                <!-- <caption>Compra</caption> -->
                 <div class="col-12 d-flex justify-content-end">
                     <a class="btnMaster px-2" href="{% url 'receita:receitaCreate' %}">Nova Receita
                         <i class="fa fa-plus-square" aria-hidden="true"></i>
@@ -22,6 +21,7 @@
                 </div>
                 <thead>
                     <tr>
+                        <th>Data</th>
                         <th>Receita</th>
                         <th>Total</th>
                         <th>Categoria1</th>
@@ -29,21 +29,20 @@
                         <th>Parcelas</th>
                         <th>Descrição</th>
                         <th>Cliente</th>
-                        <th>Criado em</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for obj in object_list %}
                     <tr>
+                        <td>{{ obj.criadoem|date:"y-m-d" }}</td>
                         <td>{{ obj.nome }}</td>
                         <td>R$ {{ obj.total|floatformat:2 }}</td>
                         <td>{{ obj.categoria1 }}</td>
                         <td>{{ obj.categoria2 }}</td>
-                        <td align="center">{{ obj.num_parcelas }}</td>
+                        <td class="text-center">{{ obj.num_parcelas }}</td>
                         <td>{{ obj.descricao }}</td>
                         <td>{{ obj.cliente|default:""|truncatechars:30 }}</td>
-                        <td>{{ obj.criadoem|date:"d/m/y" }}</td>
                         <td>
                             <a class="px-1" href="{{ obj.receita_gau_edit }}">
                                 <i class="fa fa-edit"></i>
@@ -65,14 +64,24 @@
 {% block script %}
 <script src="{% static 'js/datatables.min.js' %}"></script>
 <script src="{% static 'js/jqueryDataTable.js' %}"></script>
-<script>
-    function filtro() {
-        let dataInicio = document.getElementById('data_ini')
-        let datafim = document.getElementById('data_fim')
-    };
 
+<script>
     $(document).ready(function () {
         $('#id_table').DataTable({
+            "columnDefs": [
+                {
+                    "targets": 0, // Supondo que a coluna de data seja a primeira
+                    "render": function (data, type, row, meta) {
+                        if (type === 'display') {
+                            var dateSplit = data.split('-');
+                            return dateSplit[2] + '/' + dateSplit[1] + '/' + dateSplit[0]; // Formato DD/MM/YYYY
+                        }
+                        return data; // Para sort e outros tipos, retornar data sem modificação
+                    }
+                }
+            ],
+            "order": [0, 'desc'],
+            "pageLength": 100,
             "language": {
                 "sProcessing": "Proccesando...",
                 "sLengthMenu": "Mostrar _MENU_ registros",

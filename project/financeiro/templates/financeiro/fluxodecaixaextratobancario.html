@@ -1,0 +1,201 @@
+{% extends 'index.html' %}
+
+{% load static %}
+
+<title> {% block title %} Fluxo de Caixa (Extrato Bancário) {% endblock title%} </title>
+
+{% block index %}
+
+<div class="container">
+    <div class="filters card border-1 mb-2">
+        <div class="card-header">
+            <label class="fs-5 fw-bold">Filtro</label>
+        </div>
+        <div class="card-body row label">
+            <form method="GET">
+                <div class="row align-items-center">
+                    <div class="col-12 col-lg-1 ml-2 ml-lg-0">
+                        <label>Periodo</label>
+                    </div>
+                    <div class="col-12 col-lg-4 d-flex gap-3 ml-2 ml-lg-0">
+                        <input type="date" id="data_ini" name="data_ini" class="form-control form-control-sm"
+                            placeholder="Data de início" value="{{ data_ini }}">
+                        <input type="date" id="data_fim" name="data_fim" class="form-control form-control-sm"
+                            placeholder="Data fim" value="{{ data_fim }}">
+                    </div>
+                    <div class="col-12 col-lg-1 mt-2 mt-lg-0 ml-2 ml-lg-0 text-end ps-0">
+                        <button type="submit" class="btn btn-primary btn-sm" value="Pesquisar">Pesquisar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="d-flex flex-column flex-lg-row gap-2 justify-content-center mb-2">
+        {% if saldo >= 0 %}
+        <div class="card col-md bg-success text-bg-success bg-opacity-50 p-3">
+            {% else %}
+            <div class="card col-md bg-danger text-bg-danger bg-opacity-50 p-3">
+                {% endif %}
+                <div class="d-flex justify-content-center align-items-center justify-content-md-center ">
+                    <div class="text-end">
+                        <span class="text-end">Saldo Hoje</span>
+                        <div class="d-flex align-items-center justify-content-end">
+                            <h6 class="fw-bold">{{ saldo }}</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card col-md p-3">
+                <div class="row">
+                    <div class="col text-center">
+                        <span>A Receber</span>
+                        <h6 class="fw-bold txgreen">{{ areceber }}</h6>
+                    </div>
+                    <div class="col text-center">
+                        <span>Vencidos</span>
+                        <h6 class="fw-bold txred">{{ areceber_vencidas }}</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="card col-md p-3">
+                <div class="row">
+                    <div class="col text-center">
+                        <span>A Pagar</span>
+                        <h6 class="fw-bold txred">{{ apagar }}</h6>
+                    </div>
+                    <div class="col text-center">
+                        <span>Atrasados</span>
+                        <h6 class="fw-bold txred">{{ apagar_vencidas }}</h6>
+                    </div>
+                </div>
+            </div>
+            {% if balanco >= 0 %}
+            <div class="card col-md bg-success text-bg-success bg-opacity-50 p-3">
+                {% else %}
+                <div class="card col-md bg-danger text-bg-danger bg-opacity-50 p-3">
+                    {% endif %}
+                    <div class="d-flex justify-content-center align-items-center justify-content-md-center">
+                        <div class="text-end">
+                            <span class="text-end">Balanço</span>
+                            <div class="d-flex align-items-center justify-content-end">
+                                <h6 class="fw-bold">{{ balanco }}</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- <div class="card col-md p-3">
+            <div
+                class="d-flex justify-content-between align-items-center justify-content-md-center justify-content-xl-between">
+                <div class="imageBlock d-flex align-items-center justify-content-center bg-white d-md-none d-xl-flex">
+                    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" font-size="1.5rem"
+                        class="iconify iconify--mdi" width="1em" height="1em" viewBox="1 0 22 22">
+                        <path fill="currentColor"
+                            d="M7 15h2c0 1.08 1.37 2 3 2s3-.92 3-2c0-1.1-1.04-1.5-3.24-2.03C9.64 12.44 7 11.78 7 9c0-1.79 1.47-3.31 3.5-3.82V3h3v2.18C15.53 5.69 17 7.21 17 9h-2c0-1.08-1.37-2-3-2s-3 .92-3 2c0 1.1 1.04 1.5 3.24 2.03C14.36 11.56 17 12.22 17 15c0 1.79-1.47 3.31-3.5 3.82V21h-3v-2.18C8.47 18.31 7 16.79 7 15Z"
+                            style="color: rgb(209, 3, 3);"></path>
+                    </svg>
+                </div>
+                <div class="text-end">
+                    <span>Vencidos</span>
+                    <div class="d-flex align-items-center justify-content-end">
+                        <h6>{{ vencidas }}</h6>
+                    </div>
+                </div>
+            </div>
+        </div> -->
+            </div>
+            <div class="filters card border-1">
+                <div class="card-header">
+                    <label class="fs-5 fw-bold">Fluxo de Caixa (Extrato Bancário)</label>
+                </div>
+                <div class="table-responsive p-3">
+                    <table class="table table-sm" id="id_table">
+                        <thead>
+                            <tr>
+                                <th>Dia</th>
+                                <th class="text-end pe-5">Saldo</th>
+                                <th class="text-end pe-5">A receber</th>
+                                <th class="text-end pe-5">A pagar</th>
+                                <th class="text-end pe-5">Previsão de caixa</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for obj in object_list %}
+                            <tr class="bg-conciliar">
+                                <td>{{ obj.dia|safe }}</td>
+                                {% if obj.saldo >= 0 %}
+                                <td class="text-end txgreen pe-5">R$ {{ obj.saldo|floatformat:2 }}</td>
+                                {% else %}
+                                <td class="text-end txred pe-5">R$ {{ obj.saldo|floatformat:2 }}</td>
+                                {% endif %}
+                                <td class="text-end txgreen pe-5">R$ {{ obj.a_receber|floatformat:2 }}</td>
+                                <td class="text-end txred pe-5">R$ {{ obj.a_pagar|floatformat:2 }}</td>
+                                {% if obj.balanco >= 0 %}
+                                <td class="text-end txgreen pe-5">
+                                    R$ {{ obj.balanco|floatformat:2 }}</td>
+                                {% else %}
+                                <td class="text-end txred pe-5">R$ {{ obj.balanco|floatformat:2 }}</td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endblock %}
+
+        {% block script %}
+        <script src="{% static 'js/datatables.min.js' %}"></script>
+        <script src="{% static 'js/jqueryDataTable.js' %}"></script>
+
+        <script>
+            function filtro() {
+                let dataInicio = document.getElementById('data_ini')
+                let datafim = document.getElementById('data_fim')
+            };
+
+
+            $(document).ready(function () {
+                $('#id_table').DataTable({
+                    "columnDefs": [
+                        {
+                            "targets": 0, // Supondo que a coluna de data seja a primeira
+                            "render": function (data, type, row, meta) {
+                                if (type === 'display') {
+                                    var dateSplit = data.split('-');
+                                    return dateSplit[2] + '/' + dateSplit[1] + '/' + dateSplit[0]; // Formato DD/MM/YYYY
+                                }
+                                return data; // Para sort e outros tipos, retornar data sem modificação
+                            }
+                        }
+                    ],
+                    "order": [0, 'desc'],
+                    "pageLength": 100,
+                    "language": {
+                        "sProcessing": "Proccesando...",
+                        "sLengthMenu": "Mostrar _MENU_ registros",
+                        "sZeroRecords": "Nenhum resultado encontrado",
+                        "sEmptyTable": "Nenhum dado disponivel",
+                        "sInfo": "Mostrando registros de _START_ a _END_ de um total de _TOTAL_ registros",
+                        "sInfoEmpty": "Mostrando registros de 0 a 0 de um total de 0 registros",
+                        "sInfoFiltered": "(filtrado de um total de _MAX_ registros)",
+                        "sInfoPostFix": "",
+                        "sSearch": "Buscar:",
+                        "sUrl": "",
+                        "sInfoThousands": ",",
+                        "sLoadingRecords": "Carregando...",
+                        "oPaginate": {
+                            "sFirst": "Primero",
+                            "sLast": "Último",
+                            "sNext": "Seguinte",
+                            "sPrevious": "Anterior"
+                        },
+                        "oAria": {
+                            "sSortAscending": ": Ativar para ordenar a coluna de maneira ascendente",
+                            "sSortDescending": ": Ativar para ordenar a coluna de maneira descendente"
+                        }
+                    }
+                });
+            }); 
+        </script>
+        {% endblock %}

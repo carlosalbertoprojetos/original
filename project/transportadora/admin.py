@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 
-from .models import Transportadora
+from .models import Transportadora, Rotas
 
 
 class TransportadoraAdmin(admin.ModelAdmin):
@@ -12,6 +12,7 @@ class TransportadoraAdmin(admin.ModelAdmin):
         "tel_contato",
         "email",
         "cidade",
+        "atuacao"
     )
     fieldsets = [
         (
@@ -39,6 +40,7 @@ class TransportadoraAdmin(admin.ModelAdmin):
                 "fields": (
                     ("logradouro", "numero", "complemento", "bairro"),
                     ("cidade", "estado"),
+                     ("atuacao"),
                 )
             },
         ),
@@ -50,3 +52,14 @@ class TransportadoraAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Transportadora, TransportadoraAdmin)
+
+
+class RotasAdmin(admin.ModelAdmin):
+    
+    list_filter = ["cidade", "estado", "transportadoras"]
+    list_display = (
+        "cidade",
+        "estado",
+        "get_transportadoras",
+    )
+admin.site.register(Rotas, RotasAdmin)

@@ -7,16 +7,18 @@ app_name = "suporte"
 
 
 urlpatterns = [
-    path("", v.suporteGeralList, name="suporteGeralList"),
-    path("<venda>/", v.suporteCreate, name="suporteCreate"),
+    path("", v.suporteList, name="suporteList"),
+    path("<int:venda>/", v.suporteCreate, name="suporteCreate"),
     path(
         "<venda>/timeline/create/",
         v.suporteTimeLineCreate,
         name="suporteTimeLineCreate",
     ),
+    path("fluxo/acoes/", v.acoesFluxoAjax, name="acoesFluxoAjax"),
+    path("problema/subprob/", v.subproblemasAjax, name="subproblemasAjax"),
     path(
-        "<timeline>/timeline/update/",
-        v.suporteTimeLineUpdate,
-        name="suporteTimeLineUpdate",
+        "<suporte>/reabrir/atendimento/",
+        v.reabrirAtendimento,
+        name="reabrirAtendimento",
     ),
 ]

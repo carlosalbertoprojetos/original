@@ -49,7 +49,10 @@ class ProdutoForm(forms.ModelForm):
             ),
             "preco": forms.NumberInput(attrs={"class": "form-control form-control-sm"}),
             "peso": forms.NumberInput(attrs={"class": "form-control form-control-sm"}),
-            "estoque_ini": forms.NumberInput(
+            "estoque_127": forms.NumberInput(
+                attrs={"class": "form-control form-control-sm"}
+            ),
+            "estoque_220": forms.NumberInput(
                 attrs={"class": "form-control form-control-sm"}
             ),
             "aliq_icms_interno": forms.NumberInput(
@@ -60,6 +63,15 @@ class ProdutoForm(forms.ModelForm):
             ),
             "status_produto": forms.CheckboxInput(
                 attrs={"class": "required checkbox form-control form-control-sm"}
+            ),
+            "altura": forms.NumberInput(
+                attrs={"class": "form-control form-control-sm"}
+            ),
+            "largura": forms.NumberInput(
+                attrs={"class": "form-control form-control-sm"}
+            ),
+            "comprimento": forms.NumberInput(
+                attrs={"class": "form-control form-control-sm"}
             ),
             "descricao": forms.TextInput(
                 attrs={

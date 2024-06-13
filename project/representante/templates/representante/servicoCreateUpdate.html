@@ -1,0 +1,111 @@
+{% extends 'index.html' %}
+
+{% load static %}
+
+<title> {% block title %} Serviço {% endblock title%} </title>
+
+{% block index %}
+
+<div class="container">
+    <form method="post" action="">
+        {% csrf_token %}
+        <div class="card">
+            <div class="card-header">
+                <label class="fs-5 fw-bold">
+                    {% if Alterar == True %}
+                    Alterar
+                    {% else %}
+                    Novo
+                    {% endif %}
+                    Serviço
+                </label>
+                <!-- <a class="float-end btn btn-primary btn-sm" href="{{ url }}">Conta
+                    Bancária</a> -->
+            </div>
+            <div class="card-body label">
+                <div class="row mb-2">
+                    <div class="col-12 col-md-4">
+                        <label for="{{ form.cliente.id_for_label }}">Cliente</label>
+                        {{ form.cliente }}
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <label for="{{ form.data_recebimento.id_for_label }}">Data do Recebimento</label>
+                        {{ form.data_recebimento }}
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <label for="{{ form.data_entrega.id_for_label }}">Data da Entrega</label>
+                        {{ form.data_entrega }}
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <label for="{{ form.valor.id_for_label }}">Valor</label>
+                        {{ form.valor }}
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <label for="{{ form.pagamento.id_for_label }}">Data do Pagamento</label>
+                        {{ form.data_pagamento }}
+                    </div>
+                    {% for produto in form.produto.all %}
+                    {{ produto.nome }}
+                    {% endfor %}
+                    <!-- {% if request.user.is_superuser %}
+                    <div class="col-1 col-lg-1 p-0"><br />
+                        <a href="/admin/representante/regiao/" target="_blank" /><i class="fa fa-plus"
+                            aria-hidden="true"></i>
+                        </a>
+                    </div>
+                    {% endif %} -->
+                </div>
+                <div class="col-12 col-md-4">
+                    <label for="{{ form.produto.id_for_label }}">Selecionar Produtos</label>
+                    {{ form.produto }}
+                    <!-- <ul style="list-style: none;">
+                        {% for produto in form.produto %}
+                        <li>{{ produto }}</li>
+                        {% endfor %}
+                    </ul> -->
+                </div>
+                <!-- <div class="flex-container"> -->
+
+                <!-- <label class="required" for="id_produto">Produto:</label> -->
+
+                <!-- <div class="form-select-sm related-widget-wrapper" data-model-ref="PRODUTO"> -->
+                <!-- <select name="produto" required="" aria-describedby="id_produto_helptext" id="id_produto"
+                            multiple="">
+                            <option value="1" selected="">Bebedouro 100lt</option>
+                            <option value="3" selected="">Bebedouro 25L</option>
+                            <option value="2" selected="">Bebedouro 50lt</option>
+                        </select> -->
+                <!-- <select name="produto" required="" aria-describedby="id_produto_helptext" id="id_produto"
+                            multiple="">
+                            {% for produto in form.produto %}
+                            <option>{{ produto }}</option>
+                            {% endfor %}
+                        </select> -->
+                <!-- </div> -->
+                <!-- {% for ingredientes_desse_produto in form.produto.all %}
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ ingredientes_desse_produto.nome }}</h5>
+                                <p class="card-text">{{ ingredientes_desse_produto.custo }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %} -->
+                <!-- </div> -->
+
+            </div>
+        </div>
+
+        <div class="d-flex float-end m-3">
+            <div class="col-3 d-flex gap-2 align-middle">
+                <a role="button" class="btn btn-secondary btn-sm"
+                    href="{% url 'representante:servicosList' id %}">Cancelar</a>
+                <div class="form-group form-button">
+                    <input type="submit" class="btn btn-primary btn-sm" value="Salvar" />
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

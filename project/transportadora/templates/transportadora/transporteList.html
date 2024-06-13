@@ -29,6 +29,7 @@
                         <th>CPF</th>
                         <th>CNPJ</th>
                         <th>Estado</th>
+                        <th>Faturamento</th>
                         <th align="center">Ação</th>
                     </tr>
                 </thead>
@@ -43,7 +44,12 @@
                         <td>{{ obj.cpf|default:"" }}</td>
                         <td>{{ obj.cnpj|default:"" }}</td>
                         <td>{{ obj.estado|default:"" }}</td>
-                        <td align="center pe-1">
+                        <td class="text-center"> <abbr title="Faturamento">
+                                <a href="{% url 'venda:listaConferenciaTransporteExpedicao' obj.id %}">
+                                    <i class="fa fa-money" aria-hidden="true"></i>
+                                </a>
+                            </abbr></td>
+                        <td class="text-center pe-1">
                             <abbr title="Editar">
                                 <a href="{{ obj.transp_gau_edit }}">
                                     <i class=" fa fa-edit"></i>
@@ -76,6 +82,7 @@
 
     $(document).ready(function () {
         $('#id_table').DataTable({
+            "pageLength": 100,
             "language": {
                 "sProcessing": "Proccesando...",
                 "sLengthMenu": "Mostrar _MENU_ registros",

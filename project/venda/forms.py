@@ -1,10 +1,10 @@
 import datetime
 from django import forms
+from django.contrib.auth.models import User
 
-from cliente.models import Cliente
 from .data import dataAgendaProducao, ChoiceMaximoDesconto
 from project.constantes import ESCOLHAS_STATUSVENDAS
-from .models import Venda, VendaProduto, MaximoDesconto, Voltagem, Torneira, Adesivado
+from .models import Venda, VendaProduto, MaximoDesconto
 from django.core.exceptions import ValidationError
 from produto.models import Produto
 
@@ -28,7 +28,6 @@ class VendaForm(forms.ModelForm):
         widget=forms.Select(
             attrs={
                 "class": "form-control-sm form-select form-select-sm",
-                "onchange": "change()",
             }
         ),
     )
@@ -57,7 +56,7 @@ class VendaForm(forms.ModelForm):
             "nickname_mercadolivre",
             "cotacao_transportadora",
             "telefonequemrecebe_mercadolivre",
-            "quemrecebe_mercadolivre"
+            "quemrecebe_mercadolivre",
         )
 
         widgets = {
@@ -82,23 +81,29 @@ class VendaForm(forms.ModelForm):
             "valor_frete": forms.NumberInput(
                 attrs={
                     "class": "form-control form-control-sm text-end",
-                    "onchange": "change()",
+                    "value": "0",
+                    "onchange": "totalVenda()",
                 }
             ),
             "valor_venda": forms.NumberInput(
                 attrs={
                     "class": "form-control form-control-sm text-end",
+                    "tabindex": "-1",
                 }
             ),
             "porcentagem_desconto": forms.Select(
                 attrs={
                     "class": "form-select form-select-sm",
-                    "onchange": "change()",
+                    "onchange": "totalVenda()",
                 },
                 choices=ChoiceMaximoDesconto(),
             ),
             "subtotal": forms.NumberInput(
-                attrs={"class": "form-control form-control-sm text-end"}
+                attrs={
+                    "class": "form-control form-control-sm text-end",
+                    "readonly": "readonly",
+                    "tabindex": "-1",
+                }
             ),
             "status_venda": forms.Select(
                 attrs={"class": "form-select form-select-sm"},
@@ -110,14 +115,21 @@ class VendaForm(forms.ModelForm):
                 }
             ),
             "dias_prim_par": forms.NumberInput(
-                attrs={"class": "form-control form-control-sm"}
+                attrs={
+                    "class": "form-control form-control-sm",
+                    "tabindex": "-1",
+                }
             ),
             "dias_outras_par": forms.NumberInput(
-                attrs={"class": "form-control form-control-sm"}
+                attrs={
+                    "class": "form-control form-control-sm",
+                    "tabindex": "-1",
+                }
             ),
             "parcelas": forms.NumberInput(
                 attrs={
                     "class": "form-control form-control-sm text-center",
+                    "tabindex": "-1",
                 }
             ),
             "vendedor": forms.TextInput(
@@ -125,7 +137,12 @@ class VendaForm(forms.ModelForm):
                     "class": "form-control form-control-sm text-center",
                 }
             ),
-            "formapgto": forms.Select(attrs={"class": "form-control form-control-sm"}),
+            "formapgto": forms.Select(
+                attrs={
+                    "class": "form-control form-control-sm",
+                    "onchange": "limparAviso()",
+                }
+            ),
             "detalhes": forms.TextInput(
                 attrs={"class": "form-control form-control-sm"}
             ),
@@ -133,6 +150,12 @@ class VendaForm(forms.ModelForm):
                 attrs={"class": "form-control form-control-sm text-center"}
             ),
             "nickname_mercadolivre": forms.TextInput(
+                attrs={"class": "form-control form-control-sm text-center"}
+            ),
+            "telefonequemrecebe_mercadolivre": forms.TextInput(
+                attrs={"class": "form-control form-control-sm text-center"}
+            ),
+            "quemrecebe_mercadolivre": forms.TextInput(
                 attrs={"class": "form-control form-control-sm text-center"}
             ),
             "cotacao_transportadora": forms.TextInput(
@@ -152,15 +175,12 @@ class VendaForm(forms.ModelForm):
             for ch in range(len(self.choice)):
                 if data.strftime("%d/%m/%Y") == self.choice[ch][1][:10]:
                     data_id = (data.strftime("%Y-%m-%d"), self.choice[ch])
-
         self.fields["dias_prim_par"].widget.attrs["readonly"] = True
         self.fields["dias_outras_par"].widget.attrs["readonly"] = True
         self.fields["parcelas"].widget.attrs["readonly"] = True
         self.fields["valor_venda"].widget.attrs["readonly"] = True
-        self.fields["vendedor"].widget.attrs["readonly"] = True
         if self.choice:
             self.fields["data_entrega"].choices = self.choice
-
         if self.instance:
             self.fields["status_venda"].queryset = ESCOLHAS_STATUSVENDAS
 
@@ -202,18 +222,21 @@ class VendaProdutoForm(forms.ModelForm):
             "quantidade": forms.NumberInput(
                 attrs={
                     "class": "form-control form-control-sm text-center",
-                    "onchange": "agendaProd()",
+                    "onchange": "subTotalProduto(this.id)",
                 }
             ),
             "preco": forms.NumberInput(
                 attrs={
                     "class": "form-control form-control-sm text-end",
                     "onblur": "preco_min(this)",
-                    "onchange": "agendaProd()",
                 }
             ),
             "subtotal": forms.NumberInput(
-                attrs={"class": "form-control form-control-sm text-end"}
+                attrs={
+                    "class": "form-control form-control-sm text-end",
+                    "tabindex": "-1",
+                    "onblur": "limparAviso()",
+                }
             ),
         }
 

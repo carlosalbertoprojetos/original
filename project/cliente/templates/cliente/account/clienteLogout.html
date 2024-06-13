@@ -1,0 +1,31 @@
+{% extends 'cliente/account/clienteDashboard.html' %}
+
+{% load static %}
+
+{% block title %} Painel {% endblock title%}
+
+{% block dashboard %}
+
+<div class="container p-4">
+  <div class="col-11 col-lg-5 card border-0 shadow-lg m-auto p-4">
+    <div class="card-body mt-1">
+      <div>
+        <h1>Sair</h1>
+        <p class="text-muted font-weight-bold" style="font-size: 14px;">
+        <p>Você tem certeza que deseja sair?</p>
+        </p>
+      </div>
+      <form class="d-flex flex-column justify-content-center" id="formLogin" method="POST"
+        action="{% url 'account_logout' %}">
+        {% csrf_token %}
+        <div class="form-floating mb-3">
+          {% if redirect_field_value %}
+          <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+          {% endif %}
+          <button class="w-100" type="submit">Sair</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

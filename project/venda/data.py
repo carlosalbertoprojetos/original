@@ -7,6 +7,7 @@ from producao.models import LimiteProducaoDiaria
 
 def dataAgendaProducao():
     agenda = VendaProduto.objects.all()
+    return
 
     # lista as datas com agendamento
     # limiteproducaodiaria = LimiteProducaoDiaria.objects.first()
@@ -14,7 +15,6 @@ def dataAgendaProducao():
     #    limiteproducaodiaria = limiteproducaodiaria.qtde
     # else:
     #    limiteproducaodiaria = 0
-
     data_count = []
     for a in agenda:
         if a.venda.data_entrega:

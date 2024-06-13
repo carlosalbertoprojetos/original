@@ -47,18 +47,18 @@ compraDelete = CompraDelete.as_view()
 
 
 def fornecedorAjax(request):
-    if request.is_ajax():
-        term = request.GET.get("term")
-        clientes = Fornecedor.objects.filter(
-            Q(nome__icontains=term) | Q(nome_fantasia__icontains=term)
-        )
-        data = list(clientes.values())
-        return JsonResponse(data, safe=False)
+    # if request.is_ajax():
+    term = request.GET.get("term")
+    clientes = Fornecedor.objects.filter(
+        Q(nome__icontains=term) | Q(nome_fantasia__icontains=term)
+    )
+    data = list(clientes.values())
+    return JsonResponse(data, safe=False)
 
 
 @login_required
 def compraCreate(request):
-    form = CompraForm(request.POST or None)
+    form = CompraForm(request.POST or None, request.FILES or None)
     Formset_compraMateriaPrima_Factory = inlineformset_factory(
         Compra,
         CompraMateriaPrima,
@@ -111,7 +111,7 @@ def compraUpdate(request, pk):
     dados_produto = CompraMateriaPrima.objects.filter(compra=objeto)
     dados_parcelas = ContaPagar.objects.filter(compra=objeto)
 
-    form = CompraForm(request.POST or None, instance=objeto)
+    form = CompraForm(request.POST or None, request.FILES or None, instance=objeto)
 
     Formset_compraMateriaPrima_Factory = inlineformset_factory(
         Compra,

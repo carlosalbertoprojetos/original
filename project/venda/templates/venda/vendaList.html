@@ -49,9 +49,11 @@
 <script>
     $(document).ready(function () {
         $('#tableID').DataTable({
+
+            "order": [2, 'desc'],
             "columnDefs": [{ type: 'date-euro', 'targets': [2, 3] }],
             "order": [[2, "desc"]],
-            "pageLength": 25,
+            "pageLength": 100,
             "language": {
                 "sProcessing": "Proccesando...",
                 "sLengthMenu": "Mostrar _MENU_ registros",

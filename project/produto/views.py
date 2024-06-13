@@ -33,7 +33,7 @@ def produtoCreate(request):
         form=ProdutoMatPriForm,
         can_delete=False,
         min_num=1,
-        extra=5,
+        extra=0,
     )
     formset = Formset_ProdutoMatPri_Factory(request.POST or None)
 
@@ -43,6 +43,9 @@ def produtoCreate(request):
             formset.instance = form
             formset.save()
             return redirect("produto:produtoList")
+        else:
+            context = {"form": form, "formset": formset}
+            return render(request, templateProdutoCreateUpdate, context)
     else:
         context = {"form": form, "formset": formset}
         return render(request, templateProdutoCreateUpdate, context)

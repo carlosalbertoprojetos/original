@@ -7,13 +7,16 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('garantia', '0004_auto_20231202_0823'),
+        ("garantia", "0004_auto_20231202_0823"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='garantia',
-            name='status',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='garantia.statusgarantia'),
+            model_name="garantia",
+            name="status",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to="garantia.statusgarantia",
+            ),
         ),
     ]

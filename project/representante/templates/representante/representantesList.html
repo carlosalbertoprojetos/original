@@ -1,0 +1,111 @@
+{% extends 'index.html' %}
+
+{% load static %}
+
+<title> {% block title %} Representante {% endblock title%} </title>
+
+
+{% block index %}
+
+<div class="container">
+    <div class="filters card border-1">
+        <div class="card-header">
+            <label class="fs-5 fw-bold">Lista de Representantes</label>
+        </div>
+        <div class="table-responsive p-3">
+            <table class="table" id="id_table">
+                <div class="col-12 d-flex justify-content-end">
+                    <a class="btnMaster px-2" href="{% url 'representante:representanteCreate' %}">Novo Representante
+                        <i class="fa fa-plus-square" aria-hidden="true"></i>
+                    </a>
+                </div>
+                <thead>
+                    <tr>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Nome Fantasia</th>
+                        <th>Telefone</th>
+                        <th>Cidade/UF</th>
+                        <th>Situação</th>
+                        <th>Região</th>
+                        <th class="text-center">Serviços</th>
+                        <th class="text-center">Ação</th>
+                    </tr>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for repres in representantes %}
+                    <tr>
+
+                        <td>{{ repres.nome|default:""|truncatechars:40 }}</td>
+                        <td>{{ repres.nome_fantasia|default:""|truncatechars:40 }}</td>
+                        <td>{{ repres.tel_principal|default:"" }}</td>
+                        <td>{{ repres.cidade|default:"" }}/{{ repres.estado|default:"" }}</td>
+                        {% if repres.status_representante == True %}
+                        <td>Ativo</td>
+                        {% else %}
+                        <td>Inativo</td>
+                        {% endif %}
+                        <td>{{ repres.regiao|default:"" }}</td>
+                        <td class="text-center pe-3"><a href="{% url 'representante:servicosList' repres.id %}"><i
+                                    class="fa fa-wrench" aria-hidden="true"></i></a></td>
+                        <td class="text-center pe-3">
+                            <abbr title="Editar">
+                                <a href="{{ repres.rep_gau_edit }}">
+                                    <i class=" fa fa-edit"></i>
+                                </a>
+                            </abbr>
+                            <abbr title="Excluir">
+                                <a href="{{ repres.rep_gau_delete }}">
+                                    <i class="fa fa-close no"></i>
+                                </a>
+                            </abbr>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script src="{% static 'js/datatables.min.js' %}"></script>
+<script src="{% static 'js/jqueryDataTable.js' %}"></script>
+<script>
+    $(document).ready(function () {
+        $('#id_table').DataTable({
+            "order": [[0, 'desc']],
+            "pageLength": 100,
+            "language": {
+                "sProcessing": "Proccesando...",
+                "sLengthMenu": "Mostrar _MENU_ registros",
+                "sZeroRecords": "Nenhum resultado encontrado",
+                "sEmptyTable": "Nenhum dado disponivel",
+                "sInfo": "Mostrando registros de _START_ a _END_ de um total de _TOTAL_ registros",
+                "sInfoEmpty": "Mostrando registros de 0 a 0 de um total de 0 registros",
+                "sInfoFiltered": "(filtrado de um total de _MAX_ registros)",
+                "sInfoPostFix": "",
+                "sSearch": "Buscar:",
+                "sUrl": "",
+                "sInfoThousands": ",",
+                "sLoadingRecords": "Carregando...",
+                "oPaginate": {
+                    "sFirst": "Primero",
+                    "sLast": "Último",
+                    "sNext": "Seguinte",
+                    "sPrevious": "Anterior"
+                },
+                "oAria": {
+                    "sSortAscending": ": Ativar para ordenar a coluna de maneira ascendente",
+                    "sSortDescending": ": Ativar para ordenar a coluna de maneira descendente"
+                }
+            }
+        }
+
+        );
+    }); 
+</script>
+{% endblock %}

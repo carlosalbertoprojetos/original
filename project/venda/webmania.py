@@ -44,12 +44,17 @@ def emite_nf(pk):
     nf['natureza_operacao'] = venda.vendedor.extenduser.empresa.natureza_operacao
     nf['modelo'] = 1
     nf['finalidade'] = 1
-    nf['ambiente'] = 1
+
+    if venda.vendedor.extenduser.empresa.id == 1:
+        nf['ambiente'] = 1 # 2 e homologacao
+    else:
+        nf['ambiente'] = 1
 
     #monta produto
     produtos = []
     peso_total = 0
     volume_total = 0
+    soma_produtos = 0
     for produto in venda.vendaproduto_set.all():
       dictproduto = {}
       dictproduto['nome'] = produto.produto.nome + ' ' + produto.voltagem.nome + ' ' +  produto.torneira.nome
@@ -62,14 +67,29 @@ def emite_nf(pk):
       peso_total += produto.produto.peso * produto.quantidade
       volume_total += produto.quantidade
       dictproduto['origem'] = 0
-      dictproduto['subtotal'] = str(produto.preco)
-      dictproduto['total'] = str(produto.preco *  produto.quantidade)
+      if  venda.vendedor.extenduser.empresa.id == 1: 
+          #original
+          dictproduto['subtotal'] = round(float(produto.preco)  - (float(produto.preco) / 100 * 4.943),2)
+          dictproduto['ipi'] = round(float(produto.preco) / 100 * 4.943, 2)
+          dictproduto['subtotalcomipi'] =  dictproduto['subtotal'] +  dictproduto['ipi']
+          dictproduto['total'] =  dictproduto['subtotal'] * produto.quantidade
+          dictproduto['totalcomipi'] =  dictproduto['subtotalcomipi'] * produto.quantidade
+          #desconto = 0
+          #if dictproduto['totalcomipi'] !=  dictproduto['total']:
+          #    desconto =  dictproduto['totalcomipi'] - dictproduto['total']
+          #dictproduto['desconto'] = desconto
+          soma_produtos += dictproduto['totalcomipi']
+      else:
+          #distribuidora
+          dictproduto['subtotal'] = str(produto.preco)
+          dictproduto['total'] = str(produto.preco *  produto.quantidade)
+          soma_produtos += (produto.preco *  produto.quantidade)
       dictproduto['classe_imposto'] = venda.vendedor.extenduser.empresa.webmania_classedeimposto
       produtos.append(dictproduto)
     if produtos:
       nf['produtos'] = produtos
 
-    
+    #
     try:
       empresa = venda.vendedor.extenduser.empresa
     except:
@@ -127,6 +147,7 @@ def emite_nf(pk):
     pedido['desconto'] = desconto
     pedido['frete'] =  0 # float(venda.valor_frete)
     informacoes_complementares = ' ref pedido: ' + str(venda.id)
+    informacao_adicional_notafiscal = venda.informacao_adicional_notafiscal
     if venda.cotacao_transportadora:
       informacoes_complementares += ' ' + str(venda.cotacao_transportadora) + ' ' + str(venda.valor_frete)
     if venda.quemrecebe_mercadolivre:
@@ -134,8 +155,20 @@ def emite_nf(pk):
     if venda.telefonequemrecebe_mercadolivre:
       informacoes_complementares += ' tel quem recebe: ' + venda.telefonequemrecebe_mercadolivre
     pedido['informacoes_complementares'] = informacoes_complementares
-    pedido['total'] = str(venda.valor_venda)
-
+    if venda.informacao_adicional_notafiscal:
+      pedido['informacoes_complementares'] += ' ' + informacao_adicional_notafiscal
+    if venda.vendedor.extenduser.empresa.id  == 1:
+        # agora ve se os valroes deram certo
+        if soma_produtos > venda.valor_venda and soma_produtos - float(venda.valor_venda) < 5:
+            # o valor ajustou mas esta uma diferenca pequena, ai joga no desconto
+            pedido['desconto'] =  str(soma_produtos - round(venda.valor_venda,2))
+            pedido['total'] = str(venda.valor_venda)
+       # else:
+       #     return None,  'preco produtos difere valor total'
+    else:
+        pedido['total'] = str(venda.valor_venda)
+        if venda.valor_venda != soma_produtos:
+            return None, 'preco produtos difere valor total'
     nf['pedido'] = pedido
 
     #transporte

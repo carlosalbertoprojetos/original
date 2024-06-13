@@ -575,9 +575,10 @@ def estoqueReal(request):
     for bdp in bd_produto:
         for pok, pov in posicoes2.items():
             for povk, povv in pov.items():
-                vlrs_amarelos.append(
-                    f"{bdp}/{povk}/{pok+1}/{produtos_mps_totais[povk][pok]}"
-                )
+                if produtos_mps_totais[povk]:
+                    vlrs_amarelos.append(
+                        f"{bdp}/{povk}/{pok+1}/{produtos_mps_totais[povk][pok]}"
+                    )
 
     context = {
         "dias": dias_,
@@ -827,6 +828,44 @@ def previsaoEstoque(request):
             }
             return render(request, template_name, context)
     else:
+        tot_prod_diaria_geral = [
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+        ]
         formset = formsetFactory()
         context = {
             "formset": formset,

@@ -110,7 +110,7 @@
                         {{ form.status_compra }}
                     </div>
                     <div class="col-6 col-md-4">
-                        <label for="id_status_compra">Upload Pedido de Compra</label>
+                        <label for="id_pedido">Upload Pedido de Compra</label>
                         {{ form.pedido }}
                     </div>
                 </div>
@@ -169,7 +169,7 @@
             <div class="card-header"><label class="fs-5 fw-bold">Parcelas</label></div>
             <div class="card-body label py-0" id="parcela-form-list">
                 {% for parc in parcela %}
-                <div class="row parcela-form">
+                <div class="row parcela-form mt-2">
                     {{ parc.id }}
                     {{ parc.datadocumento }}
                     <div class="col-6 col-lg-2">

@@ -57,12 +57,16 @@ class Produto(models.Model):
     )
     preco = models.DecimalField(max_digits=11, decimal_places=2, default=0.00)
     peso = models.IntegerField(null=True, blank=True)
-    estoque_ini = models.FloatField(default=0, null=True, blank=True)
+    estoque_127 = models.FloatField(default=0, null=True, blank=True)
+    estoque_220 = models.FloatField(default=0, null=True, blank=True)
 
     aliq_icms_interno = models.FloatField(default=0, null=True, blank=True)
     aliq_ipi = models.FloatField(default=0, null=True, blank=True)
 
     status_produto = models.BooleanField(default=True)
+    altura = models.FloatField(null=True, blank=True)
+    largura = models.FloatField(null=True, blank=True)
+    comprimento = models.FloatField(null=True, blank=True)
     descricao = models.CharField(max_length=255, null=True, blank=True)
     criadoem = models.DateTimeField(auto_now_add=True)
     atualizadoem = models.DateTimeField(auto_now=True)

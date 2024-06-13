@@ -1,0 +1,42 @@
+{% if timeline %}
+<div class="d-flex gap-3">
+    <div class="nav-item dropdown me-3">
+        <a class="dropdown text-decoration-none text-dark" href="#" role="button" data-bs-toggle="dropdown"
+            aria-expanded="false">
+            <i class="far fa-bell"></i>
+            <span class="badge bg-danger navbar-badge">{{ timeline.count }}</span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-lg-end">
+            {% for item in timeline %}
+            <li>
+                <a href="{% url 'suporte:suporteTimeLineCreate' item.suporte.venda.id %}" class="dropdown-item">
+                    <p class="m-0">suporte: <b>{{ item.suporte.id }}</b> / compra: <b>{{ item }}</b>
+                        <br>
+                        cliente: <b>{{ item.suporte.venda.cliente.nome }}</b><br>
+                        fluxo: <b>{{ item.fluxo }} </b>/
+                        ação: <b>{{ item.acao }}</b>
+                    </p>
+                    <span class="float-end text-muted text-sm ps-1">
+                        {% for d in dias %}
+                        {% for i, v in d.items %}
+                        {% if i == item.suporte.id %}
+                        {{ v }}
+                        {% endif %}
+                        {% endfor %}
+                        {% endfor %}
+                        dias
+                    </span>
+                </a>
+            </li>
+            <hr class="dropdown-divider">
+            {% endfor %}
+        </ul>
+    </div>
+    <a class="text-decoration-none text-muted m-auto" id="idimage" role="button" data-bs-toggle="dropdown"
+        aria-expanded="false">{{ request.user }}<span class="position-absolute"></span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="idimage">
+        <li><a class="dropdown-item" href="{% url 'account_logout' %}">Sair</a></li>
+    </ul>
+</div>
+{% endif %}

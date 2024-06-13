@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block base %}
+
+<head>
+    <script src="{% static 'js/fontawesomeKit.js' %}" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="{% static 'css/sidebars.css' %}">
+</head>
+
+<div class="wrapper">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar bg-white">
+        <div class="h-100">
+            <div class="sidebar-logo">
+                <a class="logo d-flex gap-2 text-decoration-none" href="{% url 'cliente:dashboard' request.user %}">
+                    <img src="{% static 'img/logo.png' %}">
+                    <h6 class="m-auto ps-1 text-dark text-uppercase">Original</h6>
+                </a>
+            </div>
+            <!-- Sidebar Navigation -->
+            <li class="sidebar-item">
+                <a href="{% url 'cliente:comprasList' request.user %}" class="sidebar-link"><img
+                        src="{% static 'img/icons/cliente/pedido.png' %}" alt="" height="20" width="20">
+                    Pedidos
+                </a>
+                <!-- <a href="#" class="sidebar-link collapsed" data-bs-toggle="collapse" data-bs-target="#pedidos"
+                    aria-expanded="false" aria-controls="pedidos">
+                    <img src="{% static 'img/icons/cliente/pedido.png' %}" alt="" height="20" width="20">
+                    Pedidos
+                </a>
+                <ul id="pedidos" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                    <li class="sidebar-item">
+                            <a href="{% url 'cliente:compraCreate' request.user %}"
+                                class="sidebar-link2 py-0 pb-2 ps-5">Novo</a>
+                        </li>
+                    <li class="sidebar-item">
+                        <a href="{% url 'cliente:comprasList' request.user %}"
+                            class="sidebar-link2 py-0 pb-2 ps-5">Lista</a>
+                    </li>
+                    <li class="sidebar-item">
+                            <a href="#" class="sidebar-link2 py-0 pb-2 ps-5">Em Aberto</a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a href="#" class="sidebar-link2 py-0 pb-2 ps-5">Entregues</a>
+                        </li>
+                </ul> -->
+            </li>
+            <li class="sidebar-item">
+                <a href="{% url 'cliente:boletoClienteList' request.user %}" class="sidebar-link">
+                    <img src="{% static 'img/icons/cliente/boleto.png' %}" alt="" height="20" width="20">
+                    Boletos
+                </a>
+                <!-- <a href="#" class="sidebar-link collapsed" data-bs-toggle="collapse" data-bs-target="#boletos"
+                    aria-expanded="false" aria-controls="boletos">
+                    <img src="{% static 'img/icons/cliente/boleto.png' %}" alt="" height="20" width="20">
+                    Boletos
+                </a>
+                <ul id="boletos" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                    <li class="sidebar-item">
+                        <a href="{% url 'cliente:boletoClienteList' request.user %}"
+                            class="sidebar-link2 py-0 pb-2 ps-5">Lista</a>
+                    </li>
+                    <li class="sidebar-item">
+                            <a href="#" class="sidebar-link2 py-0 pb-2 ps-5">Pagos</a>
+                        </li>
+                </ul> -->
+            </li>
+            <li class="sidebar-item">
+                <a href="{% url 'cliente:suportClienteList' request.user %}" class="sidebar-link">
+                    <img src="{% static 'img/icons/cliente/assistencia.png' %}" alt="" height="20" width="20">
+                    Assistência
+                </a>
+                <!-- <a href="#" class="sidebar-link collapsed" data-bs-toggle="collapse" data-bs-target="#assistencia"
+                    aria-expanded="false" aria-controls="assistencia">
+                    <img src="{% static 'img/icons/cliente/assistencia.png' %}" alt="" height="20" width="20">
+                    Assistência
+                </a>
+                <ul id="assistencia" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link2 py-0 pb-2 ps-5">Garantia</a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link2 py-0 pb-2 ps-5">Suporte</a>
+                    </li>
+                </ul> -->
+            </li>
+            <!-- <li class="sidebar-header">
+                    Múltiplos níveis
+                </li>
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link collapsed" data-bs-toggle="collapse" data-bs-target="#multi"
+                        aria-expanded="false" aria-controls="multi">
+                        <i class="fa-solid fa-share-nodes pe-2"></i>
+                        Nível l
+                    </a>
+                    <ul id="multi" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                        <li class="sidebar-item">
+                            <a href="#" class="sidebar-link2 py-0 pb-2 ps-5 collapsed" data-bs-toggle="collapse"
+                                data-bs-target="#multi-two" aria-expanded="false" aria-controls="multi-two">
+                                <i class="fa-solid fa-share-nodes"></i>
+                                Nível 2
+                            </a>
+                            <ul id="multi-two" class="sidebar-dropdown list-unstyled collapse">
+                                <li class="sidebar-item">
+                                    <a href="#" class="sidebar-link2 ms-2 py-0 pb-2 ps-5">Link 1</a>
+                                </li>
+                                <li class="sidebar-item">
+                                    <a href="#" class="sidebar-link2 ms-2 py-0 pb-2 ps-5">Link 2</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li> -->
+            </ul>
+        </div>
+    </aside>
+    <div class="main">
+        <nav class="navbar navbar-expand px-3 justify-content-between">
+            <li class="nav-item">
+                <button class="butn text-black bg-light border-0" type="button" data-bs-theme="dark">
+                    <span class="">
+                        <i class="fa fa-navicon" style="color:#2b2b2b; font-size:20px;"></i>
+                    </span>
+                </button>
+            </li>
+            <li class="nav-item dropdown pe-3">
+                <a class="text-decoration-none nav-profile d-flex align-items-center text-black pe-0" href="#"
+                    data-bs-toggle="dropdown">
+                    <span class="dropdown-toggle ps-2">{{ request.user }}</span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+                    <li>
+                        <a class="dropdown-item d-flex align-items-center fw-bold"
+                            href="{% url 'account_change_password' %}">
+                            <img class="me-2" src="{% static 'img/icons/cliente/perfil.png' %}" alt="" height="20"
+                                width="20">
+                            <span>Alterar senha</span>
+                        </a>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li>
+                        <a class="dropdown-item d-flex align-items-center fw-bold"
+                            href="{% url 'cliente:clienteLogout' request.user.id %}">
+                            <img class="me-2" src="{% static 'img/icons/cliente/sair.png' %}" alt="" height="20"
+                                width="20">
+                            <span>Sair</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </nav>
+        <hr class="m-0">
+
+        {% block dashboard %}
+        {% endblock %}
+
+    </div>
+</div>
+
+<script>
+    // botão hamburguer para abrir/fechar sidebar
+    const toggler = document.querySelector(".butn");
+    toggler.addEventListener("click", function () {
+        document.querySelector("#sidebar").classList.toggle("collapsed");
+    });
+</script>
+{% endblock %}
+
+{% block script %}
+
+<script>
+    // collapsa quando a janela for menor ou igual a 768px
+    $(document).ready(function () {
+        var sidebar = document.getElementById('sidebar');
+        var size = window.innerWidth;
+        if (size <= 700) {
+            sidebar.setAttribute("class", 'bg-white collapsed');
+        }
+    });
+</script>
+
+{% endblock %}

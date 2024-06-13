@@ -1,0 +1,52 @@
+{% extends 'index.html' %}
+
+{% load static %}
+
+<title> {% block title %} Dados Bancários {% endblock title%} </title>
+
+{% block index %}
+
+<div class="container">
+    <form method="post" action="">
+        {% csrf_token %}
+        <div class="card">
+            <div class="card-header">
+                <label class="fs-5 fw-bold">
+                    {% if id %}
+                    Alterar
+                    {% else %}
+                    Cadastrar
+                    {% endif %}
+                    Dados da Conta
+                </label>
+            </div>
+            <div class="card-body label">
+                <div class="row mb-2">
+                    <div class="col-12 col-md-4">
+                        <label for="{{ form.banco.id_for_label }}">Banco</label>
+                        {{ form.banco }}
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <label for="{{ form.agencia.id_for_label }}">Agência</label>
+                        {{ form.agencia }}
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <label for="{{ form.conta.id_for_label }}">Conta</label>
+                        {{ form.conta }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex float-end mt-3">
+            <div class="col-2 d-flex gap-2 align-middle">
+                <a role="button" class="btn btn-secondary btn-sm"
+                    href="{% url 'representante:representantesList' %}">Cancelar</a>
+                <div class="form-group form-button">
+                    <input type="submit" class="btn btn-primary btn-sm" value="Salvar" />
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

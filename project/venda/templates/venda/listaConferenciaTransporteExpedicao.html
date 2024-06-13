@@ -1,0 +1,87 @@
+{% extends 'index.html' %}
+
+{% load static %}
+
+<title> {% block title %} Conferência de Transporte {% endblock title%} </title>
+
+
+{% block index %}
+
+<div class="container">
+    <div class="filters card border-1">
+        <div class="card-header d-flex flex-column">
+            <label class="fs-5 fw-bold mb-3">Conferência das Faturas de Transporte</label>
+            <h6>Transportadora: {% for t in transportadora %}{{ t.nome }}{% endfor %}</h6>
+        </div>
+        <div class="table-responsive p-3">
+            <table class="table" id="id_table">
+                <!-- <div class="col-12 d-flex justify-content-end">
+                    <a class="btnMaster px-2" href="{% url 'venda:vendaCreate' %}">Novo Pedido de Venda
+                        <i class="fa fa-plus-square" aria-hidden="true"></i>
+                    </a>
+                </div> -->
+                <thead>
+                    <tr>
+                        <th>Cód</th>
+                        <th>Cliente</th>
+                        <th>Entrega</th>
+                        <th>Cotação</th>
+                        <th>Frete</th>
+                        <!-- <th class="px-3">Ações</th> -->
+                    </tr>
+                </thead>
+                {% for object in object_list %}
+                <tbody>
+                    <td>{{ object.id }}</td>
+                    <td>{{ object.cliente }}</td>
+                    <td>{{ object.data_entrega|date:"d/m/y" }}</td>
+                    <td>{{ object.cotacao_transportadora|default:"" }}</td>
+                    <td class="text-end">R$ {{ object.valor_frete }}</td>
+                </tbody>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script src="{% static 'js/datatables.min.js' %}"></script>
+<script src="{% static 'js/jqueryDataTable.js' %}"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#id_table').DataTable({
+            "order": [[0, 'desc']],
+            "pageLength": 50,
+            "language": {
+                "sProcessing": "Proccesando...",
+                "sLengthMenu": "Mostrar _MENU_ registros",
+                "sZeroRecords": "Nenhum resultado encontrado",
+                "sEmptyTable": "Nenhum dado disponivel",
+                "sInfo": "Mostrando registros de _START_ a _END_ de um total de _TOTAL_ registros",
+                "sInfoEmpty": "Mostrando registros de 0 a 0 de um total de 0 registros",
+                "sInfoFiltered": "(filtrado de um total de _MAX_ registros)",
+                "sInfoPostFix": "",
+                "sSearch": "Buscar:",
+                "sUrl": "",
+                "sInfoThousands": ",",
+                "sLoadingRecords": "Carregando...",
+                "oPaginate": {
+                    "sFirst": "Primero",
+                    "sLast": "Último",
+                    "sNext": "Seguinte",
+                    "sPrevious": "Anterior"
+                },
+                "oAria": {
+                    "sSortAscending": ": Ativar para ordenar a coluna de maneira ascendente",
+                    "sSortDescending": ": Ativar para ordenar a coluna de maneira descendente"
+                }
+            }
+        }
+
+        );
+    }); 
+</script>
+{% endblock %}

@@ -2,7 +2,7 @@ from django.contrib import admin
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 
-from .models import Cliente
+from .models import Cliente, VendedorPadrao
 
 
 class ClienteResource(resources.ModelResource):
@@ -45,4 +45,7 @@ class ClienteAdmin(ImportExportModelAdmin):
     search_fields = ["nome", "cpf", "cnpj"]
 
 
-# admin.site.register(Cliente, ClienteAdmin)
+@admin.register(VendedorPadrao)
+class VendedorPadraoAdmin(admin.ModelAdmin):
+    list_display = ("vendedor",)
+    ...

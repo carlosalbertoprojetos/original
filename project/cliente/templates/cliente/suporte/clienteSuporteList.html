@@ -1,0 +1,123 @@
+{% extends 'cliente/account/clienteDashboard.html' %}
+
+{% load static %}
+
+{% block dashboard %}
+
+<div class="container mt-2 pt-0">
+    <div class="filters card border-1">
+        <div class="card-header">
+            <label class="fs-5 fw-bold">Suporte</label>
+        </div>
+        <div class="p-3">
+            <div class="table-responsive">
+                <table class="table table-sm" id="id_table">
+                    <thead>
+                        <tr>
+                            <th class="text-center">Suporte</th>
+                            <th class="text-center">Venda</th>
+                            <th class="text-center">NF</th>
+                            <th>Cliente</th>
+                            <!-- <th>Criado por</th> -->
+                            <th class="text-center">Fluxo Atual</th>
+                            <!-- <th class="text-center">Concluir Fluxo</th> -->
+                            <th class="text-center">Ação Atual</th>
+                            <!-- <th class="text-center">Concluir Ação</th> -->
+                            <!-- <th>Responsável</th> -->
+                            <th>Visualizar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in dados_timeline %}
+                        <tr>
+                            <td class="text-center pe-3">{{ s.id }}</td>
+                            <td class="text-center pe-3">{{ s.venda }}</td>
+                            <td class="text-center pe-3">{{ s.nf|default:'' }}</td>
+                            <td>{{ s.cliente|truncatechars:40 }}</td>
+                            <!-- <td>{{ s.responsavel }}</td> -->
+                            <td>
+                                {{ s.fluxo }}
+                            </td>
+                            <!-- <td class="text-center">{{ s.data|date:'d/m/Y' }}</td> -->
+                            <td class="text-center pe-3">
+                                {{ s.acao }}
+                            </td>
+                            <!-- <td class="text-center">
+                                {% for k, v in prazo_conclusao.items %}
+                                {% if s.venda.id == k %}
+                                {{ v.prazo|date:"d/m/y" }}
+                                {% endif %}
+                                {% endfor %}
+                            </td> -->
+                            <!-- <td>
+                                {% for k, v in prazo_conclusao.items %}
+                                {% if s.venda.id == k %}
+                                {{ v.ultacao }}
+                                {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td>{{ s.responsavelAtual }}</td> -->
+                            <td class="text-center pe-3">
+                                <a href="{% url 'cliente:clienteSuporteProduto' s.venda %}">
+                                    <i class="fa fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {%endfor%}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+
+<script src="{% static 'js/datatables.min.js' %}"></script>
+<script src="{% static 'js/jqueryDataTable.js' %}"></script>
+<script>
+    $(document).ready(function () {
+        $('#id_table').DataTable({
+            "order": [[0, 'desc']],
+            "pageLength": 100,
+            "language": {
+                "sProcessing": "Proccesando...",
+                "sLengthMenu": "Mostrar _MENU_ registros",
+                "sZeroRecords": "Nenhum resultado encontrado",
+                "sEmptyTable": "Nenhum dado disponivel",
+                "sInfo": "Mostrando registros de _START_ a _END_ de um total de _TOTAL_ registros",
+                "sInfoEmpty": "Mostrando registros de 0 a 0 de um total de 0 registros",
+                "sInfoFiltered": "(filtrado de um total de _MAX_ registros)",
+                "sInfoPostFix": "",
+                "sSearch": "Buscar:",
+                "sUrl": "",
+                "sInfoThousands": ",",
+                "sLoadingRecords": "Carregando...",
+                "oPaginate": {
+                    "sFirst": "Primero",
+                    "sLast": "Último",
+                    "sNext": "Seguinte",
+                    "sPrevious": "Anterior"
+                },
+                "oAria": {
+                    "sSortAscending": ": Ativar para ordenar a coluna de maneira ascendente",
+                    "sSortDescending": ": Ativar para ordenar a coluna de maneira descendente"
+                }
+            }
+        }
+
+        );
+    }); 
+</script>
+
+<script type="text/javascript">
+    $('#pesquisa').keypress(function (e) {
+        if (e.which == 13) {
+            $('form#pesquisa').submit();
+        }
+    });
+</script>
+
+{% endblock %}
