@@ -8,6 +8,7 @@ media/
 node_modules/
 dist/
 project/settings.py
+eder.pfx
 # Compiled Java class files
 *.class
 
